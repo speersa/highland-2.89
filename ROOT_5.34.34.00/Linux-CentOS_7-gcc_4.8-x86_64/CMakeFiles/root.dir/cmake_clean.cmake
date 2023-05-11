@@ -1,0 +1,42 @@
+file(REMOVE_RECURSE
+  "/home/t2k/aspeers/Highland_Installs/HighLAND_2.89/ROOT_5.34.34.00/cmake/../Linux-CentOS_7-gcc_4.8-x86_64//LICENSE"
+  "/home/t2k/aspeers/Highland_Installs/HighLAND_2.89/ROOT_5.34.34.00/cmake/../Linux-CentOS_7-gcc_4.8-x86_64//README"
+  "/home/t2k/aspeers/Highland_Installs/HighLAND_2.89/ROOT_5.34.34.00/cmake/../Linux-CentOS_7-gcc_4.8-x86_64//SRC"
+  "/home/t2k/aspeers/Highland_Installs/HighLAND_2.89/ROOT_5.34.34.00/cmake/../Linux-CentOS_7-gcc_4.8-x86_64//aclocal"
+  "/home/t2k/aspeers/Highland_Installs/HighLAND_2.89/ROOT_5.34.34.00/cmake/../Linux-CentOS_7-gcc_4.8-x86_64//bin"
+  "/home/t2k/aspeers/Highland_Installs/HighLAND_2.89/ROOT_5.34.34.00/cmake/../Linux-CentOS_7-gcc_4.8-x86_64//cint"
+  "/home/t2k/aspeers/Highland_Installs/HighLAND_2.89/ROOT_5.34.34.00/cmake/../Linux-CentOS_7-gcc_4.8-x86_64//cmake"
+  "/home/t2k/aspeers/Highland_Installs/HighLAND_2.89/ROOT_5.34.34.00/cmake/../Linux-CentOS_7-gcc_4.8-x86_64//config"
+  "/home/t2k/aspeers/Highland_Installs/HighLAND_2.89/ROOT_5.34.34.00/cmake/../Linux-CentOS_7-gcc_4.8-x86_64//emacs"
+  "/home/t2k/aspeers/Highland_Installs/HighLAND_2.89/ROOT_5.34.34.00/cmake/../Linux-CentOS_7-gcc_4.8-x86_64//etc"
+  "/home/t2k/aspeers/Highland_Installs/HighLAND_2.89/ROOT_5.34.34.00/cmake/../Linux-CentOS_7-gcc_4.8-x86_64//fonts"
+  "/home/t2k/aspeers/Highland_Installs/HighLAND_2.89/ROOT_5.34.34.00/cmake/../Linux-CentOS_7-gcc_4.8-x86_64//geom"
+  "/home/t2k/aspeers/Highland_Installs/HighLAND_2.89/ROOT_5.34.34.00/cmake/../Linux-CentOS_7-gcc_4.8-x86_64//icons"
+  "/home/t2k/aspeers/Highland_Installs/HighLAND_2.89/ROOT_5.34.34.00/cmake/../Linux-CentOS_7-gcc_4.8-x86_64//inc"
+  "/home/t2k/aspeers/Highland_Installs/HighLAND_2.89/ROOT_5.34.34.00/cmake/../Linux-CentOS_7-gcc_4.8-x86_64//include"
+  "/home/t2k/aspeers/Highland_Installs/HighLAND_2.89/ROOT_5.34.34.00/cmake/../Linux-CentOS_7-gcc_4.8-x86_64//install"
+  "/home/t2k/aspeers/Highland_Installs/HighLAND_2.89/ROOT_5.34.34.00/cmake/../Linux-CentOS_7-gcc_4.8-x86_64//lib"
+  "/home/t2k/aspeers/Highland_Installs/HighLAND_2.89/ROOT_5.34.34.00/cmake/../Linux-CentOS_7-gcc_4.8-x86_64//macros"
+  "/home/t2k/aspeers/Highland_Installs/HighLAND_2.89/ROOT_5.34.34.00/cmake/../Linux-CentOS_7-gcc_4.8-x86_64//man"
+  "/home/t2k/aspeers/Highland_Installs/HighLAND_2.89/ROOT_5.34.34.00/cmake/../Linux-CentOS_7-gcc_4.8-x86_64//root"
+  "/home/t2k/aspeers/Highland_Installs/HighLAND_2.89/ROOT_5.34.34.00/cmake/../Linux-CentOS_7-gcc_4.8-x86_64//src"
+  "/home/t2k/aspeers/Highland_Installs/HighLAND_2.89/ROOT_5.34.34.00/cmake/../Linux-CentOS_7-gcc_4.8-x86_64//test"
+  "/home/t2k/aspeers/Highland_Installs/HighLAND_2.89/ROOT_5.34.34.00/cmake/../Linux-CentOS_7-gcc_4.8-x86_64//tmp"
+  "/home/t2k/aspeers/Highland_Installs/HighLAND_2.89/ROOT_5.34.34.00/cmake/../Linux-CentOS_7-gcc_4.8-x86_64//tmva"
+  "/home/t2k/aspeers/Highland_Installs/HighLAND_2.89/ROOT_5.34.34.00/cmake/../Linux-CentOS_7-gcc_4.8-x86_64//tutorials"
+  "CMakeFiles/root"
+  "CMakeFiles/root-complete"
+  "stamps/root-PostConfigure"
+  "stamps/root-build"
+  "stamps/root-configure"
+  "stamps/root-download"
+  "stamps/root-install"
+  "stamps/root-mkdir"
+  "stamps/root-patch"
+  "stamps/root-update"
+)
+
+# Per-language clean rules from dependency scanning.
+foreach(lang )
+  include(CMakeFiles/root.dir/cmake_clean_${lang}.cmake OPTIONAL)
+endforeach()

@@ -1,0 +1,88 @@
+#!/bin/bash
+#################################################################
+
+# Update the README.md file in a package by copying the mainPage.dox 
+# file from the doc directory and converting to markdown. Also commits
+# the changes. Must be executed in the desired package's base directory
+
+usage () {                                                                      
+  echo                                                                          
+  echo "Usage: nd280-readme"  
+  echo "  Update the README.md file in a package by copying the mainPage.dox "
+  echo "  file from the doc directory and converting to markdown. Also commits "
+  echo "  the changes. Must be executed in the desired package's base "
+  echo "  directory. The conversion to markdown is quite rough but sufficient."
+  echo                                                      
+  echo "Options:"                                                               
+  echo "  -h : Print this message."                              
+  echo                                                                          
+  if [ ${#*} != 0 ]; then                                                       
+    printf "ERROR: ${*}\n" | fold -s                                            
+    exit 1                                                                      
+  else                                                                          
+    exit 0                                                                      
+  fi                                                                            
+}
+
+# read the options and arguments                                                
+while getopts "h" option; do                                               
+  case $option in                                                               
+    h) usage;;                                                                  
+  esac                                                                          
+done                                                                            
+shift "$((OPTIND-1))"
+
+if [ ${#1} != 0 ]; then
+  usage "Too many arguments. No arguments are required."
+fi
+
+declare -a bash_swp1=('\\section' '\\subsection' '\@section' '\@subsection') 
+declare -a bash_swp2=('\\code' '\\endcode'  '\\htmlonly' '\\endhtmlonly' \
+  '\\verbatim' '\\endverbatim' '(\s+)-' '^\*\s' '\\author' '\@author' '\s\\n$' \
+  '^\\n$' '\\li' '\\subpage\s' '\@subpage\s' '\\ref\s' '(\\page\s\w+).*$' \
+  '\\page' '\\c\s' '\\b\s')
+declare -a mrkdwn_swp1=('\#\#\#' '\#\#\#\#' '\#\#\#' '\#\#\#\#' '\#\#\#' \
+  '\#\#\#' '\#\#\#\#' '\#\#\#\#')
+declare -a mrkdwn_swp2=('```' '```' '' '' '```' '```' '-' '\\\* ' 'Author:' \
+  'Author:' '  ' '  ' '\*' '' '' '' '\1' '\#\#\#' '' '')
+declare -a bash_erase=('\\anchor' '\@anchor' '\/\*!' '\*\/' '^\/\/' \
+  '\\mainpage' '\@mainpage')
+
+if [ -d "doc" ]
+then
+  if [ -f doc/mainPage.dox ]
+  then
+    cp doc/mainPage.dox README.md
+  elif [ -f doc/mainpage.dox ]
+  then
+    cp doc/mainpage.dox README.md
+  else
+    echo "Cannot update README.md. No mainPage.dox"
+    exit 0;
+  fi
+  sed -i "1iThis page was created from the documentation at \
+[nd280.lancs.ac.uk](http://nd280.lancs.ac.uk)\n" README.md 
+  i=0
+  for val in "${bash_swp1[@]}"
+  do
+    perl -pi -e "s#${val}\s+\w+#${mrkdwn_swp1[$i]}#g" README.md
+    let 'i=i+1'
+  done
+  i=0
+  for val in "${bash_swp2[@]}"
+  do
+    perl -pi -e "s#${val}#${mrkdwn_swp2[$i]}#g" README.md
+    let 'i=i+1'
+  done
+  for val in "${bash_erase[@]}"
+  do
+    sed -i -e "/$val/d" README.md
+  done
+  git add README.md
+  if ! git commit -m "Updated README.md"; then
+    echo "README already up-to-date"
+  fi
+else
+  echo "Cannot update README.md. No doc directory"
+  exit 0;
+fi

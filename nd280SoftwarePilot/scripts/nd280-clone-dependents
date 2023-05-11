@@ -1,0 +1,124 @@
+#!/usr/bin/env python3
+#
+# This program downloads and builds the default (usually master) branch of
+# all packages names in the <packagename>ND280_USE.cmake file
+import subprocess, os, time, glob, re
+from pathlib import Path, PurePath
+import sys
+#
+# This script belongs in script directory with nd280 as a subdirectory
+# Find the parent directory of this script
+myPath=PurePath(os.path.realpath(__file__))
+# add nd280 on the end
+nd280Path=str(myPath.parent)+"/nd280"
+# and add it to the list of directories to search for modules
+sys.path.append(nd280Path)
+# so then this line works...
+import gitlab
+
+import argparse
+
+def usage():
+    print("""
+
+nd280-clone-dependents
+
+This finds the list of packages in the file named <targetPacakge>ND280_USE.cmake
+and clones just those packages. It can take one parameter, the name of the
+targetPackage whose dependents are to be cloned. If no parameter is provided it assumes it
+is being run inside the targetPackage. The additional packages are
+always cloned to the same point in the file system as the targetPackage itself.
+
+Options:
+    -h, --help : Print this message.
+
+""")
+
+
+# Returns the file name of the xxxND280_USE.cmake file
+# 
+# If package is defined it is ./package/cmake/packageND280_USE.cmake
+# Otherwise it is the first file which matches ./cmake/*ND280_USE.cmake
+# Otherwise it is None
+#
+def ND280_USE(package) :
+	if package :
+		package=package.rstrip('/')
+		fileName="./"+package+"/cmake/"+package+"ND280_USE.cmake"
+		file=Path(fileName)
+		if file.exists() :
+			return fileName
+		else :
+			return None
+	cmakeDir = Path('cmake/')
+	candidates=list(cmakeDir.glob('*ND280_USE.cmake'))
+	if len(candidates) > 0 :
+		return candidates[0]
+	return None
+
+
+# Extract package and version number from a line in the ND280_USE file
+def packageAndVersion(line):
+	trimmed=" ".join(line.split())
+	res = re.split(r"\(|\)| ",trimmed)
+	package=res[1]
+	version=res[2]
+	return (package,version)
+
+#
+# Look for dependents of this file by looking in the ND280_USE file
+#
+def getDependents(thisPackage):
+	#
+	file=ND280_USE(thisPackage)
+	if not file :
+		print(" Could not find cmake/<package>ND280_USE.cmake file.")
+		print("  Can not continue")
+		exit(1)
+	with open(file) as f:
+		for line in f:
+			result = re.match('#', line)
+			if not result :
+				package=packageAndVersion(line)[0]
+				projects=gl.projects.list(search=package,simple=True)
+				url=""
+				# Find the package whose name is exactly right and whose path starts with ND280
+				for project in projects :
+					if project.name == package and project.name_with_namespace.split()[0] == "ND280" :
+							url=project.ssh_url_to_repo
+				# Clone the dependent package
+				#
+				# If thisPackage was specified then put it where we are,
+				# Otherwise put it one level above our current location in the file system
+				#
+				if url != "" :
+					if not thisPackage :
+						subprocess.call(['git', 'clone', url,'../'+project.name])
+					else :
+						subprocess.call(['git', 'clone', url])
+
+				else :
+					print(" could not find package: "+package+" in the git.t2k.org repository")
+	return 
+def buildSoftware(thisPackage) :
+	nd280System = subprocess.check_output(['nd280-system'],shell=True).decode('utf-8').strip()
+	#print("Please be patient while I build "+thisPackage.)
+	#out = subprocess.check_output(['cd '+thisPackage+'; mkdir -p '+nd280System+' ; cd '+nd280System+' ; cmake ../cmake ; ../bin/makeAll.sh'],shell=True,stderr=subprocess.STDOUT)
+	subprocess.run(['cd '+thisPackage+'; mkdir -p '+nd280System+' ; cd '+nd280System+' ; cmake ../cmake ; ../bin/makeAll.sh'],shell=True)
+	return
+def getArguments() :
+	description = """This finds the list of packages in the file named <targetPackage>ND280_USE.cmake
+and clones just those packages. It can take one parameter, the name of the
+targetPackage whose dependents are to be cloned. If no parameter is provided it assumes it
+is being run inside the targetPackage. The additional packages are
+always cloned to the same point in the file system as the targetPackage itself."""
+	parser = argparse.ArgumentParser(description=description)
+	parser.add_argument('targetPackage',nargs='?')
+	args = parser.parse_args()
+	return args.targetPackage
+
+package = getArguments()
+# set up git lab connection to git.t2k.org
+gl = gitlab.Gitlab('https://git.t2k.org/',private_token='glpat-i_uxbTtXL4dF1D7r9wm1')
+getDependents(package)
+#buildSoftware(package)

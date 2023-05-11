@@ -1,0 +1,83 @@
+#! /usr/bin/env python
+#
+# Find  the package dependencies of the current package
+# and list all the packages it depends on
+#
+import os
+from os import path
+import sys
+import getopt
+import tempfile
+import shutil
+import re
+import glob
+import subprocess
+import collections
+from nd280 import shell
+def usage():
+  print("""
+    nd280-show-uses
+    This lists all the packages upon which this one depends. Run it in the ROOT directory of the package.
+    """)
+try:
+  options, args = getopt.gnu_getopt(sys.argv[1:], "hq", ["help","quiet"])
+except:
+  usage()
+  print("ERROR: Invalid option.")
+  sys.exit(1)
+for option, value in options:
+  if option == "-h" or option == "--help":
+    usage()
+    sys.exit(0)
+  else:
+    usage()
+    sys.exit(1)
+# retrieve dependency packages and their required version
+level=0
+package=dict()
+processedDirectories=set()
+def showUses(dir):
+  global level
+  processedDirectories.add(dir)
+  level=level+1
+  for useFile in glob.iglob(dir+"/cmake/*ND280_USE.cmake"):
+    with open(useFile, "r") as f:
+      line = f.readline()
+      while line:
+
+        if re.search(r'^ND280_USE',line):
+          line = re.sub(r'ND280_USE\(','',line)
+          line = re.sub(r'\)','',line)
+          line = re.sub(r'\"','',line)
+          words = line.split()
+          p = words[0]
+          if ( len(words) == 2 and words[1] == "*" ) or  len(words)<2:
+            target=glob.iglob(os.environ['CMAKE_PREFIX_PATH']+"/"+p+"*/cmake/"+p+"PackageVersion.cmake")
+          else:
+            target=glob.iglob(os.environ['CMAKE_PREFIX_PATH']+"/"+p+"_"+words[1]+"/cmake/"+p+"PackageVersion.cmake")
+          for filename in  target :
+            with open(filename,"r") as pFile:
+              pLine = pFile.readline()
+              pWords = pLine.split()
+              v=pWords[1].strip(')')
+              v=v.strip('"')
+              package[p]=v
+              subDir=os.environ['CMAKE_PREFIX_PATH']+"/"+p+"_"+v
+              if(not subDir in processedDirectories ) :
+                if path.exists(subDir) :
+                  showUses(subDir)          
+#          else:
+#            v = words[1]
+#            if ( not p in package ) :
+#              package[p] = v
+#            else :
+#              if(v != "*") :
+#                package[p]=v
+
+        line = f.readline()
+  return
+showUses(".")
+od = collections.OrderedDict(sorted(package.items()))
+for x, y in od.items():
+  print(x+" "+y) 
+sys.exit(0)

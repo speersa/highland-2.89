@@ -1,0 +1,358 @@
+/*! \page highland2/baseTrackerAnalysisHistory History for the highland2/baseTrackerAnalysis Package 
+
+\section baseTrackerAnalysis_v1r1_history Version v1r1
+
+Freeze information:
+   - Freeze Date: Wed Jul  1 11:01:44 2015
+   - Freeze User: acervera
+   - Freeze Host: Macintosh-64b9e8d35af0.local
+
+Release motivated by baseAnalysis splitting
+ - split baseAnalysis package such that it only keeps what is common to all analyses (p0d and tracker). 
+   Many things moved to this new package baseTrackerAnalysis
+
+
+\section baseTrackerAnalysis_v1r3_history Version v1r3
+
+Freeze information:
+   - Freeze Date: Sat Aug  1 11:44:58 2015
+   - Freeze User: acervera
+   - Freeze Host: Macintosh-64b9e8d35af0.local
+
+- split EnableSingleSystConfigurations in two parameters, one for weight systematics and another for variation systematics
+- add ECal EM energy syst
+- each configuration has now a diferent toy maker, which is provided as argument in the constructor
+
+
+
+\section baseTrackerAnalysis_v1r5_history Version v1r5
+
+Freeze information:
+   - Freeze Date: Wed Sep 23 17:18:45 2015
+   - Freeze User: acervera
+   - Freeze Host: portanselmo.ific.uv.es
+
+- new systematics:
+  ToFResolSystematics
+  TPCECalMatchEffSystematics
+  TPCP0DMatchEffSystematics
+  FGDECalMatchEffSystematics
+  FGDECalSMRDMatchEffSystematics
+  ECalTrackEffSystematics
+- parameters: add the new systematics, reorganize (as of TN 212) and explain systematics switches
+- add initialize method calling the Initialize of its base class baseAnalysis
+
+
+
+\section baseTrackerAnalysis_v1r7_history Version v1r7
+
+Freeze information:
+   - Freeze Date: Fri Jan  8 13:19:57 2016
+   - Freeze User: acervera
+   - Freeze Host: Macintosh-64b9e8d35af0-2.local
+
+- reflect changes in syst package (removed copying of SystematicSource)
+- added ECal PID syst
+- some minor re-organization of the order
+- to define configurations use parameters from the base class, instead of 
+  reading them from param file (they are being read from the baseClass anyway)
+- use zero-var configuration
+
+
+
+\section baseTrackerAnalysis_v1r9_history Version v1r9
+
+Freeze information:
+   - Freeze Date: Fri Feb  5 12:28:10 2016
+   - Freeze User: acervera
+   - Freeze Host: portanselmo.ific.uv.es
+
+Move to version v2
+
+- fixed a typo when adding the ECalEMSyst into the single syst configuration
+- FlipKinematics, ToF and MomRange correcitons,  OFF by default, need highlandRecPack
+  to fully work
+
+
+
+\section baseTrackerAnalysis_v2r1_history Version v2r1
+
+Freeze information:
+   - Freeze Date: Mon Mar  7 10:48:12 2016
+   - Freeze User: acervera
+   - Freeze Host: portanselmo.ific.uv.es
+
+major reorganization with new packages and  changes in event model class names
+- udapt to changes in base packages
+- add TPCPIDPullMCCorrection, off for the moment
+
+
+\section baseTrackerAnalysis_v2r3_history Version v2r3
+
+Freeze information:
+   - Freeze Date: Thu May  5 10:44:29 2016
+   - Freeze User: acervera
+   - Freeze Host: ip-192-168-19-79.private.net
+
+- Add the nue specific systematics.
+- enable TPC PID pull MC correction
+- move the method returning the ToyBoxTracker from baseAnalysis.hxx to here
+- Add methods to get the vertex and the true vertex from the ToyBoxTracker
+
+- weight corrections added to all configurations. 
+- add parameters to control weight corrections. Only pilup is enabled
+- The PileUp in the weight variable is kept for the moment but it will be removed soon (at least in trees other than the truth tree) because
+  the same information is available in the weight_corr variable (with appropriate index)
+
+
+
+\section baseTrackerAnalysis_v2r5_history Version v2r5
+
+Freeze information:
+   - Freeze Date: Sat Jun 11 17:31:16 2016
+   - Freeze User: acervera
+   - Freeze Host: Macintosh-64b9e8d35af0-2.local
+
+- got rid of -Alt systematics (they only add additional ProtonMomentum smearing, 
+  will be re-implemented (and properly,  no a simple full code copy) if needed)
+- enable MomentumResol MC correction (smearing to match data)
+
+
+\section baseTrackerAnalysis_v2r7_history Version v2r7
+
+Freeze information:
+   - Freeze Date: Tue Aug  9 13:12:11 2016
+   - Freeze User: acervera
+   - Freeze Host: macintosh-64b9e8d35af0.local
+
+
+Summer release !!!
+
+- make enums public such that they can be used by any analysis. This should salve bug 1333
+- nue*Pileup -> nue*PileUp change in SystId
+
+
+\section baseTrackerAnalysis_v2r9_history Version v2r9
+
+Freeze information:
+   - Freeze Date: Fri Sep 23 17:34:11 2016
+   - Freeze User: acervera
+   - Freeze Host: macintosh-64b9e8d35af0.local
+
+- Added P0D+TPC systematics that are now in psyche to the systematics and configurations.
+- for the moment keep independent flip kinematics and tof corrections, 
+  just add them in a proper order
+
+
+\section baseTrackerAnalysis_v2r11_history Version v2r11
+
+Freeze information:
+   - Freeze Date: Wed Oct 19 10:00:56 2016
+   - Freeze User: acervera
+   - Freeze Host: macintosh-64b9e8d35af0.local
+
+FREEZE FOR BANFF DEVELOPMENT
+
+- improvements in doxygen documentation
+- remove zero_var configuration since we now apply all weights also in the default tree
+- added MomBiasFromVertexMigration systematic
+- Fixed typo using systematics enum when enabling systematics
+
+
+\section baseTrackerAnalysis_v2r13_history Version v2r13
+
+Freeze information:
+   - Freeze Date: Wed Nov  1 11:20:54 2017
+   - Freeze User: alexander
+   - Freeze Host: alexandrs-macbook-pro.local
+
+A new freeze of baseTrackerAnalysis
+
+List of changes
+
+baseTrackerAnalysis.cxx baseTrackerAnalysis.hxx
+- added ECalPiZeroVetoPileUp systematic
+- got rid of pile-up correction
+
+
+
+\section baseTrackerAnalysis_v2r15_history Version v2r15
+
+Freeze information:
+   - Freeze Date: Tue Aug 21 03:08:26 2018
+   - Freeze User: alexander
+   - Freeze Host: alexandrs-macbook-pro.local
+
+
+a new freeze to have a stable/reference version for further nd280 developments
+
+- baseTrackerAnalysis.cxx 
+added FGD PID pull correction for MC
+
+added time data quality correction
+
+- baseTrackerAnalysis.parameters.dat
+FGD PID pull correction for MC, enabled by default
+
+added new time data quality correction, off for the moment
+
+
+\section baseTrackerAnalysis_v2r17_history Version v2r17
+
+Freeze information:
+   - Freeze Date: Fri Sep  6 13:32:49 2019
+   - Freeze User: alexander
+   - Freeze Host: Alexandrs-MacBook-Pro.local
+
+
+
+Modified Files:
+        baseTrackerAnalysis.cxx 
+Log Message:
+added FGD PID correction (fgd pid pull re-calculation)
+for the moment make sure that the fgd pull MC correction is run afterwards if
+enabled (even if already run e.g. in case of flat-trees)
+
+Modified Files:
+        baseTrackerAnalysis.parameters.dat 
+Log Message:
+added FGD PID correction: off by default
+diabled pile-up - is analysis specific
+
+Modified Files:
+        baseTrackerAnalysis.cxx 
+Log Message:
+forced FGDPIDPullMCCorrection to be run always after FGDPIDCorrection using
+the new SetCorrectionsOrder() functionality of the corrections manager
+
+
+
+
+
+\section baseTrackerAnalysis_v2r19_history Version v2r19
+
+Freeze information:
+   - Freeze Date: Fri Oct  2 11:25:08 2020
+   - Freeze User: alexander
+   - Freeze Host: Alexandrs-MacBook-Pro.local
+
+
+
+A new freeze of   highland2/psyche for summer 2020 OA publications as the main goal,
+also the base version for migration to cmake and git
+
+Modified Files:
+        baseTrackerAnalysis.cxx baseTrackerAnalysis.hxx 
+Log Message:
+for systematics that use FGD1 and FGD2 properly fill the corresponding FGD1 and
+FGD2 counters when checking signal samples efficiencies, 
+added counters for FGD hybrid efficiencies for FHC and RHC, reflect the changes
+in the systematic package
+
+Modified Files:
+        baseTrackerAnalysis.cxx baseTrackerAnalysis.hxx 
+Log Message:
+make filling the efficiency (for some weight-like systs where it is used to
+estimate the efficiencies for the signal samples) counters` filling finally working, 
+account for the cases where one may use the UseAnalysis method and/or use other
+analysis class to define/fill the variables
+
+for an analysis derived from  baseTrackerAnalysis one needs to call
+  FillEffCounters() function when filling  micro trees
+
+
+
+
+\section baseTrackerAnalysis_2_21_history Version 2_21
+
+Freeze information:  
+   - Freeze Date: Fri Nov 20 15:10:39 2020  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MacBook-Pro.local
+  
+  
+First freeze of git/cmake version  
+  
+
+
+\section baseTrackerAnalysis_2_22_history Version 2_22
+
+Freeze information:  
+   - Freeze Date: Mon Dec 28 13:38:11 2020  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MacBook-Pro.local
+  
+  
+
+A new freeze: 
+ reflect changes to ECal EmHipPID syst which now provides two binned params depending
+on the cut value used, binned params are used to retrieve signal efficiencies   
+  
+
+
+\section baseTrackerAnalysis_2_23_history Version 2_23
+
+Freeze information:  
+   - Freeze Date: Tue Jun 22 15:32:36 2021  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MacBook-Pro.local
+  
+  
+A new (base) freeze for summer 2021 OA and further xsec
+
+add numuCCMuliPiPhotonProton FGD1/FGD2 sels
+
+  
+
+
+\section baseTrackerAnalysis_2_24_history Version 2_24
+
+Freeze information:  
+   - Freeze Date: Tue Jun 22 15:33:43 2021  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MacBook-Pro.local
+  
+  
+A new (base) freeze for summer 2021 OA and further xsec
+
+Add ECalPhoton pileup systematic
+
+set corr order so that: mom resol comes prior to dedx ones 
+  
+
+
+\section baseTrackerAnalysis_2_25_history Version 2_25
+
+Freeze information:  
+   - Freeze Date: Sun Jul 11 17:29:37 2021  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MacBook-Pro.local
+  
+  
+A new freeze for summer 2021 OA/XSEC/P7 checks
+
+Fix setting corrections order, so that all seven (so far) are considered
+there was a typo that only the first two were taken into account
+
+also propagate a fix for corrections ordering from highlandCore  
+
+
+\section baseTrackerAnalysis_2_26_history Version 2_26
+
+Freeze information:  
+   - Freeze Date: Sun Jul 31 20:03:38 2022  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MBP
+  
+  
+
+A new freeze prepared to work with prod6Y/Z/AA and prod7_V06/07 + adds utils/vars for FGD charge related analyses + updates tof treatment with an infrastructure for both time smearing and time-slips + add FGD2 4pi multi-pi selection + add true info utils for AnaHits 
+
+
+
+Merge branch 'add_tof_time_slip_correction' into ‘master
+add tof time slip corr
+allow tof and tof time-slip to be both ON  
+  
+
+*/

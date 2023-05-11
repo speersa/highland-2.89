@@ -1,0 +1,240 @@
+#! /usr/bin/env python
+#
+# retrieve the package dependencies of a specified package (that has already 
+# been cloned) and clone them or make scripts to clone them depending on the 
+# options
+
+import os
+import sys
+import getopt
+import tempfile
+import shutil
+import re
+import glob
+
+from nd280 import shell
+
+def usage():
+  print("""
+
+nd280-find-dependencies [options] subGroup package version
+
+This retrieves a sub-set of the specified cloned package's dependencies by 
+looking in the <package>ND280_USE.cmake file. The dependencies are then cloned 
+using the nd280-fetch-packages function.
+
+The dependencies and their versions are retrieved from the package's 
+ND280_USE.cmake file. Only the master packages specify the dependency versions,
+so this script should only be used on master packages.
+
+The subGroup argument is the GitLab sub-group that will be searched for the
+dependencies (e.g. recon, sim etc.).
+
+By specifying the option "-b", the dependencies will not be cloned but a script 
+will be written that has thecapability of cloning the package, which can be 
+executed in parallel with others to speed up the install process. This uses the 
+function nd280-build-fetch-package.
+
+Options:
+  -h, --help : Print this message.
+  -b, --build : Do not clone dependencies and instead write a script that can 
+                be executed in parallel with others.
+  -r, --recursive : Recursively clone the dependencies of this package
+  -u, --useScripts : Use pre-built GetGit*.sh scripts to clone dependencies. Cannot be used with "build" option
+  -f, --full : fully install packages (no partial clones)
+
+Examples:
+  Clone dependencies of a specific tag of a git package :
+    nd280-find-dependencies master-packages analysisMaster 1.75
+""")
+
+# dictate whether the dependencies will be cloned by this function or a script 
+# is written to execute later instead
+build=False
+recursive=False
+use=False
+opt = ""
+
+try:
+  options, args = getopt.gnu_getopt(sys.argv[1:], "hbruf", ["help","build","recursive","useScripts","full"])
+except:
+  usage()
+  print("ERROR: Invalid option.")
+  sys.exit(1)
+
+for option, value in options:
+  if option == "-h" or option == "--help":
+    usage()
+    sys.exit(0)
+  elif option == "-b" or option == "--build":
+    build=True
+    for option, value in options:
+      if option == "-u" or option == "--useScripts":
+        print("ERROR: Cannot use -b and -u together.")
+        sys.exit(1)
+  elif option == "-r" or option == "--recursive":
+    recursive=True
+  elif option == "-u" or option == "--useScripts":
+    use=True
+  elif option == "-f" or option == "--full":
+    opt="-f"
+  else:
+    usage()
+    print("ERROR: Nani??")
+    print("\'Oh myyy Goooooddddd!!\'")
+    sys.exit(1)
+
+# check that we have the right number of arguments.   
+if len(args) != 3:
+  usage()
+  print("ERROR: Wrong number of arguments. There should be three arguments.")
+  sys.exit(1)
+
+# check ND280_VER is set
+#if 'ND280_VER' not in os.environ: 
+#  print("Please set the variable ND280_VER")
+#  sys.exit(1)
+
+# get the different arguments
+subSet = args[0]
+package = args[1]
+version = args[2]
+
+print("nd280-find-dependencies "+subSet+" "+package+" "+version)
+
+#plist = []
+#if (subSet != "master-packages"):
+#  subSet2 = subSet
+#  if(subSet2 == "anal"):
+#    subSet2 = "analysis"
+#  meta = subSet2+"Master"
+#  
+#  #create list of packages in master ND280_USE to crosscheck with dependencies
+#  with open(os.environ['ND280_ROOT']
+#      +"/"+meta+"_"+version+"/cmake/"+meta+"ND280_USE.cmake", "r") as f:
+#    line = f.readline()
+#    while line:
+#      line = re.sub(r'ND280_USE\(','',line)
+#      line = re.sub(r'\)','',line)
+#      line = re.sub(r'\"','',line)
+#      words = line.split()
+#      #retrieve package version if scripts to be used
+#      if use:
+#        if re.search(package,line):
+#          if len(words)<2:
+#            version = "*"
+#          else:
+#            version = words[1]
+#      plist.append(words[0])
+#      line = f.readline()
+
+
+
+# retrieve dependency packages and their required versions
+for name in glob.glob(os.environ['ND280_ROOT']+"/"+package+"_"+version):
+  file = name
+  break
+try:
+
+  with open(file+"/cmake/"+package+"ND280_USE.cmake", "r") as f:
+    line = f.readline()
+    while line:
+      if re.search(r'^ND280_USE',line):
+        line = re.sub(r'ND280_USE\(','',line)
+        line = re.sub(r'\)','',line)
+        line = re.sub(r'\"','',line)
+       
+        words = line.split()
+        p = words[0]
+        if len(words)<2:
+          v = "*"
+        else:
+          v = words[1]
+        RsubSet = subSet
+        # account for packages whose subgroups are different to their master 
+        #package's name
+        # These next 6 lines should be removed once the alternative system (below)
+        # goes live
+        if p == "nd280SoftwareControl":
+          RsubSet = "framework"
+        elif p == "nd280SoftwarePolicy":
+        	RsubSet = "framework"
+        elif p == "detResponseSim":
+          RsubSet = "sim"
+        #
+        # New approach, this information is added as a comment in the ND280_USE information thus:
+        #ND280_USE(project version) blah blah  # subroup or
+        #ND280_USE(project version) blah blah  #subroup
+       
+        thisword=0
+        for word in words:
+        	thisword = thisword + 1      
+        	if(word == '#' ) :      	
+        		if(len(words)>thisword):      			
+        			RsubSet = words[thisword]
+        			break
+        	if(word[0] == '#') :
+        		RsubSet=word[1:]
+        
+        # if (subSet != "master-packages"):
+          # if(p not in plist):
+            # line = f.readline()
+            # continue
+
+        print(RsubSet+"/"+p+" "+v+" ")
+
+        if 'ND280_VER' not in os.environ:
+          os.environ['ND280_VER'] = "none"
+        if build:
+          if os.environ['ND280_VER'] == "master":
+             shell.Shell("cd "+os.environ['ND280_ROOT']
+                +"; nd280-build-fetch-package "+RsubSet+" "+p+" "+p+" master")
+             if recursive and os.path.isdir(os.environ['ND280_ROOT']+"/"+p+"_master"):
+               print("Finding dependencies of " + p + " in " + RsubSet)
+               shell.Shell("cd "+os.environ['ND280_ROOT']+"; nd280-find-dependencies -b -r "+RsubSet+" "+p+" master || true")
+          else:
+            shell.Shell("cd "+os.environ['ND280_ROOT']
+                +"; nd280-build-fetch-package "+RsubSet+" "+p+" "+p+" "+v)
+            if recursive and os.path.isdir(os.environ['ND280_ROOT']+"/"+p+"_"+v):
+              print("Finding dependencies of " + p + " in " + RsubSet)
+              shell.Shell("cd "+os.environ['ND280_ROOT']+"; nd280-find-dependencies -b -r "+RsubSet+" "+p+" "+v+" || true")
+        else:
+          if os.environ['ND280_VER'] == "master":
+            if use:
+              shell.Shell("(cd ${ND280_ROOT};"
+                        +"set -e;"
+                        +"chmod +x GetGit"+p+".sh;"
+                        +"./GetGit"+p+".sh)")
+            else:
+              try: 
+                shell.Shell("cd "+os.environ['ND280_ROOT']
+                  +"; nd280-fetch-package -c "+RsubSet+" "+p+" "+p+" master")
+              except:
+                print("Error while fetching "+p)
+            if recursive and os.path.isdir(os.environ['ND280_ROOT']+"/"+p+"_master"):
+              print("Finding dependencies of " + p + " in " + RsubSet)
+              shell.Shell("cd "+os.environ['ND280_ROOT']+"; nd280-find-dependencies -r "+RsubSet+" "+p+" master || true")
+          else:
+            if use:
+              shell.Shell("(cd ${ND280_ROOT};"
+                        +"set -e;"
+                        +"chmod +x GetGit"+p+".sh;"
+                        +"./GetGit"+p+".sh)")
+            else:
+              try: 
+                shell.Shell("cd "+os.environ['ND280_ROOT']
+                    +"; nd280-fetch-package -c "+RsubSet+" "+p+" "+p+" "+v)
+              except:
+                print("Error while fetching ")
+            if recursive and os.path.isdir(os.environ['ND280_ROOT']+"/"+p+"_"+v):
+              print("Finding dependencies of " + p + " in " + RsubSet)
+              shell.Shell("cd "+os.environ['ND280_ROOT']+"; nd280-find-dependencies -r "+RsubSet+" "+p+" "+v+" || true")
+        
+        shell.Shell("cd "+os.environ['ND280_ROOT'])
+
+      line = f.readline()
+except OSError as e:
+    print(e)
+
+
+sys.exit(0)

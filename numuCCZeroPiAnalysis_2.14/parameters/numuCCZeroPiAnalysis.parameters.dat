@@ -1,0 +1,144 @@
+--- Corrections ---
+  
+--- Selection --------
+ 
+--- 1 - FGD1, 2 - FGD2, 3 - both
+ < numuCCZeroPiAnalysis.Analysis.Selection = 3 >
+
+--- Enable/Disable range momentum
+
+ < numuCCZeroPiAnalysis.HighlandRecPack.ComputeRangeMomentum = 0 >
+
+--- Enable/Disable range momentum vertex 
+
+ < numuCCZeroPiAnalysis.HighlandRecPack.ComputeRangeMomentumVertex = 0 >
+
+--- Enable/Disable range momentum for muon
+
+ < numuCCZeroPiAnalysis.HighlandRecPack.ComputeRangeMomentum.Muon = 0 >
+
+--- Enable/Disable range momentum for proton
+
+ < numuCCZeroPiAnalysis.HighlandRecPack.ComputeRangeMomentum.Proton = 0 >
+
+--- Enable/disable filling generator info
+
+< numuCCZeroPiAnalysis.FillGeneratorInfo = 1 >
+
+--- Categories, whether to add certain categories
+< numuCCZeroPiAnalysis.AddCategories.ProtonCandidate = 1 >
+< numuCCZeroPiAnalysis.AddCategories.ECalPi0VetoCandidate = 0 >
+--- True information --------
+
+< numuCCZeroPiAnalysis.MicroTree.StoreTruePionKinematics = 1 >	 //whether to store true pion kinematics in the micro-trees
+
+< numuCCZeroPiAnalysis.MicroTree.StoreTrueProtonKinematics = 1 >	 //whether to store true proton kinematics in the micro-trees
+
+--- 2p2h information --------
+
+< numuCCZeroPiAnalysis.MicroTree.StoreMECVariables = 1 >	 //whether to store 2p2h variables
+
+
+--- Cut levels --------
+
+ < numuCCZeroPiAnalysis.ForceBreak = 0 >   // Don't continue applying steps when a cut is not passed
+
+ < numuCCZeroPiAnalysis.MinAccumLevelToSave = 4 >   // minimum accum level to save the event
+
+ < numuCCZeroPiAnalysis.FillSuccessOnly = 0 >   // Fill only when any of the branches is passed
+
+--- Cuts ------------
+
+---- Common vertex cut -----------
+
+---- FGD1 -----------
+ < numuCCZeroPiAnalysis.Cuts.FGD1.CutX_vtxTPC_pTPC = 50 > 
+ < numuCCZeroPiAnalysis.Cuts.FGD1.CutY_vtxTPC_pTPC = 50 > 
+ < numuCCZeroPiAnalysis.Cuts.FGD1.CutZ_vtxTPC_pTPC = 30 > 
+
+ < numuCCZeroPiAnalysis.Cuts.FGD1.CutX_vtxTPC_pFGD = 100 > 
+ < numuCCZeroPiAnalysis.Cuts.FGD1.CutY_vtxTPC_pFGD = 100 > 
+ < numuCCZeroPiAnalysis.Cuts.FGD1.CutZ_vtxTPC_pFGD = 50  > 
+
+ < numuCCZeroPiAnalysis.Cuts.FGD1.CutX_muFGD_pTPC = 200 > 
+ < numuCCZeroPiAnalysis.Cuts.FGD1.CutY_muFGD_pTPC = 200 > 
+ < numuCCZeroPiAnalysis.Cuts.FGD1.CutZ_muFGD_pTPC = 60  >
+ 
+ < numuCCZeroPiAnalysis.Cuts.FGD1.CutX_vtxFGD_pFGD = 200 > 
+ < numuCCZeroPiAnalysis.Cuts.FGD1.CutY_vtxFGD_pFGD = 200 > 
+ < numuCCZeroPiAnalysis.Cuts.FGD1.CutZ_vtxFGD_pFGD = 60  >
+ 
+
+---- FGD2 -----------
+ 
+ < numuCCZeroPiAnalysis.Cuts.FGD2.CutX_vtxTPC_pTPC = 50 > 
+ < numuCCZeroPiAnalysis.Cuts.FGD2.CutY_vtxTPC_pTPC = 50 > 
+ < numuCCZeroPiAnalysis.Cuts.FGD2.CutZ_vtxTPC_pTPC = 30 > 
+
+ < numuCCZeroPiAnalysis.Cuts.FGD2.CutX_vtxTPC_pFGD = 100 > 
+ < numuCCZeroPiAnalysis.Cuts.FGD2.CutY_vtxTPC_pFGD = 100 > 
+ < numuCCZeroPiAnalysis.Cuts.FGD2.CutZ_vtxTPC_pFGD = 50  > 
+
+ < numuCCZeroPiAnalysis.Cuts.FGD2.CutX_muFGD_pTPC = 200 > 
+ < numuCCZeroPiAnalysis.Cuts.FGD2.CutY_muFGD_pTPC = 200 > 
+ < numuCCZeroPiAnalysis.Cuts.FGD2.CutZ_muFGD_pTPC = 60  >
+ 
+ < numuCCZeroPiAnalysis.Cuts.FGD2.CutX_vtxFGD_pFGD = 200 > 
+ < numuCCZeroPiAnalysis.Cuts.FGD2.CutY_vtxFGD_pFGD = 200 > 
+ < numuCCZeroPiAnalysis.Cuts.FGD2.CutZ_vtxFGD_pFGD = 60  >
+
+---- Usage of ToF info for cuts -----------
+ < numuCCZeroPiAnalysis.Selections.UseToFInfo = 0 >
+
+
+---- TPC PID ----
+
+ < numuCCZeroPiAnalysis.Cuts.TPCProtonPID  = 0.5 > 
+ 
+---- FGD PID cut -----------
+
+---- FGD1 -----------
+ < numuCCZeroPiAnalysis.Cuts.FGD1.FGDMuonPID    = -5 > 
+ < numuCCZeroPiAnalysis.Cuts.FGD1.FGDProtonPID  = -4 > 
+ 
+ ---- FGD2 -----------
+ < numuCCZeroPiAnalysis.Cuts.FGD2.FGDMuonPID    = -5 > 
+ < numuCCZeroPiAnalysis.Cuts.FGD2.FGDProtonPID  = -4 > 
+ 
+---- FGD Long track cut -----------
+
+---- FGD1 -----------
+ < numuCCZeroPiAnalysis.Cuts.FGD1.LongFGDTrack  = 500 > 
+ 
+ ---- FGD2 -----------
+ < numuCCZeroPiAnalysis.Cuts.FGD2.LongFGDTrack  = 500 > 
+ 
+ ----- Pions selection -----
+ < numuCCZeroPiAnalysis.Cuts.PionPID.MipLHood     =  0.8  >
+ < numuCCZeroPiAnalysis.Cuts.PionPID.PionLHood    =  0.3  >
+ < numuCCZeroPiAnalysis.Cuts.PionPID.MomentumCut  =  500  >
+ 
+ -----  ECal photons -----
+ 
+ < numuCCZeroPiAnalysis.Cuts.ECalPhotons.PIDEmHipCut = 0 >
+ < numuCCZeroPiAnalysis.Cuts.ECalPhotons.CalMostUpstreamLayerHitCut = 6 >
+ < numuCCZeroPiAnalysis.Cuts.ECalPhotons.ECalNHitsCut = 4 >
+
+ 
+
+---- High angle selection -----
+ < numuCCZeroPiAnalysis.Cuts.HA_ECal_FGD1_ToFCut     = 1.  >
+ < numuCCZeroPiAnalysis.Cuts.HA_ECal_FGD2_ToFCut     = 1.  >
+ < numuCCZeroPiAnalysis.Cuts.HA_ECal_PID	  = 0.0 >
+ < numuCCZeroPiAnalysis.Cuts.HA_ECal_PID2	  = 0.8 >
+
+ --- Actions ------------
+ < numuCCZeroPiAnalysis.Actions.FindPions.MaxMomentum = 900 >
+ < numuCCZeroPiAnalysis.Actions.FindPions.PionLHood   = 0.8 >
+ 
+ 
+ --- Systematics ------------
+ < numuCCZeroPiAnalysis.Syst.EnableNuParentDecayPos            = 0 >
+ < numuCCZeroPiAnalysis.Syst.EnableFgdBwdMigration             = 0 >
+ < numuCCZeroPiAnalysis.Syst.FgdBwdMigration.ApplyCorrelations = 1 >
+ < numuCCZeroPiAnalysis.Syst.EnableSINeutron                   = 0 >

@@ -1,0 +1,571 @@
+/*! \page nd280ToolsHistory History for the nd280Tools Package 
+
+\section nd280Tools_v1r7_history Version v1r7
+
+Freeze information:
+   - Freeze Date: Mon May 14 14:49:38 2007
+   - Freeze User: mccauley
+   - Freeze Host: t2kfe.ph.liv.ac.uk
+
+
+New freeze of nd280Tools in preperation for nd280 release v2r1.
+This is a major update of our support code, with new versions of everything other than CLHEP and EXTERN.
+ROOT v5r10p00 -> v5r14p00c
+GEANT v4r8p0 -> v8r2p1
+RECPACK v0r1p0 -> v0r1p3
+nd280Policy v2r7 -> v2r11
+
+The upgrade to GEANT is not quite as much as it first seems as we've changed our numbering to make the 4 in GEANT 4 implict. This is the first patch to GEANT4 v8r2. 
+
+
+\section nd280Tools_v1r9_history Version v1r9
+
+Freeze information:
+   - Freeze Date: Fri May 25 17:24:51 2007
+   - Freeze User: mccauley
+   - Freeze Host: t2kfe.ph.liv.ac.uk
+
+Update nd280Tools to include latest RECPACK in the new release.
+This version of RECPACK has further fixes to the compilation and should
+now compile everywhere. 
+No other changes have been made for this freeze.
+
+
+\section nd280Tools_v1r11_history Version v1r11
+
+Freeze information:
+   - Freeze Date: Thu Aug 30 12:36:50 2007
+   - Freeze User: mccauley
+   - Freeze Host: t2kfe.ph.liv.ac.uk
+
+
+New freeze of nd280Tools in preperation for nd280 v2r3.
+There are two changes in this version:
+   RECPACK has been removed. It will now have it's version specified in oaRECPACK.
+  nd280Policy is now specified with a wild card. This helps with release management. nd280Policy has its version specified in nd280.
+
+
+
+\section nd280Tools_v1r13_history Version v1r13
+
+Freeze information:
+   - Freeze Date: Mon Jan 21 12:03:40 2008
+   - Freeze User: mccauley
+   - Freeze Host: gateway.ph.liv.ac.uk
+
+Update nd280Tools for user Release.
+Upgrade to GEANT v9r0p1  !!!!
+Upgrade to ROOT v5r18p00 !!!!
+No other changes in this release.
+
+
+
+\section nd280Tools_v1r15_history Version v1r15
+
+Freeze information:
+   - Freeze Date: Thu Jan 24 16:31:00 2008
+   - Freeze User: mccauley
+   - Freeze Host: gateway.ph.liv.ac.uk
+
+Revert to the previous version of GEANT.
+The current version of nd280mc will not
+work with GEANT version 9x
+This is nd280Tools siging off.
+
+
+
+\section nd280Tools_v1r17_history Version v1r17
+
+Freeze information:
+   - Freeze Date: Thu May  1 10:00:16 2008
+   - Freeze User: mccauley
+   - Freeze Host: gateway.ph.liv.ac.uk
+
+Major update of nd280Tools for the new release.
+Upgrade GENAT to v9r1p1
+Upgrade CLHEP to v2r0p3
+Addition of MYSQL package.
+Update ROOT to use the MYSQL package, the ROOT version has not changed,
+but the tag has : v5r18p00n01
+
+
+
+\section nd280Tools_v1r19_history Version v1r19
+
+Freeze information:
+   - Freeze Date: Tue Nov 11 10:23:02 2008
+   - Freeze User: mccauley
+   - Freeze Host: pc250108.ph.liv.ac.uk
+
+Upgrade to the latest version of ROOT v5r20p00 : v5r20p00n02
+Upgrade to GEANT v9r1p2 and make visualization changes : v9r1p2n01
+Patch to MYSQL : v5r051an01
+Update for next first testbeam release.
+
+
+
+
+\section nd280Tools_v1r21_history Version v1r21
+
+Freeze information:
+   - Freeze Date: Wed Jun  3 11:55:57 2009
+   - Freeze User: mccauley
+   - Freeze Host: gateway.ph.liv.ac.uk
+
+Update root version to v5r22p00n00
+Update GENAT version to v9r2p01n00
+I must please the freeze script
+I must please the freeze script
+
+
+\section nd280Tools_v1r23_history Version v1r23
+
+Freeze information:
+   - Freeze Date: Thu Aug 20 12:29:11 2009
+   - Freeze User: mccauley
+   - Freeze Host: gateway.ph.liv.ac.uk
+
+Update to nd280Tools for the new release. 
+ROOT has been updated to v5r24 
+CLHEP has been upgraded to v2r0p4n03
+nd280-freeze needs another line of text
+
+
+
+\section nd280Tools_v1r25_history Version v1r25
+
+Freeze information:
+   - Freeze Date: Tue Oct 27 04:27:02 2009
+   - Freeze User: mcgrew
+   - Freeze Host: boxer.physics.sunysb.edu
+
+Update nd280 packaging of ROOT and GEANT
+
+ROOT:  This updates the packaging so that ROOT always includes gsl as a
+shared library.  This is required to get MathMore to build correctly on all
+platforms.  This also includes some updates to the rootcint fragments so
+that they are a bit more robust.
+
+GEANT: This changes the make command so that any failures in the GEANT make
+process show up as failures to build the GEANT package.  In particular,
+make is no longer run with the --keep-going flag, and most of the script is
+processed using "set -e" so that shell command errors also cause a failure.
+
+\section nd280Tools_v1r27_history Version v1r27
+
+Freeze information:
+   - Freeze Date: Wed Oct 28 14:23:24 2009
+   - Freeze User: mcgrew
+   - Freeze Host: boxer.physics.sunysb.edu
+
+Frozen to capture new freeze of the EXTERN package.
+
+* EXTERN freeze:  Add proper handling of the package stamps.
+
+* Documentation for nd280Tools:  This also adds a main page for the
+  package.
+
+
+\section nd280Tools_v1r29_history Version v1r29
+
+Freeze information:
+   - Freeze Date: Tue Nov 17 13:09:49 2009
+   - Freeze User: mccauley
+   - Freeze Host: alpha.ph.liv.ac.uk
+
+Update to geant to aid compilation for some systems
+Placeholder for the freeze script
+Placeholder for the freeze script
+Placeholder for the freeze script
+
+
+\section nd280Tools_v1r31_history Version v1r31
+
+Freeze information:
+   - Freeze Date: Tue Dec 15 15:08:38 2009
+   - Freeze User: mccauley
+   - Freeze Host: alpha.ph.liv.ac.uk
+
+Update to new version of ROOT v5r24p00bn00
+----- ----- ----- ----- ----- ----- -----
+----- ----- ----- ----- ----- ----- -----
+----- ----- ----- ----- ----- ----- -----
+----- ----- ----- ----- ----- ----- -----
+
+
+\section nd280Tools_v1r33_history Version v1r33
+
+Freeze information:
+   - Freeze Date: Thu Jan 28 11:43:08 2010
+   - Freeze User: mccauley
+   - Freeze Host: mccauley-laptop
+
+Update GEANT to v9r2p01n03 which has disabled 
+visulisations to aid compilation on some machines
+Update to the latest root version v5r26p00n00 
+
+
+
+\section nd280Tools_v1r35_history Version v1r35
+
+Freeze information:
+   - Freeze Date: Tue Jan 25 16:26:05 2011
+   - Freeze User: mccauley
+   - Freeze Host: hep133.ph.liv.ac.uk
+
+Update ROOT to version 5.28
+Update GEANT 4 to version v9r3p2
+Update CLHEP to version v2r0p4n5
+
+
+
+
+\section nd280Tools_v1r37_history Version v1r37
+
+Freeze information:
+   - Freeze Date: Tue Aug 23 13:56:35 2011
+   - Freeze User: mccauley
+   - Freeze Host: alpha.ph.liv.ac.uk
+
+Use updated versions of ROOT and EXTERN
+
+
+\section nd280Tools_v1r39_history Version v1r39
+
+Freeze information:
+   - Freeze Date: Fri Oct 28 17:13:29 2011
+   - Freeze User: mcgrew
+   - Freeze Host: boxer.physics.sunysb.edu
+
+The first cut of tools for Production 5.  This changes the tool package
+versions: 
+
+    CLHEP v2r0p4n05     --> v2r1p1n00
+    GEANT v9r3p02n00    --> v9r4p02n00
+    ROOT  v5r28p00fn00  --> v5r30p02n00
+
+The version of MYSQL (v5r051an01) has not been changed
+
+
+\section nd280Tools_v1r41_history Version v1r41
+
+Freeze information:
+   - Freeze Date: Fri Dec  9 17:41:09 2011
+   - Freeze User: litchfld
+   - Freeze Host: localhost6.localdomain6
+
+Pick up a small change to the build script for one external tool (ROOT, v5r30p02n00 => v5r30p02n01):
+
+Disable (for now) the mathmore library which depends on GSL and is therefore not reliably present across different systems. 
+
+
+
+\section nd280Tools_v1r43_history Version v1r43
+
+Freeze information:
+   - Freeze Date: Wed Jul 25 09:30:41 2012
+   - Freeze User: mccauley
+   - Freeze Host: hep133.ph.liv.ac.uk
+
+New freeze of nd280Tools to add latest root version v5r34p1 and the
+new package to contain GSL.
+
+
+\section nd280Tools_v1r45_history Version v1r45
+
+Freeze information:
+   - Freeze Date: Mon Dec 10 15:23:37 2012
+   - Freeze User: litchfld
+   - Freeze Host: localhost6.localdomain6
+
+Use a version of GEANT that isn't horribly buggerd.  (muon MS scattering bug)
+
+GEANT4 v9r4p02n00 => v9r4p04n00
+
+
+
+\section nd280Tools_v1r47_history Version v1r47
+
+Freeze information:
+   - Freeze Date: Mon Oct 28 10:34:57 2013
+   - Freeze User: ajf
+   - Freeze Host: lapb1.lancs.ac.uk
+
+
+
+
+ ROOT version changed to v5r34p10n01
+
+
+\section nd280Tools_v1r49_history Version v1r49
+
+Freeze information:
+   - Freeze Date: Thu Nov  7 14:00:47 2013
+   - Freeze User: ajf
+   - Freeze Host: lapb1.lancs.ac.uk
+
+
+
+Move ROOT version to v5r34p09n01. Currently later version break
+nd280AnalysisTools ( see bug 939 )
+
+\section nd280Tools_v1r51_history Version v1r51
+
+Freeze information:
+   - Freeze Date: Wed Feb 12 12:19:50 2014
+   - Freeze User: ajf
+   - Freeze Host: lapf.lancs.ac.uk
+
+
+
+
+ROOT   ->  v5r34p09n02
+
+\section nd280Tools_v1r53_history Version v1r53
+
+Freeze information:
+   - Freeze Date: Wed Feb 12 15:57:27 2014
+   - Freeze User: ajf
+   - Freeze Host: lapf.lancs.ac.uk
+
+
+
+ ROOT    v5r34p09n03
+
+
+
+\section nd280Tools_v1r55_history Version v1r55
+
+Freeze information:
+   - Freeze Date: Tue Apr  1 11:14:44 2014
+   - Freeze User: ajf
+   - Freeze Host: lapf.lancs.ac.uk
+
+
+
+
+ROOT version v5r34p09n04
+
+\section nd280Tools_v1r57_history Version v1r57
+
+Freeze information:
+   - Freeze Date: Fri Sep 19 12:04:15 2014
+   - Freeze User: ajf
+   - Freeze Host: lapf.lancs.ac.uk
+
+
+
+ MYSQL      to version       v5r6p20
+
+\section nd280Tools_v1r59_history Version v1r59
+
+Freeze information:
+   - Freeze Date: Mon Nov  9 12:24:35 2015
+   - Freeze User: ajf
+   - Freeze Host: lapf.lancs.ac.uk
+
+
+
+
+
+
+ This freeze allows all the tools to be built in parallel.
+
+EXTERN v3r7
+CLHEP  v2r1p1n01 
+GEANT  v9r4p04n02
+MYSQL  v5r6p20n01
+ROOT   v5r34p34n00
+GSL    v1r15p0n00
+
+
+
+\section nd280Tools_v1r61_history Version v1r61
+
+Freeze information:
+   - Freeze Date: Wed Jan 13 10:27:29 2016
+   - Freeze User: ajf
+   - Freeze Host: lapf.lancs.ac.uk
+
+
+
+
+First version with CERNLIB added.
+
+
+
+\section nd280Tools_v1r63_history Version v1r63
+
+Freeze information:
+   - Freeze Date: Tue May 24 21:43:08 2016
+   - Freeze User: elder
+   - Freeze Host: neutsrv2.triumf.ca
+
+
+
+First version with NEUT added.
+This corresponds to NEUT v5.3.5
+ROOT v5r34p34n00 has been fixed
+
+
+
+\section nd280Tools_v1r65_history Version v1r65
+
+Freeze information:
+   - Freeze Date: Mon May 30 22:02:08 2016
+   - Freeze User: elder
+   - Freeze Host: neut18.triumf.ca
+
+Reverting to package versions used in nd280Tools v1r55
+(in preparation for Prod6 respin using the NeutG4CascadeInterface)
+
+CLHEP  v2r1p1n01 -> v2r1p1n00
+GEANT v9r4p04n02 -> v9r4p04n00
+MYSQL v5r6p20n01 -> v5r051an01
+ROOT v5r34p34n00 -> v5r34p09n04
+
+Minor update in the compilation script:
+CERNLIB v2005r1 -> v2005r3
+
+
+\section nd280Tools_v1r67_history Version v1r67
+
+Freeze information:
+   - Freeze Date: Mon Aug  1 17:30:32 2016
+   - Freeze User: ajf
+   - Freeze Host: lapf.lancs.ac.uk
+
+
+
+
+Added NEUT (v5r3p5n00)
+Minor tweak to CERNLIB (v2005r3)
+
+
+\section nd280Tools_v1r69_history Version v1r69
+
+Freeze information:
+   - Freeze Date: Thu Jan 12 14:41:38 2017
+   - Freeze User: ajf
+   - Freeze Host: lapf.lancs.ac.uk
+
+
+
+Removed nd280Policy.
+Added CMAKE
+GEANT moved to version v10r1p03n00
+
+This is a major change in GEANT version. Extensive changes in nd280mc have
+also been made as a result.
+
+
+
+\section nd280Tools_v1r71_history Version v1r71
+
+Freeze information:
+   - Freeze Date: Tue Jul 24 13:03:58 2018
+   - Freeze User: ajf
+   - Freeze Host: lapf.lancs.ac.uk
+
+
+
+CERNLIB -> v2005r5 
+
+To fix issues with 
+ newer versions of gcc and glibc.
+
+
+\section externalsMaster_1_73_history Version 1_73
+
+Freeze information:
+   - Freeze Date: Sun Sep  1 19:30:15 2019
+   - Freeze User: wilfs
+   - Freeze Host: lx03.hep.ph.ic.ac.uk
+
+
+
+In preparation for development for the nd280 upgrade, the official repository 
+for this package (and all other nd280 software packages) has been moved from CVS 
+to GitLab at git.t2k.org and it is now built by CMake rather than CMT. More 
+information on the new CMake build can be found at 
+http://nd280.lancs.ac.uk/devel/invariant/nd280Doc/workbook/SoftwareUserCMAKEandGIT.html.
+
+Also, some of the packages have been renamed to make their role in the software 
+clearer. This has affected some class and function names in the code too. For more 
+information on the files changed by the package renaming, go to 
+git.t2k.org/nd280/renaming.
+
+The name of this package was changed from nd280Tools to externalsMaster.
+
+\section externalsMaster_1_74_history Version 1_74
+
+Freeze information:
+   - Freeze Date: Fri Oct 11 15:16:19 2019
+   - Freeze User: Wilf Shorrock
+   - Freeze Host: lx03.hep.ph.ic.ac.uk
+
+
+CERNLIB 2005.8
+
+
+\section externalsMaster_1_75_history Version 1_75
+
+Freeze information:
+   - Freeze Date: Thu Mar  5 14:26:01 2020
+   - Freeze User: Mathieu Guigue
+   - Freeze Host: lpn143.local
+
+
+nd280SoftwarePolicy is a dependency of this package (and no longer installed by
+the nd280SoftwarePilot): currently using 3.2 as minimum.
+Dockerfile have been added, along with Continuous Integration via T2K Gitlab instance.
+
+
+\section externalsMaster_1_76_history Version 1_76
+
+Freeze information:  
+   - Freeze Date: Thu Mar 26 13:50:48 2020  
+   - Freeze User: Alex Finch  
+   - Freeze Host: finchresearchlaptop
+  
+  
+nd280SoftwarePolicy added to externalsMaster and version bumped up to 3.3.
+
+
+
+\section externalsMaster_1_77_history Version 1_77
+
+Freeze information:  
+   - Freeze Date: Thu Mar 26 14:58:58 2020  
+   - Freeze User: Alex Finch  
+   - Freeze Host: finchresearchlaptop
+  
+  
+
+ Bumped up versions of nd280SoftwarePolicy and Geant4  
+  
+
+
+\section externalsMaster_1_78_history Version 1_78
+
+Freeze information:  
+   - Freeze Date: Fri Mar 27 15:46:28 2020  
+   - Freeze User: Alex Finch  
+   - Freeze Host: finchresearchlaptop
+  
+  
+ version 3.5 of nd280SoftwarePilot  
+
+
+\section externalsMaster_1_79_history Version 1_79
+
+Freeze information:  
+   - Freeze Date: Thu May 21 14:03:24 2020  
+   - Freeze User: Alexander J Finch  
+   - Freeze Host: lapw.lancs.ac.uk
+  
+  
+  
+new versions of nd280SoftwarePolicy, CERNLIB, and NEUT
+
+*/

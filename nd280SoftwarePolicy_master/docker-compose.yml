@@ -1,0 +1,9 @@
+version: '3.4'
+
+services:
+  policy_dev:
+    build:
+      context: .
+    volumes:
+      - .:/usr/local/t2k/current/nd280SoftwarePolicy_master
+    working_dir: /usr/local/t2k/current/nd280SoftwarePolicy_master

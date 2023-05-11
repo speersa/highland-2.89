@@ -1,0 +1,491 @@
+#!/bin/bash
+#################################################################
+
+# Run the highland installation process.  By default, this only allows one make 
+# job to be run.  The number of jobs can be set from the command line.  For 
+# example,
+#
+#  highland-install -j8 12.29
+#
+# will run with 8 parallel jobs.
+
+usage () {
+  echo
+  echo "Usage: highland-install [options] [version]"
+  echo "  Installs the specified version of the HighLAND2 Software."
+  echo
+  echo "  The number of jobs can be set by using highland-install -jN [version] "
+  echo "  where 'N' is the number of jobs to run. The default number of jobs "
+  echo "  is 1."
+  echo
+  echo "  'version' is the software version to be installed. Enter the version "
+  echo "  in the format <major>.<minor> or state "master" if you want the "
+  echo "  master branch"
+  echo ""
+  echo
+  echo "Options:"
+  echo "  -h : Print this message."
+  echo "  -j : Define the maximum number of parallel jobs to use during the "
+  echo "       cloning and make stages."
+  echo "  -c : When this option is set, the software packages will be cloned "
+  echo "       from the GitLab repository but will not be compiled with CMake."
+  echo "  -s : Skip the clone step. Use this if all the packages are already "
+  echo "       successfully cloned."
+  echo "  -i : Install the binary package of CMake available on the GitLab "
+  echo "       repo. If you want to use this to build the software then make "
+  echo "       sure you have used the correct option with configure.sh."
+  echo "  -d : Install only psyche, psyche version should be provided in this case "
+  echo "  -r : Install a ROOT version from nd280Software. ROOT5 at the moment"
+  echo "  -R : Install RECPACK from nd280Software."
+  echo "  -p : Set the production to oaAnalysisReader"
+  echo "  -D<OPT=VAL> : Pass arbitrary options to CMake"
+  echo
+  echo "Examples:"
+  echo "  To install the master branch of HighLAND2 using 1 CPU:"
+  echo "    highland-install master"
+  echo "  To install the version 12.29 with 8 parallel jobs:"
+  echo "    highland-install -j8 12.29"
+  echo "  To install the version 12.29 with 8 parallel jobs with CMAKE_CXX_STANDARD=17:"
+  echo "    highland-install -j8 12.29 -DND280_PROJECT_CXX_STANDARD=17"
+  echo
+  if [ ${#*} != 0 ]; then
+    printf "ERROR: ${*}\n" | fold -s
+    exit 1
+  else
+    exit 0
+  fi
+}
+
+NMAXJOBS=10
+
+# Set the default variables of the installation.
+compileAll=true
+cloneAll=true
+instCmake=false
+onlyPsyche=false
+cloneROOT=false
+instRECKPACK=false
+CMAKE_ARGS=()
+# read the options and arguments
+while getopts "hcisdrRj:p:D:v" option; do
+  case $option in
+    h) usage;;
+    j) ND280_NJOBS=$OPTARG;;
+    c) compileAll=false;;
+    s) cloneAll=false;;
+    i) instCmake=true;;
+    d) onlyPsyche=true;;
+    r) cloneROOT=true;;
+    R) instRECKPACK=true;;
+    p) prodVersion=$OPTARG;;
+    D) CMAKE_ARGS+=( $OPTARG );;
+    *) usage "Option not valid."
+  esac
+done
+shift "$((OPTIND-1))"
+
+if [ -z "$ND280PILOT_ROOT" ]; then
+  usage """Please source the nd280SoftwarePilot.profile script before running 
+  ERROR: this script"""
+elif [ ${#1} = 0 ]; then
+  usage "Please specify which version of the software to install."
+elif [ $# != 1 ]; then
+  usage "Wrong number of arguments."
+fi
+if [[ ${1} =~ v[0-9]+r[0-9]+.* ]]; then
+  echo
+  echo "WARNING: Version specified is from before the GitLab transition."
+  echo "WARNING: This version uses CMT and will not build, so the build "
+  echo "WARNING: stage will be skipped."
+  compileAll=false
+  sleep 5
+elif ! [[ ${1} =~ [0-9]+\.[0-9]+.* || ${1} =~ "master" ]]; then
+  usage """Incorrect version format.
+  ERROR: The format should be <major>.<minor> or <major>.<minor>.<patch>
+  ERROR: e.g. 12.29 to install version 12 revision 29 (v12r29 in old form)."""
+fi
+
+# If ND280_ROOT is not set then make it equal to ND280PILOT_ROOT
+if [ -z ${ND280_ROOT} ] ; then
+  export ND280_ROOT=${ND280PILOT_ROOT}
+fi
+# If CMAKE_PREFIX_PATH is not set then make it equal to ND280_ROOT
+if [ -z ${CMAKE_PREFIX_PATH} ] ; then
+  export CMAKE_PREFIX_PATH=${ND280_ROOT}
+fi
+
+masterPackage="highland2Master"
+subFolder="highland2"
+if [[ $onlyPsyche = "true" ]]; then
+  subFolder="psyche"
+  masterPackage="psycheMaster"
+fi
+
+installationRelease=${1}
+echo
+echo "##################################################"
+echo "#### Installing Release: " ${installationRelease} "of" ${masterPackage}
+echo "##################################################"
+echo
+
+if [ ${installationRelease} == "master" ]; then
+  echo
+  echo "WARNING: The master branch for each package is being installed."
+  sleep 2
+  echo "WARNING: Avoid modifying the master branches directly."
+  sleep 2
+  echo "WARNING: We recommend you clone a specific release or a feature branch."
+  sleep 2
+  echo "WARNING: Continue with caution..."
+  sleep 3
+  echo
+fi
+
+echo "-- Location of nd280Pilot Directory = ${ND280PILOT_ROOT}"
+echo "-- Base directory for installation  = ${ND280_ROOT}"
+echo "-- Paths searched by cmake          = ${CMAKE_PREFIX_PATH}"
+echo "-- Remote Repository = ${ND280_GIT}"
+if [[ ${ND280_GIT} == ^http ]]; then
+  echo
+  echo "WARNING: Using http clone so git-push is disabled."
+  echo "WARNING: Write access needed \(for example ssh\) to push."
+  echo
+fi
+
+
+export ND280_NJOBS
+if [ -z ${ND280_NJOBS+x} ]; then
+  ND280_NJOBS=1
+fi
+
+
+if [[ $ND280_NJOBS -gt $NMAXJOBS ]]; then
+  ND280_NJOBS=10
+  echo The number of parallel jobs for the download stage is limited to ${ND280_NJOBS}
+fi
+
+
+
+echo "-- Jobs = ${ND280_NJOBS}"
+
+echo Start highland-install: $(date)
+echo
+
+## Define os
+os=$(uname | tr '-' '_')
+
+
+# Print the system being used.
+uname -a
+echo
+
+# Print the distribution being used.  This assumes we are working on an lsb
+# system so it only works for linux.
+if [ -x /usr/bin/lsb_release ]; then
+  /usr/bin/lsb_release -i -d -r -c
+fi
+echo
+
+# Print the C++ compiler installed
+echo COMPILER BEING USED.
+if which g++ >> /dev/null 2>&1; then
+  if g++ 2>&1 | grep -q "clang"; then
+    echo USING CLANG
+  else
+    g++ -v 2>&1
+  fi
+fi
+
+echo
+
+
+# Print the version of git installed
+if which git; then
+  echo GIT BEING USED.
+  git --version 2>&1
+else
+  echo GIT NOT AVAILABLE
+fi
+echo
+
+# Print the version of python installed
+if which python; then
+  echo PYTHON BEING USED.
+  python -V 2>&1
+elif which python3; then
+  echo PYTHON BEING USED.
+  python3 -V 2>&1
+  alias python=python3
+else
+  echo PYTHON NOT AVAILABLE
+  exit 1
+fi
+echo
+
+# install CMake if requested
+if ${instCmake}; then
+  if ! nd280-install-cmake; then
+    echo Failed to install CMake 3.14.0 binary.
+    exit 1;
+  fi
+fi
+if which cmake; then
+  echo CMAKE BEING USED
+  cmake --version 2>&1
+else
+  echo CMAKE NOT AVAILABLE
+  echo
+  exit 1
+fi
+echo
+
+## Version
+export ND280_VER
+ND280_VER=${installationRelease}
+
+if $cloneAll; then
+  echo "##############################################################"
+  echo "#### Installing nd280SoftwarePolicy_master"
+  echo "##############################################################"
+  echo
+  if ! nd280-fetch-package framework nd280SoftwarePolicy \
+    nd280SoftwarePolicy master; then
+      echo "Could not fetch nd280SoftwarePolicy: $(date)"
+      exit 1
+  fi
+
+  # Install ROOT and its dependencies
+  if $cloneROOT; then
+    ## make it not equal to master
+    if [[ $ND280_VER = "master" ]]; then
+      ND280_VER="version_tmp"
+    fi
+    echo "##############################################################"
+    echo "#### Installing ROOT"
+    echo "##############################################################"
+    echo
+    if ! nd280-meta-dependencies -c -p ROOT externals 1.79; then
+      echo "Could not get ROOT with nd280-meta-dependencies: $(date)"
+      exit 1
+    fi
+    ND280_VER=${installationRelease}
+  fi
+
+  # Install RECPACK and its dependencies
+  if $instRECKPACK; then
+    ## make it not equal to master
+    if [[ $ND280_VER = "master" ]]; then
+      ND280_VER="version_tmp"
+    fi
+    echo "##############################################################"
+    echo "#### Installing RECPACK"
+    echo "##############################################################"
+    echo
+    # Install CLHEP dependency
+    # Should probably make sure that the externals version is the same as the ROOT one used above
+    # But maybe that does not matter
+    if ! nd280-meta-dependencies -c -p CLHEP externals 1.79; then
+      echo "Could not get CLHEP with nd280-meta-dependencies: $(date)"
+      exit 1
+    fi
+    # Would like to only install RECPACK, but the `-p` option does not seem to work
+    # Download it all then
+    # TODO: Fix this when the `-p` option works again
+    if ! nd280-meta-dependencies -c recon 4.59; then
+      echo "Could not get RECPACK with nd280-meta-dependencies: $(date)"
+      exit 1
+    fi
+    ND280_VER=${installationRelease}
+    # Also get the highland bindings for RECPACK
+    # TODO: Choose a fixed release rather than using 'master'
+    nd280-fetch-package highland2Software/highland2UserAnalyses highlandRecPack highlandRecPack master
+  fi
+
+  # Install the software.
+
+  cd ${ND280_ROOT}
+  set -e
+  if ! nd280-fetch-package highland2Software ${masterPackage} ${masterPackage} ${installationRelease}; then
+    echo "Could not fetch ${masterPackage} ${masterPackage} \ 
+      ${installationRelease}: $(date)"
+  fi
+    
+  rm -f GetGit*.sh
+
+  if ! nd280-find-dependencies -b  highland2Software/${subFolder} \
+    ${masterPackage} ${installationRelease} | sed -e "s/highland2\/psyche/psyche/"; then
+    
+    echo "Could not find dependencies for highland2Software/${subFolder} \
+      ${masterPackage} ${installationRelease}: $(date)"
+  fi
+
+  if [[ $onlyPsyche = "false" ]]; then
+    if [ -e GetGitpsycheMaster.sh ]; then
+      if [ ${os} = "Darwin" ]; then
+        sed -i '' -e "s/highland2\///g" GetGitpsycheMaster.sh
+      else
+        sed -i -e "s/highland2\///g" GetGitpsycheMaster.sh
+      fi
+    fi
+  fi
+
+  for f in GetGit*.sh; do
+    [ -e "$f" ] && (ls GetGit*.sh | xargs -P ${ND280_NJOBS} -I NAME /bin/bash NAME; rm GetGit*.sh;);
+    break;
+  done
+
+
+  ### in case of highland2Master case deal with psycheMaster
+  if [[ $onlyPsyche = "false" ]]; then
+    if [ -e psycheMaster* ]; then
+      psycheVersion=$(echo psycheMaster* | sed -e "s/psycheMaster\_//")
+      echo
+      echo "##################################################"
+      echo "#### Get psyche packages: " ${psycheVersion} "of" psycheMaster
+      echo "##################################################"
+      echo
+      if ! nd280-find-dependencies -b  highland2Software/psyche psycheMaster ${psycheVersion}; then
+         echo "Could not find dependencies for  highland2Software/psyche psycheMaster ${psycheVersion}: $(date)"
+      fi
+      
+
+      for f in GetGit*.sh; do
+        [ -e "$f" ] && (ls GetGit*.sh | xargs -P ${ND280_NJOBS} -I NAME /bin/bash NAME; rm GetGit*.sh;);
+        break;
+      done
+
+    else 
+      echo psycheMaster not present: cannot proceed
+      exit 1
+    fi
+  fi
+
+else
+  echo
+  echo "Clone step skipped..."
+  echo
+fi
+
+cd ${ND280_ROOT}
+
+for oafolder in oaAnalysisReader*; do
+  if [ -e ${oafolder} ]; then
+    cversion=$(grep "set(PRODUCTIONDIR" ${oafolder}/cmake/CMakeLists.txt | sed -n -e 's/^.*set(PRODUCTIONDIR//p')
+    cversion=$(echo ${cversion} | sed -n -e 's/)//p')
+
+    echo ""
+    echo "#####################################################"
+    echo "#### oaAnalysisReader production in" ${oafolder} "is" $cversion
+    echo "#####################################################"
+    echo ""
+    if  [ ! -z "$prodVersion" ]; then
+      echo ""
+      echo "#####################################################"
+      echo "#### oaAnalysisReader production will be set to" $prodVersion
+      echo "#####################################################"
+      echo "" 
+
+      if [ ${os} = "Darwin" ]; then
+        sed -i '' -e "s/\(set(PRODUCTIONDIR\)\(.*\)/\1 $prodVersion)/" ${oafolder}/cmake/CMakeLists.txt
+      else
+        sed -i -e "s/\(set(PRODUCTIONDIR\)\(.*\)/\1 $prodVersion)/" ${oafolder}/cmake/CMakeLists.txt
+      fi
+    fi
+  fi
+done
+
+
+
+# now run cmake and make in all packages if requested
+if [[ $compileAll = true && $installationRelease != "master" ]]; then
+  echo ""
+  echo "#####################################################"
+  echo "#### Executing CMake in " ${masterPackage}
+  echo "#####################################################"
+  echo ""
+  cd ${ND280_ROOT}/${masterPackage}_${installationRelease}
+  set -e
+  mkdir -p `nd280-system`
+  cd `nd280-system`
+  CMAKE_ARG_STR=
+  for a in ${CMAKE_ARGS[@]}; do
+    CMAKE_ARG_STR="-D${a} ${CMAKE_ARG_STR}"
+  done
+  CMAKE_CMD="cmake ../cmake ${CMAKE_ARG_STR}"
+  echo ${CMAKE_CMD}
+  if ! ${CMAKE_CMD}; then
+    echo
+    echo Could not install highland2 software: $(date)
+    exit 1
+  fi
+  #if ! ../bin/cmakeAll.sh; then
+  #  echo
+  #  echo Could not install highland2 software: $(date)
+  #  exit 1
+  #fi
+  echo ""
+  echo "#####################################################"
+  echo "#### Executing makeAll.sh"
+  echo "#####################################################"
+  echo ""
+  set +e
+  . ../bin/setup.sh
+  set -e
+  if ! ../bin/makeAll.sh; then
+    echo
+    echo Could not install $masterPackage software: $(date)
+    exit 1
+  fi
+
+  # Now compile everything needed to use RECPACK in higland
+  if $instRECKPACK; then
+    cd "$ND280_ROOT/highlandRecPack_"*
+    mkdir `nd280-system`
+    cd `nd280-system`
+    if ! cmake ../cmake; then
+      echo
+      echo Could not install highlandRecPack software: $(date)
+      exit 1
+    fi
+    set +e
+    . ../bin/setup.sh
+    set -e
+    if ! ../bin/makeAll.sh; then
+      echo
+      echo Could not install highlandRecPack software: $(date)
+      exit 1
+    fi
+  fi
+
+  # Now remove temporary build directories
+  # This saves a few gigabytes of size for the containers
+  cd "$ND280_ROOT"
+  for tmpdir in */*/tmp_build; do
+    if [[ -e $tmpdir ]]; then
+      rm -rf $tmpdir
+    fi
+  done
+
+
+elif [ ! $compileAll ]; then
+  echo
+  echo "CMake build skipped..."
+  echo
+elif [ $installationRelease == "master" ]; then
+  echo 
+  echo Each package has been cloned and left on its master branch. The 
+  echo package directory names all have \"_master\" tagged on, which prevents
+  echo the software from being built. 
+  echo
+  echo If you want to build the master version of the software, change the 
+  echo \"_master\" prefix of each package to the package version found in 
+  echo \'cmake/\<package\>PackageVersion.cmake\' by running 
+  echo \'nd280-update-versions\'. You should then be able to build the 
+  echo software by running \'highland-install -s \<version\>\' where \<version\> 
+  echo is the version appended to the highland/psycheMaster package.
+  echo
+fi
+
+echo Complete highland-install: $(date)
+
+#-*-Shell-Script-*-

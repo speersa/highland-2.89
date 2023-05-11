@@ -1,0 +1,362 @@
+/*! \page highland2/oaAnalysisReaderHistory History for the highland2/oaAnalysisReader Package 
+
+\section oaAnalysisReader_v2r1_history Version v2r1
+
+Freeze information:
+   - Freeze Date: Thu Nov 10 16:59:56 2016
+   - Freeze User: acervera
+   - Freeze Host: portcervera.ific.uv.es
+
+FREEZE FOR BANFF DEVELOPMENT with no nd280AnalysisTools
+
+This package does part of what nd280AnalysisTools used to do for highland
+In particular it provide oaAnalysis classes through MakeProject. 
+This root commant is not run on the fly but instead the classes for different relevant productions are 
+provided in different folders: prod5D, prod5F, prod6B and prod6TREx. 
+By default prod6B is used in the requirements file. 
+
+Also a script createProd.py is provided to automatically create a production folder, provided the folder name and a root file
+
+
+\section oaAnalysisReader_v2r3_history Version v2r3
+
+Freeze information:
+   - Freeze Date: Mon Jan  9 16:06:43 2017
+   - Freeze User: acervera
+   - Freeze Host: macintosh-64b9e8d35af0.local
+
+- added prod6E and prod6G
+- Install the ND__*.h headers in to the binary folder (?)
+- in requirements file add table with correspondence between a given production, the oaAnalysis version used for that production
+  and the oaAnalysisReader subfolder to be used
+
+
+\section oaAnalysisReader_v2r5_history Version v2r5
+
+Freeze information:
+   - Freeze Date: Tue Feb  7 23:34:44 2017
+   - Freeze User: acervera
+   - Freeze Host: macintosh-64b9e8d35af0.local
+
+
+
+\section oaAnalysisReader_v2r7_history Version v2r7
+
+Freeze information:
+   - Freeze Date: Wed Mar  1 17:00:59 2017
+   - Freeze User: acervera
+   - Freeze Host: macintosh-64b9e8d35af0.local
+
+add reader for production 7: Prod7_RC1
+
+
+\section oaAnalysisReader_v2r9_history Version v2r9
+
+Freeze information:
+   - Freeze Date: Sat Apr 22 18:02:11 2017
+   - Freeze User: alexander
+   - Freeze Host: alexandrs-mbp.home
+
+An freeze to add ECal vertexing info for prod7 candidate
+highland2/oaAnalysisReader/src/prod7_RC1
+oaAnalysisReaderLinkDef.h oaAnalysisReaderProjectHeaders.h0 
+        oaAnalysisReaderProjectSource.cxx 
+Added Files:
+        ND__TTrackerECALReconModule__TECALReconVertexCandidate.h 
+        ND__TTrackerECALReconModule__TECALReconVertexTrack.h 
+Adds ECal-local vertexing headers to Prod7_RC1
+
+
+
+\section oaAnalysisReader_v2r11_history Version v2r11
+
+Freeze information:
+   - Freeze Date: Wed Nov  1 08:28:18 2017
+   - Freeze User: alexander
+   - Freeze Host: alexandrs-mbp.home
+
+
+ A new freeze:
+new iteration of prod-7 
+with v12r9 of nd280 (featuring v6r3 or oaAnalysis)
+
+updated to clarify the correspondence between the production/oaAnalysis version
+and oaAnalysisReader folder to be used
+
+
+\section oaAnalysisReader_v2r13_history Version v2r13
+
+Freeze information:
+   - Freeze Date: Tue Aug 21 01:58:50 2018
+   - Freeze User: alexander
+   - Freeze Host: alexandrs-macbook-pro.local
+
+
+a new freeze to have a stable/reference version for further nd280 developments
+
+- /home/trt2kmgr/ND280Repository/highland2/oaAnalysisReader/src/prod7B
+- requirements
+added 7B so to follow the already mature prod7 iterations
+(will substitute RC2,  but cannot delete folders in CVS,  so will leave as it is
+for the moment)
+use 7B instead of RC2
+added the required changes 
+
+added production 6P
+
+
+
+\section oaAnalysisReader_v2r15_history Version v2r15
+
+Freeze information:
+   - Freeze Date: Fri Sep  6 12:08:23 2019
+   - Freeze User: alexander
+   - Freeze Host: Alexandrs-MacBook-Pro.local
+
+
+updated to correspond to "new" prod7B iteration based on nd280 v12r19 
+
+use prod7B for v12r19 
+
+< # 7A,  7B                      v6r3                 prod7B
+---
+> # 7A,  7B (v12r15)             v6r3                 prod7_RC2
+> # 7B (v12r19)                 v6r7                 prod7B
+
+Directory /home/trt2kmgr/ND280Repository/highland2/oaAnalysisReader/src/prod6R added
+to the repository
+
+prod6R libraries (oaAnalysis v5r29p29)
+
+added prod6Q, R and S
+
+added 6T
+
+Directory /home/trt2kmgr/ND280Repository/highland2/oaAnalysisReader/src/prod6T added
+to the repository
+
+make 6T the default production from now on
+
+
+
+
+
+\section oaAnalysisReader_v2r17_history Version v2r17
+
+Freeze information:
+   - Freeze Date: Wed Nov  6 18:43:06 2019
+   - Freeze User: alexander
+   - Freeze Host: alexandrs-mbp.home
+
+A new freeze to include updates from Jacek that make it possible to use local ROOT verion
+
+Modified Files:
+        createProd.py 
+Log Message:
+trivial modifications which add also python 3 compatibility
+
+
+Modified Files:
+        createProd.py 
+Log Message:
+add the missing std namespace usage
+
+
+
+\section oaAnalysisReader_v2r19_history Version v2r19
+
+Freeze information:
+   - Freeze Date: Sat Feb 29 14:09:35 2020
+   - Freeze User: alexander
+   - Freeze Host: alexandrs-mbp.dlink
+
+
+Since preparing a big freeze for summer 2020 OA, increase the version number where appropriate 
+
+A new freeze of oaAnalysisReader package
+
+Modified Files:
+        mainpage.dox 
+Log Message:
+Remove the word package from the end of the  \page line
+
+Removed Files:
+        oaAnalysisReaderProjectHeaders.h 
+Log Message:
+removed obsolete file
+
+
+\section oaAnalysisReader_2_21_history Version 2_21
+
+Freeze information:  
+   - Freeze Date: Fri Nov 20 14:51:26 2020  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MacBook-Pro.local
+  
+  
+First freeze on git/cmake  
+
+
+\section oaAnalysisReader_2_22_history Version 2_22
+
+Freeze information:  
+   - Freeze Date: Mon Feb  8 23:37:09 2021  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MacBook-Pro.local
+  
+  
+
+Fix prod7 pre-created headers to work on Linux machines:
+
+make sure that 
+pair<int, TVector2> is not added twice to cint: i.e. do not add it inside TGlobalPID header
+
+  
+  
+
+
+\section oaAnalysisReader_2_23_history Version 2_23
+
+Freeze information:  
+   - Freeze Date: Tue Jun 22 15:19:19 2021  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MacBook-Pro.local
+  
+  
+A new (base) freeze for summer 2021 OA and further xsecs
+
+add prod6W — individual hits for FGD tracks
+
+re-generate libs to exclude local absolute paths in headers, 
+
+new libs with ROOT5
+
+
+clean up folders when re-compile
+
+ 
+  
+
+
+\section oaAnalysisReader_2_24_history Version 2_24
+
+Freeze information:  
+   - Freeze Date: Sun Jan 16 07:45:13 2022  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MBP
+  
+  
+
+A new freeze to make the software to be used with new prod7 V0X series
+
+Merge branch 'new_version_numbering_prod7_changes' into 'master'
+
+New version numbering prod7 changes
+
+version with root 5.34.34
+
+proper set for prod7_V02
+
+prod7 V series and prod6X (instead of 6W)
+  
+
+
+\section oaAnalysisReader_2_25_history Version 2_25
+
+Freeze information:  
+   - Freeze Date: Sun Jan 16 07:46:38 2022  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MBP
+  
+  
+a new freeze to be able to work with new prod7V0X iterations
+
+Merge branch 'new_version_numbering_prod7_changes' into 'master'
+
+New version numbering prod7 changes
+
+version with root 5.34.34
+
+proper set for prod7_V02
+
+prod7 V series and prod6X (instead of 6W)
+  
+
+
+\section oaAnalysisReader_2_25_history Version 2_25
+
+Freeze information:  
+   - Freeze Date: Wed Jun  1 18:25:29 2022  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MBP
+  
+  
+  
+A proper freeze for 2.25
+
+
+\section oaAnalysisReader_2_26_history Version 2_26
+
+Freeze information:  
+   - Freeze Date: Sun Jul 31 19:55:52 2022  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MBP
+  
+  
+
+A new freeze prepared to work with prod6Y/Z/AA and prod7_V06/07 + adds utils/vars for FGD charge related analyses + updates tof treatment with an infrastructure for both time smearing and time-slips + add FGD2 4pi multi-pi selection + add true info utils for AnaHits 
+
+
+
+  
+
+
+\section oaAnalysisReader_2_27_history Version 2_27
+
+Freeze information:  
+   - Freeze Date: Wed Jan 11 15:02:16 2023  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MBP
+  
+  
+
+
+A new freeze 
+
+added prod6AA and prod7_V09  
+
+
+\section oaAnalysisReader_2_28_history Version 2_28
+
+Freeze information:  
+   - Freeze Date: Wed Mar 29 16:15:44 2023  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MBP
+  
+  
+
+A new freeze
+
+fix CINT double addition of <int, TVector2> pair object for prod7_V09
+
+make prod6AA the default version to compile against
+  
+
+
+\section oaAnalysisReader_2_29_history Version 2_29
+
+Freeze information:  
+   - Freeze Date: Thu Apr  6 13:33:48 2023  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MacBook-Pro.local
+  
+  
+A new freeze
+
+add prod7_V12
+
+make prod7_V12 the default to compile against 
+  
+  
+
+*/

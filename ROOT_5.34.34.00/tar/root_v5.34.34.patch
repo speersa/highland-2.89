@@ -1,0 +1,69 @@
+diff -u -r original/root/cint/cint/src/loadfile.cxx src/root/cint/cint/src/loadfile.cxx
+--- original/root/cint/cint/src/loadfile.cxx	2015-10-02 15:27:51.000000000 +0100
++++ src/root/cint/cint/src/loadfile.cxx	2018-11-01 13:36:28.108268302 +0000
+@@ -2700,8 +2700,8 @@
+       outname[len_outname+1] = '\0';
+     }
+ #endif
+-
+-    G__FastAllocString temp(G__LARGEBUF);
++// T2K modification to allow for very long lists of include files with very long pathnames
++    G__FastAllocString temp(100000);
+ #if defined(G__SYMANTEC)
+     /**************************************************************
+      * preprocessor statement for Symantec C++
+diff -u -r original/root/geom/geom/src/TGeoNode.cxx src/root/geom/geom/src/TGeoNode.cxx
+--- original/root/geom/geom/src/TGeoNode.cxx	2015-10-02 15:27:51.000000000 +0100
++++ src/root/geom/geom/src/TGeoNode.cxx	2018-10-18 11:19:48.199249175 +0100
+@@ -236,7 +236,9 @@
+       icheck++;
+       if (!node->GetVolume()->IsSelected()) {
+          msg = TString::Format("found %d overlaps", overlaps->GetEntriesFast());
++#ifdef SHOW_GEONODE_PROGRESS_BAR
+          geom->GetGeomPainter()->OpProgress(node->GetVolume()->GetName(),icheck,ncheck,timer,kFALSE, msg);
++#endif
+          node->GetVolume()->SelectVolume(kFALSE);
+          node->GetVolume()->CheckOverlaps(ovlp,option);
+       }   
+diff -u -r original/root/cmake/modules/FindGSL.cmake src/root/cmake/modules/FindGSL.cmake
+--- original/root/cmake/modules/FindGSL.cmake	2019-05-24 16:24:16.000000000 +0100
++++ src/root/cmake/modules/FindGSL.cmake	2019-05-24 16:26:31.000000000 +0100
+@@ -63,11 +63,12 @@
+ 
+ else( WIN32 AND NOT CYGWIN AND NOT MSYS )
+   if( UNIX OR MSYS )
+-    find_program( GSL_CONFIG_EXECUTABLE gsl-config
+-      ${GSL_DIR}/bin
++# PATCHED FOR T2K TO ENSURE NOT USING SYSTEM LIBRARIES
++    find_program( GSL_CONFIG_EXECUTABLE NAMES gsl-config
++      PATHS
+       $ENV{GSL_DIR}/bin
+-      /usr/bin/
+-      /usr/local/bin
++      ${GSL_DIR}/bin
++      NO_DEFAULT_PATH
+     )
+  
+     if( GSL_CONFIG_EXECUTABLE )
+diff -u2 original/root/config/thisroot.sh src/root/config/thisroot.sh
+--- original/root/config/thisroot.sh	2019-06-17 12:55:38.000000000 +0900
++++ src/root/config/thisroot.sh	2019-06-26 10:14:08.854833138 +0900
+@@ -29,5 +29,5 @@
+ fi
+ 
+-if [ "x${BASH_ARGV[0]}" = "x" ]; then
++if [ "x${BASH_ARGV}" = "x" ] || [ "x${BASH_ARGV[0]}" = "x" ]; then
+     if [ ! -f bin/thisroot.sh ]; then
+         echo ERROR: must "cd where/root/is" before calling ". bin/thisroot.sh" for this version of bash!
+diff -u -r original/cmake/modules/SearchInstalledSoftware.cmake root/cmake/modules/SearchInstalledSoftware.cmake
+--- original/root/cmake/modules/SearchInstalledSoftware.cmake	2019-09-12 11:55:15.000000000 +0100
++++ src/root/cmake/modules/SearchInstalledSoftware.cmake	2019-09-12 11:57:31.000000000 +0100
+@@ -622,7 +622,7 @@
+   ROOT_ADD_CXX_FLAG(__cxxflags -Wno-deprecated-declarations)
+   ExternalProject_Add(
+     XROOTD
+-    URL http://xrootd.org/download/v${xrootd_version}/xrootd-${xrootd_version}.tar.gz
++    URL https://xrootd.slac.stanford.edu/download/v${xrootd_version}/xrootd-${xrootd_version}.tar.gz
+     INSTALL_DIR ${CMAKE_BINARY_DIR}
+     CMAKE_ARGS -DENABLE_PERL=FALSE
+                -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>

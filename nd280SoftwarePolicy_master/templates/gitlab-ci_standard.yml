@@ -1,0 +1,176 @@
+# This file is a default template to be included by other t2k.org projects.
+# Using job token: https://docs.gitlab.com/ee/user/project/new_ci_build_permissions_model.html#job-token
+
+########################@
+
+image: docker:latest
+
+.dind_services: 
+  services: &dind_services
+    - docker:dind
+
+include:
+  - template: Code-Quality.gitlab-ci.yml
+code_quality:
+  variables:
+    REPORT_FORMAT: html
+  artifacts:
+    paths: [gl-code-quality-report.html]
+
+stages:
+  - build
+  - check
+  - test
+  - interrogate
+  - document
+  - release
+  
+# default is to run only at warsaw - while debugging issues with crashing runners
+default :
+  tags:
+    - atwarsaw
+
+.before_script_template: &docker_login
+  before_script:
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+
+# standard image to use
+.thisimage:
+  image: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+# standard setup for jobs which are NOT building a new image
+.setup_script: &setup_script
+   - source $COMMON_BUILD_PREFIX/setup.sh
+   - source $SOFTWARE_MASTER_PATH/bin/setup.sh
+   - projectROOT=${CI_PROJECT_NAME^^}ROOT
+   - echo "Name of projectROOT is "${projectROOT}
+   - echo "Value of projectROOT is  "${!projectROOT}
+   - cd ${!projectROOT}/$LINUX_INSTALL_FOLDER
+   - source ../bin/setup.sh
+
+# Build the master branch when there is no tag
+build-master:
+  stage: build
+  services: *dind_services
+  <<: *docker_login
+  script: 
+    - docker build --pull --load
+     --build-arg EXTMASTER_IMAGE_VERSION=${CI_EXTERNALSMASTER_VERSION} 
+     --build-arg ND280SOFTWAREMASTER_IMAGE_VERSION=${CI_ND280SOFTWAREMASTER_IMAGE_VERSION} 
+     --build-arg VERSION_ARG="master" 
+     --build-arg GIT_T2K_TOKEN=$CI_REGISTRY_PASSWORD 
+     --build-arg GIT_T2K_USERNAME=$CI_REGISTRY_USER 
+     -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG" .
+    - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
+  only:
+    - master
+    - merge_requests
+# Alternative build when a tag is made
+build-tags:
+  stage: build
+  services: *dind_services
+  <<: *docker_login
+  script: 
+    - echo $CI_COMMIT_TAG
+    - docker build --pull 
+     --build-arg EXTMASTER_IMAGE_VERSION=${CI_EXTERNALSMASTER_VERSION} 
+     --build-arg ND280SOFTWAREMASTER_IMAGE_VERSION=${CI_ND280SOFTWAREMASTER_IMAGE_VERSION} 
+     --build-arg VERSION_ARG=$CI_COMMIT_TAG  
+     --build-arg GIT_T2K_TOKEN=$CI_REGISTRY_PASSWORD 
+     --build-arg GIT_T2K_USERNAME=$CI_REGISTRY_USER 
+     -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"  .
+    - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
+  only:
+    - tags
+
+# release job on master branch to create the "latest" version in registry
+release-master:
+  stage: release
+  services: *dind_services
+  <<: *docker_login
+  script:
+    - docker pull "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
+    - docker tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG" "$CI_REGISTRY_IMAGE:latest"
+    - docker push "$CI_REGISTRY_IMAGE:latest"
+  only:
+    - master
+# release job when tagging (aka freezing)
+release-tags:
+  stage: release
+  services: *dind_services
+  <<: *docker_login
+  script:
+    - docker pull "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
+    - docker tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG" "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG"
+    - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG"
+  only:
+    - tags
+
+# Check job runs 'make check' if DOCHECK is true and we are doing merge, or tag, or are on the master branch
+check:
+  extends: .thisimage
+  stage: check
+  before_script:
+    - *setup_script
+  script:
+    - make check
+  rules:
+    - if: $DOCHECK == "true" && $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $DOCHECK == "true" && $CI_COMMIT_BRANCH == "master"
+    - if: $DOCHECK == "true" && $CI_COMMIT_TAG
+
+# Test job runs nd280-validate for merge requests, commits to master, or tags, provided DOTEST is true
+test:
+  extends: .thisimage
+  stage: test
+  before_script:
+    - *setup_script
+  script:
+    - nd280-validate -a --apply
+  rules:
+    - if: $DOTEST == "true" && $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $DOTEST == "true" && $CI_COMMIT_BRANCH == "master"
+    - if: $DOTEST == "true" && $CI_COMMIT_TAG
+
+# Interrogate job , run the slow version of nd280-validate when tagging ( aka freezing )
+interrogate:
+  extends: .thisimage
+  stage: interrogate
+  before_script:
+    - *setup_script
+  script:
+    - nd280-validate -a -s --apply
+  rules:
+    - if: $DOINTERROGATION == "true" &&  $CI_COMMIT_TAG
+
+# document code using doxygen
+pages:
+  extends: .thisimage
+  stage: document
+  before_script:
+    - *setup_script
+  script:
+    - make ${CI_PROJECT_NAME}_documentation
+    - mkdir -p $CI_PROJECT_DIR/public
+    - cp -ar ../dox/* $CI_PROJECT_DIR/public/
+    - echo "Documentation will be available at ${CI_PAGES_URL} "
+  artifacts:
+    paths:
+      - public   
+  only:
+    - master
+    - merge_requests
+    - tags
+  allow_failure: true
+
+
+
+# variables set to false by default intended to be overridden when this file is included
+variables:
+  DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: ""
+  DOCHECK: "false"
+  DOTEST: "false"
+  DOINTERROGATION: "false"
+  CI_DEBUG_TRACE: "false"
+
+

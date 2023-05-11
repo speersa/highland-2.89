@@ -1,0 +1,155 @@
+/*! \page highland2/gammaAnalysisHistory History for the highland2/gammaAnalysis Package 
+
+
+Initial freeze highland2/gammaAnalysis
+Including single gamma selection and OOFV sideband
+
+
+\section gammaAnalysis_v0r1_history Version v0r1
+
+Freeze information:
+   - Freeze Date: Wed Apr 22 17:35:30 2015
+   - Freeze User: lasorak
+   - Freeze Host: heppc400.ph.qmul.ac.uk
+
+Initial freeze for gammaAnalysis including the single gamma selection and OOFV sideband
+
+
+\section gammaAnalysis_v0r3_history Version v0r3
+
+Freeze information:
+   - Freeze Date: Thu Apr 30 15:48:24 2015
+   - Freeze User: lasorak
+   - Freeze Host: heppc403.ph.qmul.ac.uk
+
+   - Freeze Host: heppc403.ph.qmul.ac.uk
+
+
+
+\section gammaAnalysis_v0r5_history Version v0r5
+
+Freeze information:
+   - Freeze Date: Mon Mar  7 12:17:33 2016
+   - Freeze User: lasorak
+   - Freeze Host: heppc403.ph.qmul.ac.uk
+
+   - Freeze Host: heppc403.ph.qmul.ac.uk
+
+
+
+\section gammaAnalysis_v2r3_history Version v2r3
+
+Freeze information:
+   - Freeze Date: Mon May  9 12:19:31 2016
+   - Freeze User: lasorak
+   - Freeze Host: heppc400.ph.qmul.ac.uk
+
+
+
+
+\section gammaAnalysis_v2r5_history Version v2r5
+
+Freeze information:
+   - Freeze Date: Fri Jun 10 18:30:24 2016
+   - Freeze User: georgios
+   - Freeze Host: hep163.ph.liv.ac.uk
+
+
+
+GammaAnalysis freeze: All the datacard parameters are now moved to psyche.
+
+\section gammaAnalysis_v2r7_history Version v2r7
+
+Freeze information:
+   - Freeze Date: Tue Oct 18 16:51:11 2016
+   - Freeze User: georgios
+   - Freeze Host: hep163.ph.liv.ac.uk
+
+Update analysis to be compatible with the latest changes in psyche.
+Add option to run gamma initiator.
+Fix parameters in datacard.
+
+
+\section gammaAnalysis_v2r9_history Version v2r9
+
+Freeze information:
+   - Freeze Date: Wed Nov  9 17:20:49 2016
+   - Freeze User: georgios
+   - Freeze Host: kappa.ph.liv.ac.uk
+
+Update accum_level to match changes in gamma Selection.
+
+
+\section gammaAnalysis_v2r11_history Version v2r11
+
+Freeze information:
+   - Freeze Date: Wed Mar  1 14:51:27 2017
+   - Freeze User: georgios
+   - Freeze Host: kappa.ph.liv.ac.uk
+
+Update MinAccumLevel to adopt to changes in gamma selection in psyche.
+
+
+\section gammaAnalysis_v2r13_history Version v2r13
+
+Freeze information:
+   - Freeze Date: Tue Oct 31 15:39:05 2017
+   - Freeze User: georgios
+   - Freeze Host: hep163.ph.liv.ac.uk
+
+Minor changes to update the accum_level changes in the psyche selections.
+
+
+\section gammaAnalysis_v2r15_history Version v2r15
+
+Freeze information:
+   - Freeze Date: Sat Feb 29 17:07:43 2020
+   - Freeze User: alexander
+   - Freeze Host: alexandrs-mbp.dlink
+
+Since preparing a big freeze for summer 2020 OA, increase the version number where appropriate 
+
+A new freeze of gammaAnalysis package 
+
+Modified Files:
+        mainpage.dox 
+Log Message:
+Remove the word package from the end of the  \page line
+
+
+
+\section gammaAnalysis_v2r17_history Version v2r17
+
+Freeze information:
+   - Freeze Date: Tue Mar 31 00:53:58 2020
+   - Freeze User: alexander
+   - Freeze Host: Alexandrs-MacBook-Pro.local
+
+A new freeze as a part of new nd280Highland2 for summer 2020 OA/xsec
+
+Modified Files:
+        gammaAnalysis.hxx gammaAnalysis.cxx 
+Log Message:
+Use the option to save additional toy variables.
+
+Modified Files:
+        gammaAnalysis.parameters.dat 
+Log Message:
+Minor. Improve comments.
+
+
+
+
+
+
+\section gammaAnalysis_2_19_history Version 2_19
+
+Freeze information:  
+   - Freeze Date: Fri Nov 20 15:15:13 2020  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MacBook-Pro.local
+  
+  
+First freeze of git/cmake version  
+
+*/

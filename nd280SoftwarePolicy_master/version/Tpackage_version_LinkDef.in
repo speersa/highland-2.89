@@ -1,0 +1,5 @@
+#ifdef __CINT__
+// LinkDef for T${CMAKE_PROJECT_NAME}_version_LinkDef.h auto-generated using the
+// Tpackage_version_LinkDef.in template file.
+#pragma link C++ class ND::T${CMAKE_PROJECT_NAME}_version+;
+#endif

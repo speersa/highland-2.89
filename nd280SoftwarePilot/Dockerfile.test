@@ -1,0 +1,21 @@
+# Use via command like
+# docker build --build-arg GIT_T2K_TOKEN=<your-token> --build-arg GIT_T2K_USERNAME=<your-git-username> -t test_pilot -f Dockerfile.test .
+
+FROM git.t2k.org:8088/nd280/docker/base:centos-v0.0.1
+
+ARG GIT_T2K_USERNAME
+ARG GIT_T2K_TOKEN
+RUN git config --global url."https://${GIT_T2K_USERNAME}:${GIT_T2K_TOKEN}@git.t2k.org/".insteadOf "https://git.t2k.org/"
+
+COPY . $COMMON_BUILD_PREFIX/nd280SoftwarePilot
+
+ENV ND280_PILOT $COMMON_BUILD_PREFIX/nd280SoftwarePilot
+
+RUN source $COMMON_BUILD_PREFIX/setup.sh &&\
+    cd $ND280_PILOT &&\
+    ./configure.sh
+
+RUN source $ND280_PILOT/nd280SoftwarePilot.profile &&\
+    echo ${nd280-setup} &&\
+    export ND280_GIT=https://${GIT_T2K_USERNAME}:${GIT_T2K_TOKEN}@git.t2k.org/nd280/ &&\
+    nd280-install -j3 master

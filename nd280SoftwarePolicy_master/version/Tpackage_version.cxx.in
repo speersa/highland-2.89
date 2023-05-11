@@ -1,0 +1,67 @@
+#include "TOADatabase.hxx"
+
+// Source for T${CMAKE_PROJECT_NAME}_version.cxx auto-generated using the
+// Tpackage_version.cxx.in template file.
+
+#include "T${CMAKE_PROJECT_NAME}_version.hxx"
+#include "${CMAKE_PROJECT_NAME}_version.h"
+#include "${CMAKE_PROJECT_NAME}_make_date.hxx"
+
+ClassImp(ND::T${CMAKE_PROJECT_NAME}_version);
+
+// Trickiness so that the package version is automatically added to the
+// list of used packages.
+static ND::T${CMAKE_PROJECT_NAME}_version ${CMAKE_PROJECT_NAME}_version;
+
+ND::T${CMAKE_PROJECT_NAME}_version* ND::T${CMAKE_PROJECT_NAME}_version::fThis = NULL;
+
+ND::T${CMAKE_PROJECT_NAME}_version::T${CMAKE_PROJECT_NAME}_version() {
+    fThis = ND::T${CMAKE_PROJECT_NAME}_version::Get();
+}
+
+ND::T${CMAKE_PROJECT_NAME}_version::~T${CMAKE_PROJECT_NAME}_version() {}
+
+void ND::T${CMAKE_PROJECT_NAME}_version::Initialize(void) {
+    // register this package.
+    ND::TOADatabase::Get().PackageSet().insert(fThis);
+}
+
+ND::T${CMAKE_PROJECT_NAME}_version* ND::T${CMAKE_PROJECT_NAME}_version::Get(void) {
+    // Make sure that fThis is initialized;
+    if (!fThis) {
+        // Make sure that fThis is not null before allocating a real pointer.
+        // This cruft is required so that there isn't an infinite recursion
+        // while fThis is initialized.
+        fThis = (ND::T${CMAKE_PROJECT_NAME}_version*) 1;
+        // Allocate real space for the fThis pointer.
+        fThis = new ND::T${CMAKE_PROJECT_NAME}_version;
+        // Now initialize
+        fThis->Initialize();
+    }
+    // Return the pointer.
+    return fThis;
+}
+
+const char* ND::T${CMAKE_PROJECT_NAME}_version::GetName(void) const {
+    return ${CMAKE_PROJECT_NAME}_NAME;
+}
+
+const char* ND::T${CMAKE_PROJECT_NAME}_version::GetVersion(void) const {
+    return ${CMAKE_PROJECT_NAME}_VERSION;
+}
+
+const char* ND::T${CMAKE_PROJECT_NAME}_version::GetCompilationDate(void) const {
+    return ${CMAKE_PROJECT_NAME}_COMPILE_DATE;
+}
+
+const char* ND::T${CMAKE_PROJECT_NAME}_version::GetCompilationHost(void) const {
+    return ${CMAKE_PROJECT_NAME}_COMPILE_HOST;
+}
+
+const char* ND::T${CMAKE_PROJECT_NAME}_version::GetCompilationDirectory(void) const {
+    return ${CMAKE_PROJECT_NAME}_COMPILE_DIR;
+}
+
+const char* ND::T${CMAKE_PROJECT_NAME}_version::GetCompilationMachineInfo(void) const {
+    return ${CMAKE_PROJECT_NAME}_COMPILE_UNAME;
+}

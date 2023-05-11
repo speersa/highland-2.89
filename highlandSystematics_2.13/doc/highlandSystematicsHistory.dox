@@ -1,0 +1,209 @@
+/*! \page highland2/highlandSystematicsHistory History for the highland2/highlandSystematics Package 
+
+\section highlandSystematics_v2r1_history Version v2r1
+
+Freeze information:
+   - Freeze Date: Thu Nov 10 16:52:59 2016
+   - Freeze User: izmaylov
+   - Freeze Host: pizmaylov.ific.uv.es
+
+
+A new package dedicated to be a roof for various systematics
+developed inside highland but not subject to be migrated into psyche (i.e. oscillation 
+analysis fitters` usage):
+a good example are various systematics developed for cross-section analysis
+
+for the moment keep the systematics related to smearing due to an uknown position 
+of the parent decay (i.e. neutrino direction effectively), although the latter
+still lacks the proper inputs
+
+More to come
+
+
+
+\section highlandSystematics_v2r3_history Version v2r3
+
+Freeze information:
+   - Freeze Date: Sat Dec 24 20:23:34 2016
+   - Freeze User: izmaylov
+   - Freeze Host: Aleksandrs-MacBook-Pro.local
+
+and alos the data file with verices positions distributions  was added
+
+
+Freeze information:
+   - Freeze Date: Sat Dec 24 20:14:59 2016
+   - Freeze User: izmaylov
+   - Freeze Host: Aleksandrs-MacBook-Pro.local
+
+
+
+\section highlandSystematics_v2r5_history Version v2r5
+
+Freeze information:
+   - Freeze Date: Fri Sep  6 13:09:06 2019
+   - Freeze User: alexander
+   - Freeze Host: Alexandrs-MacBook-Pro.local
+
+
+
+
+Added Files:
+        FgdBwdMigrationWeightSystematics.cxx 
+        FgdBwdMigrationWeightSystematics.hxx 
+Log Message:
+first version of Fgd bwd migration systematic based on re-weighting
+
+one can extend it to use different samples definitions etc
+
+Added Files:
+        FgdBwdMigrationWeightSystematics.dat 
+Log Message:
+"default" data file for FGD bwd migration systematic:
+based on multi-pion topologies studied in TN-368
+
+Added Files:
+        SystIdHighland.hxx 
+Log Message:
+SystId extention for highland
+
+Modified Files:
+        FgdBwdMigrationWeightSystematics.cxx 
+        FgdBwdMigrationWeightSystematics.hxx 
+Log Message:
+added an ability to change the folder
+
+Modified Files:
+        FgdBwdMigrationWeightSystematics.cxx 
+        FgdBwdMigrationWeightSystematics.hxx 
+Log Message:
+improved the method of deciding of bwd migration: use functions added to
+CategoriesUtils, added a virtual method that may be used to apply correlations
+
+
+
+\section highlandSystematics_v2r7_history Version v2r7
+
+Freeze information:
+   - Freeze Date: Fri Oct  2 11:08:43 2020
+   - Freeze User: alexander
+   - Freeze Host: Alexandrs-MacBook-Pro.local
+
+
+A new freeze of   highland2/psyche for summer 2020 OA publications as the main goal,
+also the base version for migration to cmake and git
+
+Added Files:
+        NeutronInteractionSystematic.cxx 
+        NeutronInteractionSystematic.hxx 
+Log Message:
+first version of neutron interaction si treatment
+
+consider for the moment inelastic cross-secitons 
+
+use GEANT4 Wellisch-Laidlaw parametrisation for the xsec, valid for mom > ~200
+MeV/c,  for the moment use min kin energy ~20 MeV if is lower (but at least
+~MeVs)
+
+Added Files:
+        SINeutronSystematics.cxx SINeutronSystematics.hxx 
+Log Message:
+code to apply SI neutron systeamtic
+
+Modified Files:
+        SystIdHighland.hxx 
+Log Message:
+added SI for neutrons
+
+Added Files:
+        NeutronSI.dat 
+Log Message:
+added neutron SI data file, dummy at the moment 
+
+Modified Files:
+        highlandSystematics.parameters.dat 
+Log Message:
+a parameter to control neutron SI uncertainty - set to 0.1 accoriding to GEANT4
+validation tables
+
+
+
+\section highlandSystematics_2_9_history Version 2_9
+
+Freeze information:  
+   - Freeze Date: Fri Nov 20 14:55:12 2020  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MacBook-Pro.local
+  
+  
+First freeze of git/cmake version  
+  
+
+
+\section highlandSystematics_2_10_history Version 2_10
+
+Freeze information:  
+   - Freeze Date: Sat Jul 10 11:12:34 2021  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MacBook-Pro.local
+  
+  
+A new freeze for summer 2021 xsec results
+
+Add new VA activity systematics, resol and scale on behalf
+of Mitchell Yu  
+  
+
+
+\section highlandSystematics_2_11_history Version 2_11
+
+Freeze information:  
+   - Freeze Date: Fri May 20 18:07:28 2022  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MBP
+  
+  
+A new freeze:
+
+add FGDPIDMIPLike systematic —> keep only base functionality here —> to be extended by user packages  
+
+
+\section highlandSystematics_2_12_history Version 2_12
+
+Freeze information:  
+   - Freeze Date: Wed Jun  1 17:01:13 2022  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MBP
+  
+  
+
+The main goal of the freeze is to add new versioning scheme for systematics, corrections and POT 
+
+Now all possible productions included: Prod5, Prod6 and Prod7 wrt the previous is/isnt Prod6 check.
+
+A Highland-run analysis by default will get and set a production index based on input, . if the version check is OFF then all defaults to Prod6. One can also set it with param file,
+psycheSteering controls versioning with a param file.
+
+
+For corrections and systematics split data storage files into Prod5, Prod6 and Prod7 where the appropriate data files should go. It also BinnedParams to use ExtensionSyst() or ExtenstionCorr() so that an appropriate data files is used for a correction or a systematic. 
+As for these freeze Prod7 data for systematics and correction is just a copy of the one from Prod6: is expected to be populated with new numbers as Prod7 validation progresses. 
+
+Also fixes a bug with versions checks in numuCCZeroPiAnalysis   
+  
+
+
+\section highlandSystematics_2_13_history Version 2_13
+
+Freeze information:  
+   - Freeze Date: Fri Oct 21 14:24:50 2022  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MBP
+  
+  
+
+A new freeze of HighLAND2 software. The main goal is to have a reference version for expected nd280-upgrade merging work, then updates to ToF treatement (smearing x slips correction and updated systematics), updates to FGDs 4pi selections (mature versions ready for preliminary OA tests, some tuning on-going), technical updates like using local HASSERT wrt assert to deal with default NDEBUG setting, also for CI and eg RECPACK added as an option for installation (outside highland but highland2SoftwarePilot) and will be used in containers.
+
+add HASSERT and DHASSERT (for DEBUG flag)  preprocessor macroses for hl2  
+  
+
+*/

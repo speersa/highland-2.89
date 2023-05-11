@@ -1,0 +1,130 @@
+#! /usr/bin/env python
+#
+# Get a project from it's repository and install it.  This will check out
+# any dependent projects, and then check out the packages in each of the
+# projects.  
+
+import os
+import sys
+import getopt
+import shutil
+import re
+#from sets import Set
+from nd280 import shell
+
+def usage():
+    print("""
+
+nd280-install-project subDirectory repositoryProject project version 
+
+This clones a repository containing a project from the git server. It then
+checks for project dependencies and, if necessary, clones them. All projects
+will be cloned into the ${ND280_ROOT} directory in the folder
+<project>_<version>. 
+
+Options:
+  -h, --help : Print this message.
+  -jN : Set the number of clone and make jobs to run.
+  -f, --full : fully clone packages
+
+Examples:
+  Clone the master branch of nd280 and all of its dependencies. 5 jobs can be run in parallel.
+    nd280-install-project -j5 framework nd280 nd280 master
+  Clone the 12.29 version of nd280 and its dependencies. No parallel jobs.
+    nd280-install-project -c framework nd280 nd280 12.29
+
+""")
+        
+try:
+  options, args = getopt.gnu_getopt(sys.argv[1:], 
+                                      "hfcj:",
+                                      ["help","full",
+                                      "compile","jobs="])
+except:
+  usage()
+  print("ERROR: Invalid option.")
+  sys.exit(1)
+
+compileAll = False
+cloneHere = False
+opt = ""
+makeJobs = "1" 
+
+for option, value in options:
+  if option == "-h" or option == "--help":
+    usage()
+    sys.exit(0)
+  elif option == "-c" or option == "--compile":
+    compileAll = True
+  elif option == "-f" or option == "--full":
+    opt = "-f"
+  elif option == "-j" or option == "--jobs":
+    makeJobs = value
+  else:
+    usage()
+    print("ERROR: Nani???")
+    print("    \'Krillin_owned_count += 1\'")
+    sys.exit(1)
+
+# Check that we have the right number of arguments.      
+if len(args) != 4: 
+  usage()
+  print("ERROR: Wrong number of arguments.")
+  sys.exit(1)
+
+# get the arguments
+subDirectory = args[0]
+repositoryProject = args[1]
+project = args[2]
+version = args[3]
+
+# set maximum number of jobs when cloning dependencies
+makeJobsLow = makeJobs
+if int(makeJobs) > 10:
+  makeJobsLow = "10"
+  print("The number of parallel jobs for the download stage is limited to "
+      +makeJobsLow+"\n")
+
+print("Install Project:", repositoryProject, "   Version:", version)
+
+# clone the specified project from git. This dictates the versions of each 
+# package in the requested tag
+
+shell.Shell("(cd ${ND280_ROOT};"
+            +"set -e;"
+            +"nd280-fetch-package "+opt+" "+subDirectory+" "+repositoryProject+" "
+              +project+" "+version+";"
+            +"rm -f GetGit*.sh)")
+
+
+# build scripts to install the meta packages and clone them in parallel (if 
+# multiple jobs have been requested)
+
+shell.Shell("(cd ${ND280_ROOT};"
+            +"set -e;"
+            +"nd280-find-dependencies "+opt+" -b master-packages "+project+" "
+              +version+";"
+            +"for f in GetGit*.sh; do"
+            +"  [ -e \"$f\" ] && (ls GetGit*.sh | xargs -P "+makeJobsLow
+              +" -I NAME /bin/bash NAME;"
+            +"  rm GetGit*.sh);"
+            +"  break;"
+            +"done)")
+
+# build scripts to clone dependencies of meta packages
+for package in ["externals", "analysis", "base", "calib", "recon", "sim"]:
+    shell.Shell("(cd ${ND280_ROOT};"
+              +"set -e;"
+              +"nd280-find-meta "+opt+" "+package+" "+version+")")
+# clone the dependencies in parallel (if multiple jobs specified) but don't use 
+# too many jobs
+shell.Shell("(cd ${ND280_ROOT};"
+            +"set -e;"
+            +"for f in GetGit*.sh; do"
+            +"  [ -e \"$f\" ] && (ls GetGit*.sh | xargs -P "+makeJobsLow
+              +" -I NAME /bin/bash NAME;"
+            +"  rm GetGit*.sh);"
+            +"  break;"
+            +"done)")
+
+sys.exit(0)

@@ -1,0 +1,687 @@
+/*! \page nd280PolicyHistory History for the nd280Policy Package 
+
+
+
+\section nd280Policy_v2r13_history Version v2r9
+
+Freeze information:
+   - Freeze Date: Fri Apr 13 12:57:51 2007
+   - Freeze User: mccauley
+   - Freeze Host: t2kfe.ph.liv.ac.uk
+
+The updates in this version of ND280 policy signal a change in the way
+that we deal with frozen versions. Previously it was possible to
+change frozen versions of a package as these version were defined by
+cvs branch tags. We now use direct cvs tags which freezes these
+files. A new script nd280-create-patch is used to create a patch
+version that can be edited before being frozen again by
+nd280-freeze. The versioning for the patch numbers follows the same
+procedure we use for revisions, even numbers are development versions,
+odd numbers are stable. This approach has one problem in that it
+confuses cmt as to the head version number for the package. This can
+be fixed using the new script nd280-fix-head-version, but this must be
+used with extreme care as it has to remove the head version tag from
+the repository before replacing it in order to fix things. If in doubt
+contact the release manager.
+
+Also in this version of the package the scripts have been improved to
+now maintain the package version in the requirements file and to
+maintain a version history for the package. The version history should
+contain a summary of the updates, much as this version history does.
+
+
+\section nd280Policy_v2r11_history Version v2r11
+
+Freeze information:
+   - Freeze Date: Mon May 14 14:36:11 2007
+   - Freeze User: mccauley
+   - Freeze Host: t2kfe.ph.liv.ac.uk
+
+
+This is a minor update compared to the last one. However the scripts
+have been further improved and this release is being made to coincide
+with nd280 v2r1, after which a number of freezes are expected from a
+number of packages.
+
+Highlights are:
+   nd280-freeze will now send out a package freeze email.
+   Improved checking of release history update. It must now be at
+   least 3 lines long
+
+
+
+\section nd280Policy_v2r13_history Version v2r13
+
+Freeze information:
+   - Freeze Date: Thu Aug 30 13:09:14 2007
+   - Freeze User: mccauley
+   - Freeze Host: t2kfe.ph.liv.ac.uk
+
+New freeze of nd280Policy for nd280 v2r3
+Updates in this version are:
+   Improved patch handling in freeze scripts.
+   Updated doxygen build procedures to give custom headers and footers.
+
+
+
+\section nd280Policy_v2r15_history Version v2r15
+
+Freeze information:
+   - Freeze Date: Tue Feb 12 13:48:54 2008
+   - Freeze User: mccauley
+   - Freeze Host: gateway.ph.liv.ac.uk
+
+Freeze scripts have been updated with additional checks to avoid 
+problems shown up during the latest freezes:
+    New tags will not be added to the repository if they already exist.
+    The requirements and history files must be up to date with cvs to avoid 
+    commit problems   
+
+Also path_append changed to path_prepend.
+An option to name releases of nd280 has been added.
+
+
+
+\section nd280Policy_v2r17_history Version v2r17
+
+Freeze information:
+   - Freeze Date: Thu Feb 14 16:48:16 2008
+   - Freeze User: mccauley
+   - Freeze Host: gateway.ph.liv.ac.uk
+
+Bug fix the document history status check.
+Updates for documentation building.
+This line is for the freeze script.
+This line is for the freeze script.
+
+
+\section nd280Policy_v2r19_history Version v2r19
+
+Freeze information:
+   - Freeze Date: Wed Apr 30 14:15:33 2008
+   - Freeze User: mccauley
+   - Freeze Host: gateway.ph.liv.ac.uk
+
+
+Update nd280Policy for the new release.
+This is a documentation update to ensure that 
+python documentation is created by Doxygen.
+This affects oaAnalysis and nd280Control.
+
+
+
+\section nd280Policy_v2r21_history Version v2r21
+
+Freeze information:
+   - Freeze Date: Fri Nov 21 11:52:29 2008
+   - Freeze User: mccauley
+   - Freeze Host: pc250108.ph.liv.ac.uk
+
+Futher improvements to nd280-freeze.
+Added an option to directly increment the major version number.
+Fixes to ensure that Yoshi can run the script:
+   Files are now set to be writable before editing.
+
+
+
+\section nd280Policy_v2r23_history Version v2r23
+
+Freeze information:
+   - Freeze Date: Tue Jun 16 10:00:13 2009
+   - Freeze User: mccauley
+   - Freeze Host: gateway.ph.liv.ac.uk
+
+Add support for subpackages to nd280-freeze
+Remove nd280-fix-head-version, it is nolonger required
+Add support for the new testing framework from Clark
+I need one more line for the script
+
+
+
+
+\section nd280Policy_v2r25_history Version v2r25
+
+Freeze information:
+   - Freeze Date: Tue Oct 27 14:02:42 2009
+   - Freeze User: mcgrew
+   - Freeze Host: boxer.physics.sunysb.edu
+
+This release includes several enhancements:
+
+** Allow packages to designate specific files to be processed by doxygen.
+   The ND280 doxygen processing normally requires that all files containing
+   documentation are named *.py, *.hxx, *.cxx, or *.dox.  Unfortunately,
+   this means that scripts (such as nd280-freeze) cannot be parsed for
+   documentation.  This allows these extra files to be specified in a file
+   contained in the local "cmt" directory.  All files found in the package
+   cmt directory with the extension *.Doxyfile will be appended to the
+   standard nd280 Doxyfile.
+
+** The package version fragment has been updated to more reliably track
+   when package files have changed.  This now correctly updates the version
+   stamp for the package, and can handle a "*.cxx *.hxx, *_LinkDef.h" on
+   the document line.
+
+** When a package is frozen, tag the message to the list with [FREEZE]
+   instead of [COMMIT].
+
+
+\section nd280Policy_v2r27_history Version v2r27
+
+Freeze information:
+   - Freeze Date: Tue Nov 17 12:51:40 2009
+   - Freeze User: mccauley
+   - Freeze Host: alpha.ph.liv.ac.uk
+
+Update imbedded email address to new list.
+Taking advantage of new release to roll things out
+I need more text for freeze
+I need more text for freeze
+
+
+\section nd280Policy_v2r29_history Version v2r29
+
+Freeze information:
+   - Freeze Date: Mon Mar 22 02:27:50 2010
+   - Freeze User: mccauley
+   - Freeze Host: iota.ph.liv.ac.uk
+
+Change the options in Policy to help avoid the problems seen 
+with the recent event loop change.
+Add an option to freeze to control message checking.
+
+
+
+\section nd280Policy_v2r31_history Version v2r31
+
+Freeze information:
+   - Freeze Date: Tue May  4 02:42:15 2010
+   - Freeze User: mccauley
+   - Freeze Host: iota.ph.liv.ac.uk
+
+Update to nd280Policy to update patching procedure Its important that
+we pay attention to patching to ensure that we produce stable
+releases, so from now on nd280-freeze will automaitically make the
+patch head p0 when a package is frozen. Additionally from now on p0 is
+the patch head for a stable version and will continue to be so as
+patches are applied. The script nd280-create-patch still exists but
+should not be used except by the release manger as a recovery tool.
+
+
+
+\section nd280Policy_v2r33_history Version v2r33
+
+Freeze information:
+   - Freeze Date: Thu Sep  9 14:04:14 2010
+   - Freeze User: mcgrew
+   - Freeze Host: boxer.physics.sunysb.edu
+
+The version fragment has been updated to automatically generate macros
+which can check the version of a package against a target version.  The
+BEFORE_<package> macro will return true if the package version is before a
+particular version, release and patch number.  The EQUALS_<package> returns
+true if the package version matches a version, release and patch number.
+These are documented on the \ref checkingPackageVersion page in the doxygen
+documentation.  
+
+\section nd280Policy_v2r35_history Version v2r35
+
+Freeze information:
+   - Freeze Date: Wed Feb  2 11:24:13 2011
+   - Freeze User: mccauley
+   - Freeze Host: hep133.ph.liv.ac.uk
+
+Update to the nd280-freeze script to update the version history when
+patching a package.
+
+
+\section nd280Policy_v2r37_history Version v2r37
+
+Freeze information:
+   - Freeze Date: Fri Oct 28 18:34:22 2011
+   - Freeze User: mcgrew
+   - Freeze Host: boxer.physics.sunysb.edu
+
+New Features: 
+
+** nd280-freeze: A new feature has been added so that sites with commit
+   access, but no email will still get a freeze message out to the world.
+   The freeze message is now added to the commit message of the history
+   file.  This works in conjunction with a modified cvs-log which checks if
+   a message corresponds to a freeze.
+
+
+\section nd280Policy_v2r39_history Version v2r39
+
+Freeze information:
+   - Freeze Date: Wed Feb 12 11:58:27 2014
+   - Freeze User: ajf
+   - Freeze Host: lapf.lancs.ac.uk
+
+
+
+Added 
+     Linux           "-Wl,--no-as-needed" \
+to
+macro cpplinkflags   
+to allow linking on recent version of gcc
+
+\section nd280Policy_v2r41_history Version v2r41
+
+Freeze information:
+   - Freeze Date: Wed May 14 10:25:37 2014
+   - Freeze User: ajf
+   - Freeze Host: lapf.lancs.ac.uk
+
+
+
+
+Modified requirements file to allow for parallel building of
+packages using latest version of CMT.
+
+
+
+\section nd280Policy_v2r43_history Version v2r43
+
+Freeze information:
+   - Freeze Date: Tue Nov 17 14:36:29 2015
+   - Freeze User: ajf
+   - Freeze Host: lapf.lancs.ac.uk
+
+
+
+
+Add a simple script which runs (cmt) make in parallel, but doesn't leave
+CMTBCAST set to YES afterwards, which can be troublesome.
+
+
+\section nd280Policy_v2r45_history Version v2r45
+
+Freeze information:
+   - Freeze Date: Tue Nov 17 15:53:14 2015
+   - Freeze User: ajf
+   - Freeze Host: lapf.lancs.ac.uk
+
+
+
+
+Bug fix in nd280-parallel-build
+
+
+
+\section nd280Policy_v2r47_history Version v2r47
+
+Freeze information:
+   - Freeze Date: Wed Dec 14 12:22:29 2016
+   - Freeze User: ajf
+   - Freeze Host: lapa.lancs.ac.uk
+
+
+
+
+Added  a setup script to control choice of compiler, where more than one is available.
+Removed "pattern" lines in requirements which created an unwanted dependence on ROOT,
+they are now in oaEvent.
+
+
+
+\section nd280Policy_v2r49_history Version v2r49
+
+Freeze information:
+   - Freeze Date: Fri Jun 30 12:00:37 2017
+   - Freeze User: ajf
+   - Freeze Host: lapf.lancs.ac.uk
+
+
+
+nd280-parallel-build modified to allow user to set ND280_NJOBS manually.
+
+
+
+\section nd280Policy_v2r51_history Version v2r51
+
+Freeze information:
+   - Freeze Date: Tue Dec  5 12:11:57 2017
+   - Freeze User: ajf
+   - Freeze Host: lapf.lancs.ac.uk
+
+
+
+
+
+Provide a mechanism to disable compiler_setup.sh, then use that
+mechanism inside nd280-parallel-build where running the compiler_setup.sh script
+repeatedly is unneccesary, and can cause problems when run in parallel.
+
+
+
+
+
+\section nd280Policy_v2r53_history Version v2r53
+
+Freeze information:
+   - Freeze Date: Tue Dec  5 16:21:31 2017
+   - Freeze User: ajf
+   - Freeze Host: lapf.lancs.ac.uk
+
+
+
+ Fix the test for whether to run the compiler_setup.sh or not
+to work with older versions of bash.
+
+
+\section nd280SoftwarePolicy_3_0_history Version 3_0
+
+Freeze information:
+   - Freeze Date: Sun Sep  1 19:31:00 2019
+   - Freeze User: wilfs
+   - Freeze Host: lx03.hep.ph.ic.ac.uk
+
+
+
+In preparation for development for the nd280 upgrade, the official repository 
+for this package (and all other nd280 software packages) has been moved from 
+CVS to GitLab at git.t2k.org and it is now built by CMake rather than CMT. More 
+information on the new CMake build can be found at 
+http://nd280.lancs.ac.uk/devel/invariant/nd280Doc/workbook/SoftwareUserCMAKEandGIT.html.
+
+Also, some of the packages have been renamed to make their role in the software 
+clearer. This has affected some class and function names in the code too. For 
+more information on the files changed by the package renaming, go to 
+git.t2k.org/nd280/renaming.
+
+The name of this package was changed from nd280Policy to nd280SoftwarePolicy.
+
+Several functions have been added to the standardFunctions of nd280SoftwarePolicy 
+to emulate some of the capabilities of CMT in CMake.
+
+\section nd280SoftwarePolicy_3_1_history Version 3_1
+
+Freeze information:
+   - Freeze Date: Fri Oct 11 13:22:03 2019
+   - Freeze User: Wilf Shorrock
+   - Freeze Host: lx03.hep.ph.ic.ac.uk
+
+
+Added a new feature that checks the git tag of a package matches the directory
+name and the version defined in the cmake files.
+
+A new c++ standard has also been enforced. All code must follow the standards
+of c++11 or later versions. This ensures the code will work on recent gcc
+versions. Several packages have had minor changes to comply with this new
+standard.
+
+The rootcint variable could get intorlerably long, so it is now possible to
+mark certain directories to indicate they should not be included in the list
+for rootcint.
+
+The CONFIGURE_ADD option for ND280_USE has been changed slightly, so that the
+find_package() command is reissued when CONFIGURE_ADD is called. This ensures
+the relevant libraries defined by the CONFIGURE_ADD option are built and can
+be used by dependencies of the original package.
+
+
+
+\section nd280SoftwarePolicy_3_1_2_history Version 3_1_2
+
+Freeze information:
+   - Freeze Date: Wed Oct 16 13:22:43 2019
+   - Freeze User: Wilf Shorrock
+   - Freeze Host: lx03.hep.ph.ic.ac.uk
+
+
+A small bug fix.
+
+For some unaccountable reason file(COPY ../${build_directory}/setup.sh
+DESTINATION ../bin) would randomly not work when called in the functions
+ND280_PATH_APPEND or ND280_PYTHON_PATH_APPEND. Luckily these are rarely used
+(only in nd280SoftwareControl in fact). The workaround was to add file(REMOVE
+../bin/setup.sh) before each call to file(COPY ...). This appears to have
+fixed
+it. In addition the lines machineDependentOutput(build_directory) which were
+commented out in ND280_PATH_APPEND and ND280_PYTHON_PATH_APPEND have been
+
+
+
+\section nd280SoftwarePolicy_3_1_1_history Version 3_1_1
+
+Freeze information:
+   - Freeze Date: Wed Oct 16 13:26:13 2019
+   - Freeze User: Wilf Shorrock
+   - Freeze Host: lx03.hep.ph.ic.ac.uk
+
+
+A small bug fix.
+
+For some unaccountable reason file(COPY ../${build_directory}/setup.sh
+DESTINATION ../bin) would randomly not work when called in the functions
+ND280_PATH_APPEND or ND280_PYTHON_PATH_APPEND. Luckily these are rarely used
+(only in nd280SoftwareControl in fact). The workaround was to add file(REMOVE
+../bin/setup.sh) before each call to file(COPY ...). This appears to have fixed
+it. In addition the lines machineDependentOutput(build_directory) which were
+commented out in ND280_PATH_APPEND and ND280_PYTHON_PATH_APPEND have been
+re-enabled.
+
+
+\section nd280SoftwarePolicy_3_1_2_history Version 3_1_2
+
+Freeze information:
+   - Freeze Date: Thu Oct 17 14:28:16 2019
+   - Freeze User: Wilf Shorrock
+   - Freeze Host: lx03.hep.ph.ic.ac.uk
+
+
+A minor change due to analysisTools being added to the build. Seeing as the
+package needs a data file before it can be built, the make command for the
+analysisTools package has been removed from the generated makeAll.sh scripts.
+
+
+\section nd280SoftwarePolicy_3_2_history Version 3_2
+
+Freeze information:
+   - Freeze Date: Wed Mar  4 22:09:06 2020
+   - Freeze User: Mathieu
+   - Freeze Host: 6f7452616123
+
+
+Major changes to the installation procedure and the dependencies being added.
+nd280SoftwarePolicy is now a dependency of externalsMaster instead of being installed by nd280SoftwarePilot during the global installation with nd280-install. 
+nd280SoftwarePolicy now has a CMakeLists file that is used to install the CMake policy. 
+Changed location of the dictionaries into the installation directory. 
+Proper documentation build procedure was added. 
+Docker and Continuous Integration available for a more reliable release process.
+
+
+\section nd280SoftwarePolicy_3_3_history Version 3_3
+
+Freeze information:  
+   - Freeze Date: Thu Mar 26 13:43:08 2020  
+   - Freeze User: Alex Finch  
+   - Freeze Host: finchresearchlaptop
+  
+  
+Protect against ND280_NJOBS not being defined.
+ND280_PYTHON_LIBRARIES() can now install directories.
+  
+  
+
+
+\section nd280SoftwarePolicy_3_5_history Version 3_5
+
+Freeze information:  
+   - Freeze Date: Fri Mar 27 15:42:23 2020  
+   - Freeze User: Alex Finch  
+   - Freeze Host: finchresearchlaptop
+  
+  
+In ND280_SCRIPT and ND280_PYTHON_LIBRARY change to using execute_process instead of add_target.
+ These functions simply copy existing files and this change ensures they only do it once, when
+cmake is run.  
+
+
+\section nd280SoftwarePolicy_3_6_history Version 3_6
+
+Freeze information:  
+   - Freeze Date: Thu May 21 13:53:30 2020  
+   - Freeze User: Alexander J Finch  
+   - Freeze Host: lapw.lancs.ac.uk
+  
+  
+A whole bunch of small improvements...
+
+Fix bug with ROOT depth level being set too high, and prevent makeAll.sh trying to build non existent scripts.
+Tweaked doxygen and made it possible for users to add their own settings via environment
+variable ND280_ADDITIONAL_DOXYGEN
+Added clean-cmake-files and clean-all targets to ND280 projects.
+Adapted to also work with ROOT 6.
+Removed use of ls in batch scripts created when running cmake.
+Tidied up indenting in standarFunctions.cmake
+  
+
+
+\section nd280SoftwarePolicy_3_9_history Version 3_9
+
+Freeze information:  
+   - Freeze Date: Thu Dec 10 15:27:21 2020  
+   - Freeze User: Alexander J Finch  
+   - Freeze Host: lapw.lancs.ac.uk
+  
+  
+  
+
+
+Various general changes:
+
+Define ND280_SYSTEM cache variable inside function machineDependentOutput
+Minor tweaks to enable the building of ROOT documentation
+
+Related to building on Apple:
+
+Modify ND280_ADD_LIBRARY: add link_libraries so to force adding libs
+Add a protection for a case when libraries do not exist yet
+Add DYLD_LIBRARY_PATH for APPLE, export ND280_SYSTEM
+
+\section nd280SoftwarePolicy_3_10_history Version 3_10
+
+Freeze information:  
+   - Freeze Date: Wed Dec 16 16:54:08 2020  
+   - Freeze User: Alexander J Finch  
+   - Freeze Host: lapw.lancs.ac.uk
+  
+  
+  
+
+
+Minor change. Remove -I from front of ${package}_INCLUDE_DIRS. MYSQL put it in and
+it messes things up.
+
+
+\section nd280SoftwarePolicy_3_11_history Version 3_11
+
+Freeze information:  
+   - Freeze Date: Fri Jun 18 09:49:02 2021  
+   - Freeze User: Alexander J Finch  
+   - Freeze Host: lapw.lancs.ac.uk
+  
+  
+  
+
+
+A few small changes.
+
+
+Added COMPUTE_GUEST_SETUP variable in compiler_setup.sh to allow user to abort
+script early.
+
+Fixed version comparison in sanity check to ignore trailing and leading zeros.
+
+Changed URL pointed to by Workbook tab in doxygen output.
+
+
+
+\section nd280SoftwarePolicy_3_12_history Version 3_12
+
+Freeze information:  
+   - Freeze Date: Tue Jul 27 12:33:13 2021  
+   - Freeze User: Alexander J Finch  
+   - Freeze Host: lapw.lancs.ac.uk
+  
+  
+  
+
+
+Rationalise setting of C++ compiler options.Defaults are similar to those 
+used in the cmt era.
+
+Default build is Release.
+
+Values for Release and Debug set explicitly.
+
+Make it easy to build either the current package or all packages with non
+default cmake settings.
+
+\section nd280SoftwarePolicy_3_13_history Version 3_13
+
+Freeze information:  
+   - Freeze Date: Fri Oct 29 09:46:34 2021  
+   - Freeze User: Alexander J Finch  
+   - Freeze Host: lapw.lancs.ac.uk
+  
+  
+  
+
+
+Modified so that the name of the current project is no longer
+included in the ${PROJECT_NAME}.dependencies file.
+
+\section nd280SoftwarePolicy_3_14_history Version 3_14
+
+Freeze information:  
+   - Freeze Date: Mon Mar  7 14:22:40 2022  
+   - Freeze User: Mathieu Guigue  
+   - Freeze Host: lpnlp38.in2p3.fr
+  
+  
+Better handling of GCC versions
+Implementation of templates for Continuous Integration
+Generic build implementation for the Continuous Integration (centos7 is default)
+
+
+\section nd280SoftwarePolicy_3_15_history Version 3_15
+
+Freeze information:  
+   - Freeze Date: Wed Jul  6 15:24:17 2022  
+   - Freeze User: Alexander J Finch  
+   - Freeze Host: lapw.lancs.ac.uk
+  
+  
+Ensure lib and bin directories are created early in function ND280_PROJECT.
+In rare cases they were not being created in time for ND280_SCRIPT to find them.  
+
+
+\section nd280SoftwarePolicy_3_16_history Version 3_16
+
+Freeze information:  
+   - Freeze Date: Thu Jul  7 10:41:07 2022  
+   - Freeze User: Alexander J Finch  
+   - Freeze Host: lapw.lancs.ac.uk
+  
+  
+  
+
+
+Fix bug in previous freeze.
+Also tidy up warning messages.
+Also add print out of level value when scripts run by makeAll.sh fail.
+
+\section nd280SoftwarePolicy_3_17_history Version 3_17
+
+Freeze information:  
+   - Freeze Date: Wed Jul 13 10:03:06 2022  
+   - Freeze User: Alexander J Finch  
+   - Freeze Host: lapw.lancs.ac.uk
+  
+  
+Change the DEBUG compiler options to avoid problems building Highland in debug mode.  
+
+*/

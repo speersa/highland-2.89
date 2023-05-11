@@ -1,0 +1,8 @@
+<hr size="1">
+<b>Package Summary</b>
+<BR>
+<i>Package Name</i>: ${PROJECT_NAME}
+<br>
+<i>Package Version</i>: ${${PROJECT_NAME}_VERSION}
+<br>
+<i>Package Manager</i>: 

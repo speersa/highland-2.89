@@ -1,0 +1,331 @@
+#!/bin/bash
+#################################################################
+
+# Run the ND280 installation process.  By default, this only allows one make 
+# job to be run.  The number of jobs can be set from the command line.  For 
+# example,
+#
+#  nd280-install -j8 12.29
+#
+# will run with 8 parallel jobs.
+
+usage () {
+  echo
+  echo "Usage: nd280-install [options] [version]"
+  echo "  Installs the specified version of the ND280 Software."
+  echo
+  echo "  The number of jobs can be set by using nd280-install -jN [version] "
+  echo "  where 'N' is the number of jobs to run. The default number of jobs "
+  echo "  is 1."
+  echo
+  echo "  'version' is the software version to be installed. Enter the version "
+  echo "  in the format <major>.<minor> or state 'master' if you want the "
+  echo "  master branch"
+  echo 
+  echo "  Packages utilise 'partial clones' by filtering out all blob objects "
+  echo "  from commits and branches other than the most recent commit on the "
+  echo "  requested branch. For full clones, use the -f option."
+  echo ""
+  echo
+  echo "Options:"
+  echo "  -h : Print this message."
+  echo "  -j : Define the maximum number of parallel jobs to use during the "
+  echo "       cloning and make stages."
+  echo "  -c : When this option is set, the software packages will be cloned "
+  echo "       from the GitLab repository but will not be compiled with CMake."
+  echo "  -s : Skip the clone step. Use this if all the packages are already "
+  echo "       successfully cloned."
+  echo "  -i : Install the binary package of CMake available on the GitLab "
+  echo "       repo. If you want to use this to build the software then make "
+  echo "       sure you have used the correct option with configure.sh."
+  echo "  -f : Fully clone all packages and do not filter out blobs from old "
+  echo "       commits. This option is useful if developers plan to work "
+  echo "       offline and checkout old commits and branches."
+  echo
+  echo "Examples:"
+  echo "  To install the master branch of ND280 using 1 CPU:"
+  echo "    nd280-install master"
+  echo "  To install the version 12.29 with 8 parallel jobs:"
+  echo "    nd280-install -j8 12.29"
+  echo
+  if [ ${#*} != 0 ]; then
+    printf "ERROR: ${*}\n" | fold -s
+    exit 1
+  else
+    exit 0
+  fi
+}
+
+# Set the default variables of the installation.
+compileAll=true
+cloneAll=true
+instCmake=false
+full=false
+
+# read the options and arguments
+while getopts "hcifsj:" option; do
+  case $option in
+    h) usage;;
+    j) ND280_NJOBS=$OPTARG;;
+    c) compileAll=false;;
+    s) cloneAll=false;;
+    i) instCmake=true;;
+    f) full=true;;
+    *) usage "Option not valid."
+  esac
+done
+shift "$((OPTIND-1))"
+
+if [ -z "$ND280PILOT_ROOT" ]; then
+  usage """Please source the nd280SoftwarePilot.profile script before running 
+ERROR: this script"""
+elif [ ${#1} = 0 ]; then
+  usage "Please specify which version of the software to install."
+elif [ $# != 1 ]; then
+  usage "Wrong number of arguments."
+fi
+if [[ ${1} =~ v[0-9]+r[0-9]+.* ]]; then
+  echo
+  echo "WARNING: Version specified is from before the GitLab transition."
+  echo "WARNING: This version uses CMT and will not build, so the build "
+  echo "WARNING: stage will be skipped."
+  compileAll=false
+  sleep 5
+elif ! [[ ${1} =~ [0-9]+\.[0-9]+.* || ${1} =~ "master" ]]; then
+  usage """Incorrect version format.
+ERROR: The format should be <major>.<minor> or <major>.<minor>.<patch>
+ERROR: e.g. 12.29 to install version 12 revision 29 (v12r29 in old form)."""
+fi
+
+# If ND280_ROOT is not set then make it equal to ND280PILOT_ROOT
+if [ -z ${ND280_ROOT} ] ; then
+  export ND280_ROOT=${ND280PILOT_ROOT}
+fi
+# If CMAKE_PREFIX_PATH is not set then make it equal to ND280_ROOT
+if [ -z ${CMAKE_PREFIX_PATH} ] ; then
+  export CMAKE_PREFIX_PATH=${ND280_ROOT}
+fi
+
+
+installationRelease=${1}
+echo
+echo "##################################################"
+echo "#### Installing Release: " ${installationRelease}
+echo "##################################################"
+echo
+
+if [ ${installationRelease} == "master" ]; then
+  echo
+  echo "WARNING: The master branch for each package is being installed."
+  sleep 2
+  echo "WARNING: Avoid modifying the master branches directly."
+  sleep 2
+  echo "WARNING: We recommend you clone a specific release or a feature branch."
+  sleep 2
+  echo "WARNING: Continue with caution..."
+  sleep 3
+  echo
+fi
+
+echo "-- Location of nd280Pilot Directory = ${ND280PILOT_ROOT}"
+echo "-- Base directory for installation  = ${ND280_ROOT}"
+echo "-- Paths searched by cmake          = ${CMAKE_PREFIX_PATH}"
+echo "-- Remote Repository = ${ND280_GIT}"
+if [[ ${ND280_GIT} == ^http ]]; then
+  echo
+  echo "WARNING: Using http clone so git-push is disabled."
+  echo "WARNING: Write access needed \(for example ssh\) to push."
+  echo
+fi
+export ND280_NJOBS
+if [ -z ${ND280_NJOBS+x} ]; then
+  ND280_NJOBS=1
+fi
+echo "-- Jobs = ${ND280_NJOBS}"
+
+echo Start nd280-install: $(date)
+echo
+
+export ND280_VER
+ND280_VER=${installationRelease}
+
+# Print the system being used.
+uname -a
+echo
+
+# Print the distribution being used.  This assumes we are working on an lsb
+# system so it only works for linux.
+if [ -x /usr/bin/lsb_release ]; then
+  /usr/bin/lsb_release -i -d -r -c
+fi
+echo
+
+# Print the C++ compiler installed
+echo COMPILER BEING USED.
+if which g++ >> /dev/null 2>&1; then
+  if g++ 2>&1 | grep -q "clang"; then
+    echo USING CLANG
+  else
+    g++ -v 2>&1
+  fi
+fi
+
+echo
+
+
+
+# Print the version of git installed
+if which git; then
+  echo GIT BEING USED.
+  git --version 2>&1
+else
+  echo GIT NOT AVAILABLE
+fi
+echo
+
+# Print the version of python installed
+if which python; then
+  echo PYTHON BEING USED.
+  python -V 2>&1
+else
+  echo PYTHON NOT AVAILABLE
+  exit 1
+fi
+echo
+
+# install CMake if requested
+if ${instCmake}; then
+  if ! nd280-install-cmake; then
+    echo Failed to install CMake 3.14.0 binary.
+    exit 1;
+  fi
+fi
+if which cmake; then
+  echo CMAKE BEING USED
+  cmake --version 2>&1
+else
+  echo CMAKE NOT AVAILABLE
+  echo
+  exit 1
+fi
+echo
+
+if $cloneAll; then
+  # Install nd280SoftwarePolicy. Hardcoded to clone version 3.1 or master only 
+  # for now 
+  # We are trying to get away from installing nd280SoftwarePolicy here,
+  # so limit to certain versions only
+  #
+  if [ ${installationRelease} == "12.29" ]; then
+    echo "##############################################################"
+    echo "#### Installing nd280SoftwarePolicy_3.1.2"
+    echo "##############################################################"
+    echo
+    if $full; then
+      echo "FULL INSTALL REQUESTED, CLONING MAY TAKE A WHILE..."
+      if ! nd280-fetch-package -f framework nd280SoftwarePolicy \
+           nd280SoftwarePolicy 3.1.2; then
+        echo "Could not fetch nd280SoftwarePolicy: $(date)"
+        exit 1
+      fi
+    else
+      if ! nd280-fetch-package framework nd280SoftwarePolicy \
+           nd280SoftwarePolicy 3.1.2; then
+        echo "Could not fetch nd280SoftwarePolicy: $(date)"
+        exit 1
+      fi
+    fi
+  else
+    echo "###################################################################"
+    echo "#### NO nd280SoftwarePolicy version specified in nd280SoftwarePilot"
+    echo "###################################################################"
+    echo
+    echo
+  fi
+  
+  # Install the software.
+  echo
+  echo "###############################################################"
+  echo "#### Installing nd280SoftwareMaster_${installationRelease} and its"\
+            "dependencies"
+  echo "###############################################################"
+  echo
+
+  if $full; then 
+    if ! nd280-install-project -j${ND280_NJOBS} -c -f framework nd280SoftwareMaster \
+         nd280SoftwareMaster $installationRelease; then
+        echo
+        echo Could not install nd280 software: $(date)
+        exit 1
+    fi
+  else
+    if ! nd280-install-project -j${ND280_NJOBS} -c framework nd280SoftwareMaster \
+         nd280SoftwareMaster $installationRelease; then
+        echo
+        echo Could not install nd280 software: $(date)
+        exit 1
+    fi
+  fi
+    
+else
+  echo
+  echo "Clone step skipped..."
+  echo
+fi
+
+# now run cmake and make in all packages if requested
+if [[ $compileAll = true && $installationRelease != "master" ]]; then
+  echo ""
+  echo "#####################################################"
+  echo "#### Executing CMake in nd280SoftwareMaster"
+  echo "#####################################################"
+  echo ""
+  cd ${ND280_ROOT}/nd280SoftwareMaster_${installationRelease}
+  set -e
+  mkdir -p `nd280-system`
+  cd `nd280-system`
+  if ! cmake ../cmake; then
+    echo
+    echo Could not install nd280 software: $(date)
+    exit 1
+  fi
+  #if ! ../bin/cmakeAll.sh; then
+  #  echo
+  #  echo Could not install nd280 software: $(date)
+  #  exit 1
+  #fi
+  echo ""
+  echo "#####################################################"
+  echo "#### Executing makeAll.sh"
+  echo "#####################################################"
+  echo ""
+  set +e
+  . ../bin/setup.sh
+  set -e
+  if ! ../bin/makeAll.sh; then
+    echo
+    echo Could not install nd280 software: $(date)
+    exit 1
+  fi
+elif [ ! $compileAll ]; then
+  echo
+  echo "CMake build skipped..."
+  echo
+elif [ $installationRelease == "master" ]; then
+  echo 
+  echo Each package has been cloned and left on its master branch. The 
+  echo package directory names all have \"_master\" tagged on, which prevents
+  echo the software from being built. 
+  echo
+  echo If you want to build the master version of the software, change the 
+  echo \"_master\" prefix of each package to the package version found in 
+  echo \'cmake/\<package\>PackageVersion.cmake\' by running 
+  echo \'nd280-update-versions\'. You should then be able to build the 
+  echo software by running \'nd280-install -s \<version\>\' where \<version\> 
+  echo is the version appended to the nd280SoftwareMaster package.
+  echo
+fi
+
+echo Complete nd280-install: $(date)
+
+#-*-Shell-Script-*-

@@ -1,0 +1,11 @@
+# Hashes of file build rules.
+c0fd12c83e9f7cbfca2a73d2e870c718 CMakeFiles/root
+e52d5a6c4555297082608250b35193b8 CMakeFiles/root-complete
+11052f538c2a0ba0c39ccc6f99c4789f stamps/root-PostConfigure
+26c72e0a80b837520833736a8ed9be0b stamps/root-build
+104bb30cece5077db2b8bef75f625dc1 stamps/root-configure
+271f762f16845927094bf6a66dc3d9c7 stamps/root-download
+33346d439685ae3834e2afdfd3003a84 stamps/root-install
+fa0f4e1234447ab8438529b206cbaa69 stamps/root-mkdir
+fd7446d344577cb214bd716cb5017cca stamps/root-patch
+da115b4b8de81a6f5e6df14a5bddb4a4 stamps/root-update

@@ -1,0 +1,28 @@
+package nd280Psyche
+version v3r52
+
+manager Anselmo Cervera <anselmo.cervera@cern.ch>
+manager Alexander Izmaylov <izmaylov@inr.ru>
+
+author nd280-software@mailman.t2k.org
+
+branches cmt doc
+
+# Master package to specify psyche package versions
+
+use psycheROOT        v3r3    psyche
+use psychePolicy      v3r3    psyche
+use psycheCore        v3r37   psyche
+use psycheEventModel  v3r35   psyche
+use psycheUtils       v3r31   psyche 
+use psycheND280Utils  v3r51   psyche
+use psycheIO          v3r29   psyche
+use psycheSelections  v3r43   psyche
+use psycheSystematics v3r41   psyche
+use psycheSteering    v3r33   psyche
+
+# Build methods to include.
+#document version version *.cxx ../dict/*.cxx
+#document register register
+document doxygen doxygen -group=documentation *.cxx *.hxx ../doc/*.dox *py
+

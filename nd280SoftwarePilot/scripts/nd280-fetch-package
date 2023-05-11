@@ -1,0 +1,139 @@
+#! /usr/bin/env python
+#
+# clone a specified package from the git repo and write the output to a shell 
+# script the cloned package will be cloned into a folder named after the package
+# and with the package version as a suffix
+
+import os
+import glob
+import sys
+import getopt
+import tempfile
+import shutil
+
+from nd280 import git
+from nd280 import shell
+
+def usage():
+  print("""
+
+nd280-fetch-package subDirectory repositoryPackage package version
+
+This clones a specified version of a package from a subdirectory on the git 
+server. The clone filters out all blobs from commits previous to the most recent commit 
+unless the -f option is used
+
+<repostitoryPackage> is the name of the package on the gitlab repository.
+
+The cloned package will be named <package>_<version>.
+
+repositoryPackage is the name of the package on git which is usually the same as package
+
+If a directory with the same name as the package to be cloned exists, the 
+cloning will be skipped and instead an attempt to pull the repository will be 
+made.
+
+Options:
+  -h, --help : Print this message.
+  -c, --clean : Remove failed cloned folders.
+  -f, --full : Fully clone the package, don't filter blobs
+
+Examples:
+  Clone master branch of a git package :
+    nd280-fetch-package base oaEvent oaEvent master 
+  Clone specific tag of a git package :
+    nd280-fetch-package base oaEvent oaEvent 12.29
+""")
+
+try:
+  options, args = getopt.gnu_getopt(sys.argv[1:], "hcf", ["help","clean","full"])
+except:
+  usage()
+  print("ERROR: Invalid option.")
+  sys.exit(1)
+
+clean_if_fail = False
+# This option requires git 2.20 or greater 
+opt = ""
+if git.SupportsPartialClones() :
+  opt = "--filter=blob:none"
+
+
+for option, value in options:
+  if option == "-h" or option == "--help":
+    usage()
+    sys.exit(0)
+  elif option == "-c" or option == "--clean":
+    clean_if_fail = True
+  elif option == "-f" or option == "--full":
+    opt = ""
+  else:
+    usage()
+    print("ERROR: Nani??")
+    print("\'Oh myyy Goooooddddd!!\'")
+    sys.exit(1)
+
+# check that we have the right number of arguments.      
+if len(args) != 4:
+  usage()
+  print("ERROR: Wrong number of arguments.")
+  sys.exit(1)
+
+# get the different arguments
+subDirectory = args[0]
+repositoryPackage = args[1]
+package = args[2]
+version = args[3]
+    
+print(("nd280-fetch-package "
+  +subDirectory+" "+repositoryPackage+" "+package+" "+version))
+
+# clone and checkout the package if not already present
+if glob.glob(os.environ['ND280_ROOT']+"/"+package+"_"+version):
+  print("")
+  print(("The clone of "+package+"_"+version+" already exists. Skipping..."))
+else:
+  # generate a temporary name for the incoming repository that is guaranteed 
+  # not to exist. The file name will look like "git_8H9lJt" where the last 6 
+  # characters are pseudo random
+  tempRepo = tempfile.mktemp(dir="",prefix="git_")
+
+  # Clone the requested repository into a directory named by tempRepo.
+  # This lets the script look at the contents and distinguish between
+  # the different types of repositories.  This is slightly more
+  # complicated than a simple clone so we can be sure that all
+  # the branches and tags show up.  Normally a "git clone" will clone
+  # all branches, and then checkout master.  The other branches will be
+  # left as "origin/<branch-name>" and need to be checked out explicitly.
+  #
+  # The following lines are a souped up version of:
+  #
+  # result = shell.Shell("git clone ${ND280_GIT}" + repositoryName
+  #                              + " " + tempRepo)
+  try:
+    shell.Shell("""echo Cloning {package}_{version}
+cd ${{ND280_ROOT}}
+mkdir {tempRepo}
+git clone {opt} --branch {version} -c advice.detachedHead=false ${{ND280_GIT}}{subDirectory}/{repositoryPackage}.git {tempRepo}
+""".format(version=version, subDirectory=subDirectory, repositoryPackage=repositoryPackage, package=package, tempRepo=tempRepo, opt=opt))
+  except:
+    print("""
+ERROR: git clone error when cloning {package}_{version} [see messages above].
+       After debugging, you should delete the {package}_{version} directory
+       The git address was ${{ND280_GIT}}{subDirectory}/{repositoryPackage}.git
+""".format(version=version, subDirectory=subDirectory, repositoryPackage=repositoryPackage, package=package, tempRepo=tempRepo, opt=opt))
+    sys.exit(1)
+
+  shell.Shell("""cd ${{ND280_ROOT}}
+mv {tempRepo} {package}_{version}
+""".format(version=version, subDirectory=subDirectory, repositoryPackage=repositoryPackage, package=package, tempRepo=tempRepo, opt=opt))
+  
+  if clean_if_fail:
+    print(" Clean option -> Removing folder")
+    os.rmdir(os.environ['ND280_ROOT']+"/"+package+"_"+version)
+    sys.exit(1)
+
+  if 'ND280_VER' not in os.environ:
+    os.environ['ND280_VER'] = "none"
+
+sys.exit(0)

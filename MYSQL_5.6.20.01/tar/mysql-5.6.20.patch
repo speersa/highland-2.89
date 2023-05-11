@@ -1,0 +1,22 @@
+diff -r -u8 orig.mysql-5.6.20/sql/sql_acl.cc mysql-5.6.20/sql/sql_acl.cc
+--- orig.mysql-5.6.20/sql/sql_acl.cc	2019-09-19 17:20:47.128337245 -0400
++++ mysql-5.6.20/sql/sql_acl.cc	2019-09-19 17:36:33.558897657 -0400
+@@ -3207,17 +3207,17 @@
+         to the value of old_passwords variable in the following way.
+ 
+          if old_passwords == 0, mysql_native hashing is used.
+ 	 if old_passwords == 1, mysql_old hashing is used.
+ 	 if old_passwords == 2, error.
+       * An empty password is considered to be of mysql_native type.
+     */
+     
+-    if (combo->plugin.str == NULL || combo->plugin.str == '\0')
++    if (combo->plugin.str == NULL || combo->plugin.str[0] == '\0')
+     {
+       if (combo->uses_identified_by_password_clause)
+       {
+ 	if ((combo->password.length == SCRAMBLED_PASSWORD_CHAR_LENGTH) ||
+ 	    (combo->password.length == 0))
+ 	{
+ 	  combo->plugin.str= native_password_plugin_name.str;
+ 	  combo->plugin.length= native_password_plugin_name.length;

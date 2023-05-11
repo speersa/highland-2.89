@@ -1,0 +1,10 @@
+*.bak
+.*
+!/.gitignore
+!/.gitlab-ci.yml
+*_history.txt
+*history.dox.old~
+*.old~
+Linux*/
+doc/footer.html
+doc/standardFunctions.cmake

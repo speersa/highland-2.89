@@ -1,0 +1,784 @@
+#! /usr/bin/env python
+#
+#  Freeze a package or project to a new version.
+
+import re
+import os
+import os.path
+import pwd
+import argparse
+import sys
+import time
+import socket
+import textwrap
+
+from nd280 import shell
+from nd280 import git
+
+
+#Define the command line options and parse the command line.
+usage = """Usage: %prog [options]
+
+    Freeze a git package by creating a new version tag. This manipulates git
+    branches and tags to update the version, and also generates the history
+    files needed for the doxygen documentation. The version numbers generated
+    by this script have the form "v.r.p", where "v" is the major version, "r"
+    is the release number, and "p" is a patch number. The convention is that
+    versions represent incompatible changes; releases represent new features,
+    but otherwise remain compatible; and patches represent bug fixes.
+
+    Any changes made to doc/mainPage.dox will be transferred to the
+    README.md file, unless the --leave-readme option is used."
+
+    This script must be run from the base directory of the package to
+    be frozen.
+
+    Unless the "--apply" option is provided, this will not modify the
+    state of the repository (i.e. it defaults to "--dry-run").
+
+    To publish the newly frozen version to the upstream repository, you
+    still need to run the two commands:
+        git push --all
+        git push --tags
+    Before running those two commands, you can still do "git surgery"
+    without affecting other users.
+"""
+parser = argparse.ArgumentParser(description=usage)
+parser.add_argument("-d","--dry-run",
+                  action="store_true", default=True, dest="dryRun",
+                  help="Determine the release versions, but do nothing.")
+parser.add_argument("--apply",
+                  action="store_false",default=True, dest="dryRun",
+                  help="Apply the changes.")
+parser.add_argument("--force-version",
+                  action="store", default="no", dest="forceVersion",
+                  help="Force a new major version. Use this if the package "
+                      +"has major interface changes. It must be run on the "
+                      +"master branch and overrides the creation of a new "
+                      +"release.  The next available version is used when "
+                      +"this is set to 'next', otherwise it is the "
+                      +"supplied integer value.")
+parser.add_argument("--force-release",
+                  action="store", default="no", dest="forceRelease",
+                  help="Force a new release version, even if currently on an "
+                      +"existing release branch. Overrides the creation of a "
+                      +"new patch.  If the value is 'next', the release will "
+                      +"be incremented by one, otherwise it is the supplied "
+                      +"integer value.")
+parser.add_argument("--force-patch",
+                  action="store", default="no", dest="forcePatch",
+                  help="Force a new patch.  If this is set to 'next', the "
+                      +"patch will be incremented by one, otherwise "
+                      +"it is the supplied integer value.")
+parser.add_argument("--trace",
+                  action="store_true", default=True, dest="trace",
+                  help="Print commands before executing them.")
+parser.add_argument("--no-trace",
+                  action="store_false", dest="trace", 
+                  help="Don't print commands before executing them.")
+#parser.add_argument("--name-tag",
+#                  action="store", dest="nameTag", type="string",
+#                  help="Set an additional named tag for a stable release of "
+#                      +"the nd280Release package.  An example might be "
+#                      +"'Prod5c'")
+parser.add_argument("--history",
+                  action="store", dest="versionHistory", 
+                  default=None,
+                  help="Specify version history file. Defaults to None.")
+parser.add_argument("--history-message",
+                  action="store", dest="historyMessage", 
+                  default=None,
+                  help="Specify the message to add to the version history "
+                      +"file. If undefined (recommended), an editor will be "
+                      +"opened at runtime for the user to write the history "
+                      +"message. This is really only useful when doing a batch "
+                      +"freeze where many packages have the same history "
+                      +"message.")
+parser.add_argument("--skip-history-check",
+                  action="store_false", default=True, dest="checkHistory",
+                  help="Disable verification checks on the history message. "
+                      +"Sometimes for minor freezes these cannot be met and "
+                      +"this switch can be used to avoid using filler. This "
+                      +"does NOT absolve you from using a complete release "
+                      +"history in a freeze!")
+parser.add_argument("--skip-remote-check",
+                  action="store_true", default=False, dest="skipRemoteCheck",
+                  help="Skip checking the exists of a remote origin. This "
+                      +"allows freezing to proceed even if there isn't a "
+                      +"remote repository. Proceed with extreme caution.")
+parser.add_argument("--skip-ahead-check",
+                  action="store_true", default=False, dest="skipAheadCheck",
+                  help="Skip the repository status check. This allows freezing "
+                      +"to proceed even if the local repository is not at a "
+                      +"branch HEAD, or not synchronized with the remote "
+                      +"repository. This can be used to freeze when there "
+                      +"isn't network access.  Proceed with extreme caution.")
+parser.add_argument("--skip-modified-check",
+                  action="store_true", default=False, dest="skipModifiedCheck",
+                  help="Skip checking that all modified files are committed to "
+                      +"the local repository. Proceed with extreme caution.")
+parser.add_argument("--skip-untracked-check",
+                  action="store_true", default=False, dest="skipUntrackedCheck",
+                  help="Skip checking that none of the local files are "
+                      +"untracked. Proceed with extreme caution.")
+parser.add_argument("--leave-readme",
+                  action="store_true", default=False, dest="leaveReadme",
+                  help="Do not update the README.md file to account for "
+                      +"changes in doc/mainPage.dox. Use this option if you "
+                      +"have manually changed the README.md file. It's "
+                      +"recommended to just update the mainPage.dox file "
+                      +"though.")
+
+
+args = parser.parse_args()
+
+##############################################################
+# Collect configuration information about this package.
+class Configuration():
+    toplevel = None    # The top level directory
+    name = None        # The name of what is being frozen
+    #project = False   `# Is this a project
+    #package = False   `# Is this a package
+
+    def __init__(self):
+        self.toplevel = git.GetRepositoryRoot()
+        #self.useCMT = cmt.CheckCMT()
+        #if self.useCMT and os.path.exists(self.toplevel+"/cmt"):
+        #    package = cmt.GetPackage(self.toplevel + "/cmt")
+        #    if package != None:
+        #        print "Use the CMT package name", package.name
+        #        self.cmtPackage = True
+        #        self.name = package.name
+        #    else:
+        #        project = cmt.GetProject(self.toplevel +"/cmt")
+        #        if project != None:
+        #            print "Use the CMT project name", project.name
+        #            self.cmtProject = True
+        #            self.name = project.name
+        self.name = os.path.basename(self.toplevel)
+        self.name = self.name.split("_")
+        self.name = self.name[0]
+
+# This is a global
+config = Configuration()
+
+############################################################
+def Command(command):
+    """Run a system command after applying the effect of command line options
+
+    This responds to the --dry-run and --apply args.
+    """
+    global options, config
+
+   
+    if args.trace : print("  >>>"+ command)
+    if not args.dryRun: os.system(command)
+
+
+############################################################
+def UnpackVersion(versionString):
+    """Unpack the version string
+
+    This has the regular expressions needed to turn the text version
+    string into a sequence of integers three. A missing version value
+    will be set to zero. If the version string is entirely
+    incompatible with a version number, (e.g. "master"), this returns
+    None.
+    """
+    match=re.match(r"[^0-9]*([0-9]+)",versionString)
+    if match == None: return None
+    major = int(match.group(1))
+    match=re.match(r"[^0-9]*[0-9]+[^0-9]+([0-9]+)",versionString)
+    if match == None: return (major, 0, 0)
+    minor = int(match.group(1))
+    match=re.match(r"[^0-9]*[0-9]+[^0-9]+[0-9]+[^0-9]+([0-9]+)",
+                   versionString)
+    if match == None: return (major, minor, 0)
+    patch = int(match.group(1))
+    return (major, minor, patch)
+
+
+#############################################################
+def KnownVersions():
+    """Get a list of all known versions used in this package. The
+    returned list is sorted from lowest to highest."""
+    tags = git.GetTags()
+    versions = []
+    for t in tags:
+        v = UnpackVersion(t)
+        if v == None: continue
+        versions.append(v)
+    versions.sort()
+   
+    return versions
+
+
+############################################################
+def CheckReleaseBranch(branchName):
+    """ This will be true if the current branch is a release branch."""
+    match=re.match(r"[^0-9]*[0-9]+[^0-9]*[0-9]+[^0-9.]*\.x$",
+                       branchName)
+    if match == None: return False
+    return True
+
+
+############################################################
+# Format the version number as a string...
+def TextVersion(ver): return "v%dr%dp%d" % ver
+def FormatVersion(ver):
+  if ver[2] != 0:
+    return "%d.%d.%d" % ver
+  else:
+    return "%d.%d" % (ver[0],ver[1])
+def FormatBranch(ver): return "%d.%d.x" % (ver[0],ver[1])
+def doxyVersion(ver):
+  if ver[2] != 0:
+    return "%d_%d_%d" % ver
+  else:
+    return "%d_%d" % (ver[0],ver[1])
+
+
+############################################################
+def GetPreviousVersion():
+    """Get the current version from the repository.
+
+    This is the base that the new version will be constructed from.
+    This returns a tuple of (previousVersion, branchVersion,
+    releaseBranch, knownVersions) where previousVersion is a 3-tuple
+    of (v,r,p), branchVersion is a 3-tuple of (v,r,0) for the release
+    branch, releaseBranch is a boolean for if the repository is
+    currently on a named release branch (i.e. the name is v.r.x where
+    v and r are integers), and knownVersions is a list of 3-tuples of
+    all known versions. Both previousVersion and branchVersion can be
+    None"""
+    global options, config
+
+    # Find the name of the current branch and see what version it implies
+    branch = git.BranchName()
+    releaseBranch = CheckReleaseBranch(branch)
+    branchVersion = UnpackVersion(branch);
+
+    # Get the list of all previous versions.
+    knownVersions = KnownVersions()
+
+    previousVersion = None
+
+    if releaseBranch and len(knownVersions)>0:
+        # This is the normal situation on a release branch, and it
+        # means we are probably doing a patch release.
+        for v in knownVersions:
+            if v[0] == branchVersion[0] and v[1] == branchVersion[1]:
+                previousVersion = v
+        return (previousVersion, branchVersion, releaseBranch, knownVersions)
+
+    if releaseBranch:
+        # This is odd.  The repository is on a release branch, but
+        # there isn't a version 0 tag.  This happens when people have
+        # created the release branch by hand, and have been working on
+        # a tagged release candidate.
+        return (None, branchVersion, releaseBranch, knownVersions)
+
+    # This means we are not on a release branch, and we are either
+    # doing a new release, or a new major version.  The current
+    # version will be the highest existing version.  In this case, the
+    # branchVersion is likely to be "None"
+
+    if len(knownVersions) < 1:
+        # This is the first freeze for the package.  The previous
+        # version will be "None"
+        return (previousVersion, branchVersion, releaseBranch, knownVersions)
+
+    return (knownVersions[-1], branchVersion, releaseBranch, knownVersions)
+
+
+############################################################
+def GetNextVersion():
+    """Find the next version for the package.
+
+    This looks at the existing tags and branches, and then finds the
+    next tag to be used. It looks at the args.forcePatch,
+    args.forceRelease and args.forceVersion flags to decide how
+    the version should be incremented, and will exit if an illegal
+    request is made. It returns a tuple of the next version, the
+    previous version, and a flag if the current branch should be modified."""
+
+    global options, config
+
+    (previousVersion, branchVersion, releaseBranch, knownVersions) \
+        = GetPreviousVersion()
+    currentBranch = git.BranchName()
+    if( (currentBranch != "master") and (not releaseBranch) ) :
+      sys.exit(" Must be on either a release branch or master in order to freeze")
+    case = "invalid"
+    modifyCurrent = "yes"
+    if releaseBranch:
+      # on  a release branch we are probably patching,
+      # but are allowed to change the release version, 
+      # not allowed to change the version number
+        case = "incrementPatch"
+        if args.forceRelease != "no":
+            case = "incrementRelease"
+        else:
+            if args.forceVersion != "no":
+                #if args.forceVersion == "next":
+                sys.exit("Cannot freeze new version from a release branch, must be on the master branch.")
+             #   else:
+              #      case = "incrementVersion"
+               #     modifyCurrent = "no-newVersionBranch"
+    else:
+      # we must be on master in that case...
+        case = "incrementRelease"
+        if args.forceVersion != "no":
+            case = "incrementVersion"
+        if args.forcePatch != "no":
+
+            sys.exit("Can only freeze patch on from a release branch")
+
+    nextVersion = previousVersion
+    if nextVersion == None: nextVersion = (0,0,0)
+    while nextVersion in knownVersions:
+        if case == "incrementPatch": 
+            if (args.forcePatch == "next" or args.forcePatch == "no"):
+                nextVersion = (nextVersion[0], nextVersion[1],
+                               nextVersion[2]+1)
+            else:
+                nextVersion = (nextVersion[0], nextVersion[1],
+                               int(args.forcePatch))
+            if nextVersion in knownVersions: 
+                sys.exit("Cannot freeze a new patch with existing tag: "
+                         + " " + str(nextVersion[0])
+                         + "." + str(nextVersion[1])
+                         + "." + str(nextVersion[2]))
+
+        elif case == "incrementRelease": 
+            if (args.forceRelease == "next" or args.forceRelease == "no"):
+                nextVersion = (nextVersion[0], nextVersion[1]+1, 0)
+            else:
+            	print(" next version 0 is ",nextVersion[0])
+            	print("args.forceRelease=",args.forceRelease)
+            	nextVersion = (nextVersion[0], int(args.forceRelease), 0)
+            if nextVersion in knownVersions: 
+                sys.exit("Cannot freeze a new release with existing tag: "
+                         + " " + str(nextVersion[0])
+                         + "." + str(nextVersion[1])
+                         + "." + str(nextVersion[2]))
+        elif case == "incrementVersion":
+            if (args.forceVersion == "next"):
+                nextVersion = (nextVersion[0]+1, 0, 0)
+            else:
+                nextVersion = (int(args.forceVersion), 0, 0)
+            if nextVersion in knownVersions: 
+                sys.exit("Cannot freeze a new version with existing tag: "
+                         + " " + str(nextVersion[0])
+                         + "." + str(nextVersion[1])
+                         + "." + str(nextVersion[2]))
+        else: sys.exit("Nani?!")
+    return (nextVersion, previousVersion)
+
+
+############################################################
+def GetFreezeInformation(name, version):
+    """Take the package name and version and write a header for the
+    freeze information."""
+
+    # Do the bestest with the leastest to figure out the machine name.
+    # This is always hard to get a satisfactory, portable solution.
+    try:
+        #machineName = shell.CaptureShell("hostname -A")[0]
+        machineName = shell.CaptureShell("hostname")[0]
+    except:
+        machineName = socket.getfqdn(socket.gethostname())
+    try:
+        username = git.GetUsername()
+    except:
+        username = pwd.getpwuid(os.getuid())[0]
+
+    info = "\\section "+name+"_"+doxyVersion(version)+"_history" \
+        +" Version "+doxyVersion(version)+"\n\n"
+    info += "Freeze information:  \n"
+    info += "   - Freeze Date: " + time.ctime() +  "  \n"
+    info += "   - Freeze User: " + username +  "  \n"
+    info += "   - Freeze Host: " + machineName+"  \n"
+    info += "  \n"
+    
+    ## If there is a name note it too.
+    #if (name == "nd280Release" and args.nameTag):
+    #    nameTag = args.nameTag
+    #    info += "ND280 Software Version Codename :: "+nameTag+"\n"
+
+    return info
+
+
+############################################################
+def EditHistoryMessage(fileName, name, version):
+    """Call the editor to create a new history message
+
+    This uses the EDITOR environment variable to find the right editor to
+    create a new history message. It then creates a template file and expects
+    the user to fill it. After the template file is created, it verifies that
+    the history message is sufficient.
+    """
+    global options, config
+
+    try:
+        editor = os.environ["EDITOR"]
+    except:
+        editor = "emacs -nw"
+    try:
+        histFile = open(fileName,"w")
+        histFile.write(GetFreezeInformation(name,version))
+        if args.historyMessage != None:
+            histFile.write(args.historyMessage)
+        histFile.write("""
+HIST: *****************************************************************
+HIST: Add a history message to this file. Lines start with HIST will be
+HIST: stripped from the final output. There must be a blank line after the
+HIST: freeze information since the first seven lines of the file will be
+HIST: modified by nd280-freeze.
+HIST:
+HIST: This file must not be added to the repository.
+""")
+        histFile.close()
+    except:
+        sys.exit("Cannot write history template")
+
+    if args.historyMessage == None:
+        os.system(editor + " " + fileName)
+
+    try:
+        histFile = open(fileName,"r")
+        historyText = histFile.read()
+        if args.historyMessage != None:
+            print("History message provided:")
+            print(historyText)
+        histFile.close()
+    except:
+        sys.exit("Could not read history template")
+
+    return historyText
+
+
+############################################################
+def GetHistoryMessage(name,version):
+    """Get the version history and return it as text.
+
+    This checks for an existing version history file, but will call
+    the user's editor if the file doesn't exist. After reading the
+    history file it is checked to make sure that it matches the right
+    format, and the freeze information is updated.  It also strips the
+    final comments that are not required. The default history is
+    saved in the GIT top level directory.
+    """
+    global options, config
+
+    versionHistoryFile = args.versionHistory
+    if versionHistoryFile == None:
+        versionHistoryFile = FormatVersion(version)+"_history.txt"
+        versionHistoryFile = config.toplevel + "/" + versionHistoryFile
+    if os.path.exists(versionHistoryFile):
+        # If the version history exists, use that file.
+        print("    History File:   "+ os.path.relpath(versionHistoryFile))
+        try:
+            histFile = open(versionHistoryFile,'r')
+            history = histFile.read()
+            histFile.close()
+        except IOError as hist:
+            sys.exit("Cannot open " + versionHistoryFile
+                     + " for reading, exiting..")
+    else:
+        history = EditHistoryMessage(versionHistoryFile,name,version)
+
+    ####################################################################
+    # Update the history and freeze information.
+
+    # Strip the HIST comments from the end of the file.
+    histList = [line for line in history.splitlines()[7:]
+                if not line.startswith("HIST")]
+
+    # Verify that the history file has been updated with a real message.
+    historyOk = 0
+    for line in histList:
+        if len(line.split()) > 4: historyOk += 1
+
+    history = "\n".join(GetFreezeInformation(name,version).splitlines()
+                        +histList)
+    
+    if args.checkHistory:
+        if historyOk < 3:
+            sys.exit("History message is not long enough. Edit " 
+                     +versionHistoryFile+" or use option --skip-history-check")
+    else:
+        print("WARNING: Check of history message has been disabled.")
+#
+# create a copy of the history file with HIST and \section stripped out
+#
+    histList = history.splitlines()[1:]
+    strippedHistoryText="\n".join(histList)
+    histFileStrippedName = "/tmp/" + FormatVersion(version)+"_history_stripped.txt"   
+    versionHistoryFileStripped=open(histFileStrippedName,"w")
+    versionHistoryFileStripped.write(strippedHistoryText)
+    versionHistoryFileStripped.write("\n")
+    versionHistoryFileStripped.close()
+    return (history, strippedHistoryText, histFileStrippedName)
+
+
+############################################################
+def GetHistoryFile(name):
+    """Get the name of the history file
+
+    This returns the name of the history file in the package doc directory.
+    If the file doesn't exist, it will exit the script with a message
+    telling the user how to create the approprate file.
+    """
+    global config
+
+    histDir = config.toplevel+"/doc"
+
+    #if config.useCMT:
+    #    if config.cmtPackage: histDir = config.toplevel+"/doc"
+    #    else: histDir = config.toplevel+"/cmt"
+
+    if not os.path.exists(histDir+"/"):
+        print "WARNING: Creating a documentation directory"
+        os.makedirs(histDir)
+
+    histFile = histDir + "/" + name+"History.dox"
+
+    # check if the history file exists, and create it if it does not.
+    if not os.path.exists(histFile):
+        print "WARNING: The history file is missing. It will be created."
+        try:
+            h = open(histFile,"w")
+            #if config.package :
+            h.write("/*! \\page " + name + "History"
+                    + " History for the "
+                    + name + " Package \n"
+                    + "*/\n")
+            #elif config.project:
+            #    h.write("/*! \\page " + name + "History"
+            #            + " History for the "
+            #            + name + " Project \n"
+            #            + "*/\n")
+            #else:
+            #    sys.exit("Not a package or project")
+            h.close()
+        except IOError:
+            sys.exit("Unable to create the history file")
+        print "    Created ", histFile
+        sys.exit("The new history file must be added and committed to the "
+            +"repository")
+    return histFile
+
+
+############################################################
+def UpdateVersionHistory(name,version):
+    """Update the version history file.
+
+    This adds the content new version history file to the existing
+    version history. The existing history file is found by
+    GetHistoryFile. This will start an editor and prompt the user to
+    write a history message if the version history was not provided.
+    This returns the name of the file containing the history message
+    that got appended to the main package history. This file can be
+    used as a commit message.
+    """
+
+    # Get the text of the history message, and the file containing the text.
+    (historyText, shortHistoryText, historyFile) = GetHistoryMessage(name,version) 
+    print(" History information associated with this freeze:")
+    print(" ================================================= ")
+    print(shortHistoryText)
+    print(" ================================================= ")
+
+    # Look for the version history file. If it cannot be found exit and
+    # request a version be checked out or created.
+    histFileName = GetHistoryFile(name)
+    try:
+        histFile = open(histFileName,'r')
+        history = histFile.read()
+        histFile.close()
+    except:
+        error = """
+
+        This file is required to run nd280-freeze. Please check this
+        file out of the repository, or create the file and add it to
+        the repository before running nd280-freeze again."""
+        sys.exit("EXITING: Cannot read " + histFileName + error)
+
+    ########################################################
+    # Make sure that the history is a correct Doxygen page.
+    ########################################################
+    if not args.dryRun:
+        # Find the right place to insert the new history message.
+        insertHere = re.match(r'^(/\*!.*)(\*/)\s*$',history,re.DOTALL)
+        if not insertHere:
+            sys.exit("ERROR: History file is not formatted as a block comment.")
+
+        buildHistory = insertHere.group(1)
+        buildHistory += "\n"
+        buildHistory += historyText
+        buildHistory += "\n"
+        buildHistory += insertHere.group(2)
+
+        try:
+            histFile = open(histFileName + ".tmp",'w')
+            history = histFile.write(buildHistory)
+            histFile.close()
+        except:
+            sys.exit("EXITING: Cannot write " + histFileName + ".tmp")
+
+        os.rename(histFileName,histFileName+".old~")
+        os.rename(histFileName+".tmp",histFileName)
+    else:
+        print("WARNING: doxygen history file not updated during a dry run")
+    if args.trace :
+    	print("\n  Lines starting with >>> show the commands which will be executed.\n")
+    Command("git add "+histFileName)
+    Command("""git commit -m "Update history file for version """+FormatVersion(version)+""" " """)
+
+    return historyFile
+
+
+#################################################################
+def UpdateVersion(version):
+    """Change the version for CMake."""
+    global config
+    #if not config.package: return False
+
+    fname = config.toplevel + "/cmake/"+config.name+"PackageVersion.cmake"
+    Command("echo 'set(PACKAGE_VERSION \""+FormatVersion(version)+"\" )' > "
+        +fname)
+    Command("git add " + fname)
+    Command("""git commit -m "Update """+config.name
+        +"""PackageVersion.cmake for freeze of version """+FormatVersion(version)+""" " """)
+    return True
+
+
+#################################################################
+def CheckRepositoryStatus():
+    """Check that the package is up to date with the central repository"""
+
+    statusOK = True
+
+
+    if not args.skipRemoteCheck and len(git.GetRemotes()) < 1:
+        print("ERROR: Repository has no remote origin. ",\
+            "Override with --skip-remote-check")
+        statusOK = False
+
+    if not args.skipAheadCheck and git.BranchAhead() != 0:
+        print("ERROR: Local branch is"+str(git.BranchAhead(False))+
+            "commits ahead of remote.")
+        print("    Override with --skip-ahead-check")
+        statusOK = False
+    
+    if not args.skipModifiedCheck and git.BranchModified():
+        print("ERROR: Local branch has modified files. "+
+            "Override with --skip-modified-check")
+        statusOK = False
+
+    if not args.skipUntrackedCheck and git.BranchUntracked():
+        print("ERROR: Local branch has untracked files. "+
+            "Override with --skip-untracked-check")
+        statusOK = False
+
+    if not statusOK:
+        sys.exit(textwrap.fill("The local repository is not synchronized with "
+            +"the remote. Please make sure all of your changes are pushed to "
+            +"the remote repository and that you have merged all of the "
+            +"changes from the remote."))
+
+##########################################################################
+def UpdateCmakeAndHistoryFiles(Name,nextVersion):
+    """ Make all the changes to cmake and history files required when creating 
+    a new version """
+   
+# Update the history file and commit it to the current branch.
+    historyFile = UpdateVersionHistory(Name, nextVersion)
+# Update README.md if the doc/mainPage.dox file has been changed.
+# Any changes to README.md are commited. Can be skipped by the user.
+    if not args.leaveReadme:
+      Command("nd280-readme")
+# Change the version number in the CMake files. This also commits any 
+# changes added while preparing the package for the freeze (e.g. it 
+# commits the updated doxygen file). Only do this in the current branch 
+# if it is the master branch, so that the master version of the software
+# can be built if needed.
+    UpdateVersion(nextVersion)
+
+    return historyFile
+#################################################################
+# START THE REAL SCRIPT
+
+# Check that the local repository is up to date.
+CheckRepositoryStatus()
+
+# Get the next version.
+(nextVersion, previousVersion) = GetNextVersion()
+
+# Save the current branch name
+currentBranch = git.BranchName()
+
+
+print("Freeze of "+ config.name)
+
+# Nicely format the top level path. This truncates the length if it
+# is too long by chopping off directories at the beginning and
+# replacing them with "..."
+cwd = ""
+dirlist = os.path.realpath(config.toplevel).split("/")
+dirlist.reverse()
+for d in dirlist:
+    if d == "": break
+    if len(cwd)+len(d) > 50: break
+    cwd = "/" + d + cwd
+if len(cwd) < len(os.path.realpath(config.toplevel)): cwd = "..."+cwd
+print("    Top level:      "+ cwd)
+
+print("    Current Branch: "+ currentBranch)
+print("    Release Branch: "+ FormatBranch(nextVersion))
+print("    New Version:    "+ FormatVersion(nextVersion))
+
+#
+# If we are on the master branch, changes to
+# history, readme and version number are all made before switching to the
+# new branch.
+#
+# If we are on a release branch these changes are done afterwards
+#
+if currentBranch == "master":
+    historyFile=UpdateCmakeAndHistoryFiles(config.name,nextVersion)
+#
+# Make sure the freeze branch exists and change to it if necessary.
+#  N.B. If patching then nothing changes here as a patch is just a new tag 
+#
+nextVersionBranch = FormatBranch(nextVersion)
+if not git.BranchExists(nextVersionBranch):
+    Command("git checkout -b " + nextVersionBranch)
+else:
+    Command("git checkout " + nextVersionBranch)
+#
+# At this point the curent branch and freeze branches are identical if the
+# current branch is master.
+#
+# If we were on a release branch then the history and version numbers
+#  have not been changed yet, now we can do so.
+#
+#
+if currentBranch != "master":
+    historyFile=UpdateCmakeAndHistoryFiles(config.name,nextVersion)
+
+# Create the new tag using the history file as the documentation.
+Command("git tag -a -F " + historyFile + " " + FormatVersion(nextVersion))
+
+# Return to the original branch.
+Command("git checkout " + currentBranch)
+
+if args.dryRun:
+  print textwrap.fill("Use the --apply option to freeze the package or "
+                   "run this command with the --help option for usage "
+                   "information")
+else:
+  print textwrap.fill("Don't forget to run 'git push --all'"
+                        " and 'git push --tags' to"
+                        " make this available in the upstream repository.")

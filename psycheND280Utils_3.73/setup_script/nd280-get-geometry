@@ -1,0 +1,58 @@
+#! /bin/bash
+#
+# Download the geometries from repo.nd280.org/nd280files/geometry using
+# wget.  This is run without arguments.
+
+# The location of the input files.
+if [ ${GEOMFILES}x == x ]; then
+    GEOMFILES=http://repo.nd280.org/nd280files/geometry/
+fi
+
+# This directory should ALWAYS exist, but check anyway.
+if [ ! -d ${PSYCHEND280UTILSROOT} ]; then
+    echo nd280-get-geometry: oaEvent directory is missing!
+    echo    where is: ${PSYCHEND280UTILSROOT}
+    exit 1
+fi
+cd ${PSYCHEND280UTILSROOT}
+
+# This directory won't exist when the package is checkout the first  time.
+if [ ! -d ${PSYCHEND280UTILSROOT}/data/Geometry ]; then
+    echo folder not found: ${PSYCHEND280UTILSROOT}/data/Geometry
+    exit 1
+fi
+  
+cd ${PSYCHEND280UTILSROOT}/data/Geometry
+
+# Get an index of geometry files. 
+# Use a unique output file in /tmp, which we should have write access to
+#  this should work when parallel jobs run this command at the same time 
+outputFileName=$(mktemp)
+wget -q -T 5 -t 2 -S -N ${GEOMFILES} -o /dev/null -O ${outputFileName}
+
+if [ ! -f ${outputFileName} ]; then
+    echo nd280-get-geometry: Cannot check for new geometries.
+    exit 1
+fi
+
+# Build a list of the files download.
+cat  ${outputFileName}| \
+    egrep 'geom-[[:xdigit:]]{8}-[[:xdigit:]]{8}-[[:xdigit:]]{8}-[[:xdigit:]]{8}' | \
+    sed 's/<tr>.*<a[^>]*>'// | \
+    sed 's/<.*//' | \
+    cat > geometry.index
+
+# Remove the index.
+rm ${outputFileName}
+
+# Get the files.
+for file in `cat geometry.index`; do
+    if  [ ! -f ${file} ]; then
+	wget -nv -T 15 -t 1 -S -N -c ${GEOMFILES}/$file 2>&1 | grep URL
+    fi
+done
+
+# Get the geometry context map.
+# wget -nv -S -N -c ${GEOMFILES}/GEOMETRY.LIST -o /dev/null
+
+echo Geometries up to date

@@ -1,0 +1,69 @@
+Parameters to control Detector Variation Systematics
+
+ < psycheSystematics.BFieldDist.FileName            = BFieldDistortion.dat >
+ < psycheSystematics.BFieldDist.CovFile             = VariationSyst.root >
+ < psycheSystematics.BFieldDist.CovFileCov          = cov >
+ < psycheSystematics.BFieldDist.CovLowIndex         = 0 >
+ < psycheSystematics.BFieldDist.CovHighIndex        = 0 >
+
+
+ < psycheSystematics.MomScale.FileName              = MomentumScale.dat >
+ < psycheSystematics.MomScale.CovFile               = VariationSyst.root >
+ < psycheSystematics.MomScale.CovFileCov	          = cov >
+ < psycheSystematics.MomScale.CovLowIndex           = 1 >
+ < psycheSystematics.MomScale.CovHighIndex          = 1 >
+
+
+ < psycheSystematics.MomResol.FileName              = MomentumResol.dat >
+ < psycheSystematics.MomResol.CovFile               = VariationSyst.root >
+ < psycheSystematics.MomResol.CovFileCov            = cov >
+ < psycheSystematics.MomResol.CovLowIndex           = 2 >
+ < psycheSystematics.MomResol.CovHighIndex          = 4 >
+ < psycheSystematics.MomResol.UseTPCBased           = 0 > # whether to use pure tpc based smearing: local->global vs global->local
+ 
+
+ < psycheSystematics.TpcPid.FileName                =  - >
+ < psycheSystematics.TpcPid.CovFile                 = VariationSyst.root >
+ < psycheSystematics.TpcPid.CovFileCov		          = cov >
+ < psycheSystematics.TpcPid.CovLowIndex             = 5 >
+ < psycheSystematics.TpcPid.CovHighIndex            = 107 >
+
+
+ < psycheSystematics.FgdPid.FileName                =  - >
+ < psycheSystematics.FgdPid.CovFile                 = VariationSyst.root >
+ < psycheSystematics.FgdPid.CovFileCov		    = cov >
+ < psycheSystematics.FgdPid.CovLowIndex		    = 108 >
+ < psycheSystematics.FgdPid.CovHighIndex	    = 111 >
+
+ < psycheSystematics.ECalEMResol.RandomSeed	  = 2267671 >
+ < psycheSystematics.MomRangeResol.RandomSeed	  = 1121212 >
+-------------------------------------------------------------
+Parameters to control Detector Variation Systematics
+
+ < psycheSystematics.Tracker.FullCorrelations  = 0 >
+ < psycheSystematics.Tracker.UseP0DFV  = 0 >
+
+
+
+ < psycheSystematics.ToFResol.Run8.AddSmearECalP0D = 0 > 
+ < psycheSystematics.ToFResol.Run8.SmearScaleECalP0D = 2 >
+
+-------------------------------------------------------------
+Parameters to control Detector Weight Systematics
+
+# whether to treat the case when  a track crosses two FGDs and should consider matching two both since can reverse tracks based on ToF
+ < psycheSystematics.TPCFGDMatchEffSystematics.ApplyBoth_FGD1_FGD2  = 0 > 
+
+ < psycheSystematics.TPCFGDMatchEffSystematics.ProdNNodesCut = 2 > # cut on the max FGD1 nnodes to apply the systematics,  e.g. in prod6
+ 
+ -------------------------------------------------------------
+Parameters to control pion SI
+
+ < psycheSystematics.PionSI.UseToyBasedPionSI = 0 >
+ < psycheSystematics.PionSI.UseMCtoDataOnTheFly = 1 >
+ 
+=========================================================================
+Options to control covariances applied for flux
+=========================================================================
+ < psycheSystematics.FluxCov.File  = /data/fluxCov/21bv2FluxUncertainty/21bv2_run1to10_ndto9_banff.root >
+

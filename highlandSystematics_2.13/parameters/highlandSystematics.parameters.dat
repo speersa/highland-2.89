@@ -1,0 +1,20 @@
+ < highlandSystematics.NuParentDecayPos.RandomSeed = 1 >
+ 
+ --- Specify the value of the cross-section relative uncertainty
+ < highlandSystematics.NeutronSI.XSec.Uncertainty = 0.1 >  
+ 
+ 
+
+Kaon secondary interactions
+
+ < highlandSystematics.KaonSI.StepSize          = 0.1   > // mm
+ < highlandSystematics.KaonSI.StepMom           = 10.   > // MeV (not used at the moment)
+ < highlandSystematics.KaonSI.XSec.Uncertainty  = 0.1   >
+ < highlandSystematics.KaonSI.XSec.ElasticScale = 0.463 > // (not used at the moment)
+ < highlandSystematics.KaonSI.ReWeight          = 1 > // apply weights to correct/tune GEANT4  cross-sections 
+
+
+
+
+
+ 

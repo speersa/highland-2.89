@@ -1,0 +1,22 @@
+package externalsMaster
+version v1r72
+
+manager Neil McCauley <n.mccauley@liv.ac.uk>
+author t2k-nd280-software@nngroup.physics.sunysb.edu
+
+# Do not use nd280SoftwarePolicy so that this package can be installed in a
+# stand-alone project.  This separates out the tools used by the ND280
+# software from the software which we are writing.
+#
+#
+# External Libraries used by the ND280 group.
+use EXTERN v3r9
+use CLHEP  v2r1p1n01 
+use CMAKE v3r5p0n0 
+use GEANT  v10r1p03n00
+use MYSQL  v5r6p20n01
+#use PYTHIA v6r428
+use ROOT   v5r34p34n00
+use GSL    v1r15p0n00
+use CERNLIB  v2005r5
+use NEUT v5r3p5n00

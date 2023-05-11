@@ -1,0 +1,97 @@
+#! /usr/bin/env python
+#
+# find the meta package of a specified subdirectory in the git repository. Then 
+# build scripts to clone the dependencies of the meta package
+
+import os
+import sys
+import getopt
+import tempfile
+import shutil
+import re
+
+from nd280 import shell
+
+def usage():
+  print("""
+
+nd280-find-meta subGroup nd280_version
+
+This searches for the meta package of the specified subgroup on Git and builds 
+scripts to clone the meta package's dependencies. The version of the meta package
+required for the software version being installed is retrieved from the nd280 
+package. The version of the nd280 package must be specified as the second argument.
+
+The possible subgroups are: analysis, base, calib, recon, sim, tools
+
+Options:
+  -h, --help : Print this message.
+  -f, --full : fully install packages (no partial clones)
+
+Examples:
+  Search for meta package of calib subgroup :
+    nd280-find-meta calib 14.0
+""")
+
+try:
+  options, args = getopt.gnu_getopt(sys.argv[1:], "hf", ["help","full"])
+except:
+  usage()
+  print("ERROR: Invalid option.")
+  sys.exit(1)
+
+opt = ""
+
+for option, value in options:
+  if option == "-h" or option == "--help":
+    usage()
+    sys.exit(0)
+  elif option == "-f" or option == "--full":
+    opt = "-f"
+  else:
+    usage()
+    print("ERROR: Nani??")
+    print("\'Oh myyy Goooooddddd!!\'")
+    sys.exit(1)
+
+# check that we have the right number of arguments.      
+if len(args) != 2:
+  usage()
+  print("ERROR: Wrong number of arguments.")
+  sys.exit(1)
+
+# get the different arguments
+subGroup = args[0]
+version = args[1]
+
+meta = subGroup+"Master"
+nd280="nd280SoftwareMaster"
+
+# define subdirectory on git to search for dependencies for the analysis 
+# subgroup
+if subGroup == "analysis":
+  subGroup = "anal"
+
+with open(os.environ['ND280_ROOT']
+    +"/"+nd280+"_"+version+"/cmake/"+nd280+"ND280_USE.cmake") as f:
+  line = f.readline()
+  while line:
+    if re.search(meta, line, re.IGNORECASE):
+      words = re.split(r'\s',line)
+      v=''
+      for word in words :
+        x = re.findall("[0-9]+\.[0-9]+\.*[0-9]*", word)
+        if(x) :
+          v=x[0]
+          break
+    line = f.readline()
+
+if ( not v) :
+  print(" NO VERSION FOUND FOR "+subGroup+" in "+os.environ['ND280_ROOT']+"/"+nd280+"_"+version+"/cmake/"+nd280+"ND280_USE.cmake")
+if os.environ['ND280_VER'] == "master":
+  shell.Shell("nd280-find-dependencies -b "+opt+" "+subGroup+" "+meta+" master")
+else:
+  shell.Shell("nd280-find-dependencies -b "+opt+" "+subGroup+" "+meta+" "+v)
+
+sys.exit(0)
+

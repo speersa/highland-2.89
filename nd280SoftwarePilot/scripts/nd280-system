@@ -1,0 +1,110 @@
+#!/bin/bash
+#
+# Determine the system type for ND280 Software
+
+if [ ${#ND280_SYSTEM_OVERRIDE} != 0 ]; then
+  #
+  # THIS IS A MEGA SUPER SECRET OVERRIDE FOR GURU DEBUGGING AND TESTING.
+  #
+  # Override the standard system name.  This is used when testing
+  # very special system variations such as tweaks to the compiler.
+  #
+  echo '###########################################################' 1>&2
+  echo  WARNING: Override nd280-system. Installation will be broken  1>&2
+  echo '###########################################################' 1>&2
+  echo ${ND280_SYSTEM_OVERRIDE}
+  exit 0
+fi
+
+# Use uname to set some defaults.  uname is OK for the OS and
+# processor, but does a bad job at the variant and release.
+# Fortunately, lsb_release seems to be everyplace, just set unknown as
+# a default.  This converts "-" to "_" because the "-" is used as a
+# delimiter in the system name.
+os=$(uname | tr '-' '_')
+variant=$(uname -v | tr -c -d '[:alnum:]-._' | tr '-' '_')
+release=$(uname -r | tr '-' '_')
+processor=$(uname -m | tr '-' '_')
+compiler="unknown"
+
+# Try hard to find a better system variant and release.  This uses
+# lsb_release if it can be found, it tries some standard locations.
+# If it fails, it will use the results from uname.
+if [ -x /usr/bin/lsb_release ]; then
+  variant=$(/usr/bin/lsb_release -s -i)
+  release=$(/usr/bin/lsb_release -s -r)
+elif [ -f /etc/system-release ]; then
+  variant=$(cat /etc/system-release | cut -d' ' -f1) 
+  release=$(cat /etc/system-release | sed 's/[^0123456789.]//g')
+elif [ -f /etc/redhat-release ]; then
+  variant=$(cat /etc/redhat-release | cut -d' ' -f1) 
+  release=$(cat /etc/redhat-release | sed 's/[^0123456789.]//g')
+elif [ -f /etc/centos-release ]; then
+  variant=$(cat /etc/centos-release | cut -d' ' -f1) 
+  release=$(cat /etc/centos-release | sed 's/[^0123456789.]//g')
+elif [ -f /etc/os-release ]; then
+  variant=$(sed -n -e 's/"//g ; s/^NAME=//p' /etc/os-release)
+  release=$(sed -n -e 's/"//g ; s/^VERSION_ID=//p' /etc/os-release)
+elif [ -f /etc/debian_version ]; then
+  # Don't all Debian systems have lsb_release?
+  variant=Debian
+  release=$(cat /etc/debian_version)    
+fi
+# In case there are any spaces  convert them to underscores
+variant=$(echo $variant | sed 's/ /_/g')
+# If the compiler is gcc, then it provides its version.
+# One has to be careful since the information can be misleading
+# E.g. on Darwin with gcc aliased to clang  "gcc -dumpversion" will return  4.2.1. since 
+# clang was originally developed to be compatible with it and gcc is an alias
+# for clang
+# If the compiler is gcc, then it provides its version.
+if which gcc >> /dev/null 2>&1; then
+  if gcc 2>&1 | grep -q "clang"; then
+    compiler=clang
+  else
+    compiler=gcc_$(gcc -dumpversion)
+  fi
+fi
+
+
+
+# Clean up the release.
+releaseStyle="full"
+if [ ${variant} = "Debian" ]; then
+  releaseStyle="one"
+elif [ ${variant} = "CentOS" ]; then
+  releaseStyle="one"
+fi
+if [ ${releaseStyle} = "full" ]; then
+  # Use the full release name.
+  release=${release}
+elif [ ${releaseStyle} = "two" ]; then
+  release=$(echo ${release} | sed 's/\(\..*\)\..*/\1/')
+else # one
+  # Only take the major release (up to the first ".")
+  release=$(echo ${release} | sed s/\\..*//)
+fi
+
+# Clean up the compiler.
+compilerStyle="one"
+if [ $(echo ${compiler} | sed s/_4.*//) = "gcc" ]; then
+  compilerStyle="two"
+fi
+if [ ${compilerStyle} = "full" ]; then
+  # Use the full compiler version.
+  compiler=${compiler}
+elif [ ${compilerStyle} = "two" ]; then
+  compiler=$(echo ${compiler} | sed 's/\(\..*\)\..*/\1/')
+else  # one
+  # Only take the major release (up to the first ".")
+  compiler=$(echo ${compiler} | sed s/\\..*//)
+fi
+
+# Form the system name, and get rid of invalid characters
+# Treat Darwin case
+if [ ${os} = "Darwin" ]; then
+  echo "${os}_${release}-${compiler}-${processor}" | tr '/ #()' '._...'
+else
+  echo "${os}-${variant}_${release}-${compiler}-${processor}" | tr '/ #()' '._...'
+fi
+ 

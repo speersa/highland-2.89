@@ -1,0 +1,50 @@
+# package taken from www.gnu.org/software/gsl/
+# (MIRROR: http://core.ring.gr.jp/pub/GNU/gsl/)
+# version gsl-1.15.tar.gz (2011/05/06)
+
+package GSL
+version v1r15p0n00
+
+manager Phill Litchfield <r.p.litchfield@warwick.ac.uuk>
+author t2k-nd280-software@nngroup.physics.sunysb.edu
+
+use EXTERN
+
+branches cmt doc src
+
+# Set include file locations
+include_path none
+ignore_pattern package_stamps
+include_dirs $(GSLROOT)/$(GSL_tag)/include
+
+# Add the executable/library paths
+path_remove PATH "$(GSLROOT)"
+path_remove PATH "GSL"
+path_remove PATH "gsl"
+path_prepend PATH "$(GSLROOT)/$(GSL_tag)/bin" \
+             WIN32 "$(GSLROOT)/$(GSL_tag)/bin"
+
+path_remove LD_LIBRARY_PATH "$(GSLROOT)"
+path_remove LD_LIBRARY_PATH "GSL"
+path_remove LD_LIBRARY_PATH "gsl"
+path_prepend LD_LIBRARY_PATH "$(GSLROOT)/$(GSL_tag)/lib" \
+             WIN32           "$(GSLROOT)/$(GSL_tag)/lib"
+
+path_remove DYLD_LIBRARY_PATH "" \
+            Darwin            "$(GSLROOT)"
+path_prepend DYLD_LIBRARY_PATH "" \
+             Darwin            "$(GSLROOT)/$(GSL_tag)/lib"
+
+# Define the compiler & linker options to build against GSL
+
+macro GSL_cppflags  \
+      "`$(GSLROOT)/$(GSL_tag)/bin/gsl-config --cflags`"      
+macro GSL_linkopts \
+      "`$(GSLROOT)/$(GSL_tag)/bin/gsl-config --libs`"
+
+set GSL_BASE_DIR    "$(GSLROOT)/$(GSL_tag)"
+set GSL_LIB_DIR     "$(GSL_BASE_DIR)/lib"
+set GSL_INCLUDE_DIR "$(GSL_BASE_DIR)/include"
+
+# actually compile
+document external gsl compile_gsl $(GSL_SOURCE)

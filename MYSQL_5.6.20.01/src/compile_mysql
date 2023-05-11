@@ -1,0 +1,52 @@
+#!/bin/bash
+#
+#
+
+COMMAND=$1; shift
+PACKAGE=$1; shift
+TAG=$1; shift
+
+echo command: $COMMAND 
+echo package: $PACKAGE 
+echo tag: $TAG
+
+VERSION=5.6.20
+
+TAR_FILE=${PACKAGE}/mysql-${VERSION}.tar.gz
+PATCH_FILE=${PACKAGE}/mysql-${VERSION}.patch
+
+PREFIX=${PACKAGE}/${TAG}
+SOURCE=${PREFIX}/mysql-${VERSION}
+
+# Make sure the environment is properly configured.
+source ../cmt/setup.sh;
+if [ "$?" -ne 0 ]; then echo "../cmt/setup.sh failed"; exit 1; fi 
+case ${COMMAND} in 
+compile)
+	cd ${PREFIX}
+	if [ ! -d ${SOURCE} ]; then
+		tar -xzf ${TAR_FILE}
+		if [ "$?" -ne 0 ]; then echo "tar -xzf ${TAR_FILE} failed"; exit 1; fi 
+	fi
+	cd ${SOURCE}
+	mkdir build
+	cd build
+	cmake .. -DCMAKE_INSTALL_PREFIX=${PREFIX}  -DWITHOUT_SERVER=ON
+	cmake .. -L
+	if [ "$?" -ne 0 ]; then echo "	cmake .. -DCMAKE_INSTALL_PREFIX=${PREFIX}  -DWITHOUT_SERVER=ON failed" ; exit 1; fi 
+	if [ -n "${ND280_NJOBS}" ]; then
+		echo "Commencing make using N=${ND280_NJOBS} parallel jobs"
+		make  -j ${ND280_NJOBS}      
+	else
+		make           
+	fi
+	if [ "$?" -ne 0 ]; then echo "make failed"; exit 1; fi
+	make install;
+	if [ "$?" -ne 0 ]; then echo "make install failed"; exit 1; fi
+	
+	;;
+	
+clean)
+	rm -rf ${PREFIX} 
+	;;
+esac

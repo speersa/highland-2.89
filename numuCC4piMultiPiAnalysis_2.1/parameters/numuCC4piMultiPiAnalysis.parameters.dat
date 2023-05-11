@@ -1,0 +1,10 @@
+---- Cut levels --------
+ < numuCC4piMultiPiAnalysis.MinAccumLevelToSave = 5 >   // minimum accum level to save the event
+ < numuCC4piMultiPiAnalysis.FillSuccessOnly = 1 >   // Fill only when any of the branches is passed
+---- Selections -----------
+Analysis sample (1 for FGD1, 2 for FGD2)
+ < numuCC4piMultiPiAnalysis.Selections.whichFGD = 2 >
+Selection: 1  - 4pi multi-pi, 2 - 4pi multi-pi with photon and proton
+ < numuCC4piMultiPiAnalysis.Selections.whichSelection = 2 > 
+---- MicroTrees ----------
+ < numuCC4piMultiPiAnalysis.MicroTrees.AddPionSIinfo = 1 >

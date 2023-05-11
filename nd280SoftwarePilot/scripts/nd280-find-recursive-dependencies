@@ -1,0 +1,264 @@
+#! /usr/bin/env python
+#
+#
+
+from subprocess import check_output
+import os
+import sys
+import json
+import getopt
+import tempfile
+import shutil
+import re
+
+from nd280 import shell
+
+
+def usage():
+    print("""
+
+nd280-find-recursive-dependencies package [version]
+
+This retrieves (and clones) all the dependencies of the specified cloned package
+by recursively looking in the <package>ND280_USE.cmake file. 
+The dependencies are then cloned using the nd280-fetch-packages function.
+The path to each dependency is found via Git API by grabbing all the 
+existing projects.
+
+The environment variable 'ND280_VER' to the desired software version before
+executing this script.
+
+The dependencies and their versions are retrieved from the package's
+ND280_USE.cmake file. Only the master packages specify the dependency versions,
+so this script should only be used on master packages.
+
+Note that a API TOKEN should be given via the GIT_T2K_TOKEN env. variable.
+If the token don't have enough priviledges, the default_dict dictionary will
+be used. We should update this dictionary for every new package in ND280 group.
+
+A specific group of dependencies can be skipped by adding it as the last argument.
+For example: nd280-find-dependencies eventAnalysis master externals
+will download every dependencies and sub-dependencies except the externals packages (aka ROOT, GSL...)
+
+Options:
+  -h, --help : Print this message.
+
+Examples:
+  Clone dependencies of a specific tag of a git package :
+    nd280-find-dependencies eventAnalysis master [group_to_skip]
+""")
+
+default_dict_packages = {
+    "CERNLIB": "externals",
+    "CLHEP": "externals",
+    "CMAKE": "externals",
+    "CcPiPlusAnalysis": "highland",
+    "GSL": "externals",
+    "Geant4": "externals",
+    "MYSQL": "externals",
+    "NEUT": "externals",
+    "RECPACK": "recon",
+    "ROOT": "externals",
+    "alignTools": "anal",
+    "analysisMaster": "master-packages",
+    "analysisTools": "anal",
+    "antiNueCCAnalysis": "highland",
+    "atmPitSim": "sim",
+    "baseMaster": "master-packages",
+    "beamData": "calib",
+    "calibMaster": "master-packages",
+    "cosmicTriggerGeant4Sim": "sim",
+    "dataQuality": "calib",
+    "detResponseSim": "sim",
+    "ecalApplyCalib": "anal",
+    "ecalRecon": "recon",
+    "ecalTestBeamAnalysis": "anal",
+    "eventAnalysis": "anal",
+    "eventCalib": "calib",
+    "eventDisplay": "anal",
+    "eventRecon": "recon",
+    "eventUnpack": "calib",
+    "externalsMaster": "master-packages",
+    "fgdExtractCalib": "calib",
+    "fgdHighLevelCalib": "anal",
+    "fgdRawDataApplyCalib": "calib",
+    "fgdRecon": "recon",
+    "hatRecon": "recon",
+    "highland": "highland",
+    "highland2": "highland",
+    "highland2ControlSamples": "highland",
+    "highland2Systematics": "highland",
+    "highlandControlSamples": "highland",
+    "highlandReconValidation": "highland",
+    "highlandSystematics": "highland",
+    "ingridRecon": "recon",
+    "mppcExtractCalib": "anal",
+    "nd280Geant4Sim": "sim",
+    "nd280Highland2": "highland",
+    "nd280Psyche": "highland",
+    "nd280SoftwareControl": "framework",
+    "nd280SoftwareMaster": "framework",
+    "nd280SoftwarePilot": "pilot",
+    "nd280SoftwarePolicy": "framework",
+    "neutGeant4CascadeInterface": "sim",
+    "numuCC1P1PiAnalysis": "highland",
+    "oaApplyAlign": "base",
+    "oaCalibTables": "base",
+    "oaChanInfo": "base",
+    "oaEvent": "base",
+    "oaGeomInfo": "base",
+    "oaGeometryLookup": "base",
+    "oaIngridUtils": "base",
+    "oaMagnetCalib": "base",
+    "oaOfflineDatabase": "base",
+    "oaRawEvent": "base",
+    "oaRuntimeParams": "base",
+    "oaSlowControlDatabase": "base",
+    "oaUtility": "base",
+    "p0dRecon": "recon",
+    "p0decalRecon": "recon",
+    "psyche": "highland",
+    "recPackRecon": "recon",
+    "reconMaster": "master-packages",
+    "reconUtils": "recon",
+    "sandGeant4Sim": "sim",
+    "sbcatRecon": "recon",
+    "selectControlSample": "anal",
+    "selectEventSim": "sim",
+    "sfgRecon": "recon",
+    "simMaster": "master-packages",
+    "smrdApplyCalib": "calib",
+    "smrdRecon": "recon",
+    "soffTasks": "anal",
+    "testBase": "base",
+    "tfbApplyCalib": "calib",
+    "tfbExtractCalib": "anal",
+    "tpcExtractCalib": "calib",
+    "tpcRecon": "recon",
+    "trackerRecon": "recon",
+    "trexRecon": "recon"
+}
+
+try:
+    options, args = getopt.gnu_getopt(sys.argv[1:], "hbr", ["help"])
+except:
+    usage()
+    print("ERROR: Invalid option.")
+    sys.exit(1)
+
+for option, value in options:
+    if option == "-h" or option == "--help":
+        usage()
+        sys.exit(0)
+
+# check that we have the right number of arguments.
+if len(args) < 2:
+    usage()
+    print("ERROR: Wrong number of arguments. There should be two arguments.")
+    sys.exit(1)
+
+# check ND280_VER is set
+if 'ND280_VER' not in os.environ:
+    print("Please set the variable ND280_VER")
+    sys.exit(1)
+
+if 'GIT_T2K_TOKEN' not in os.environ:
+    print("You need to set the variable GIT_T2K_TOKEN with a API private token (can be a job token)")
+    exit(1)
+
+# get the different arguments
+package = args[0]
+version = args[1]
+if len(args) == 3:
+    exception_group = args[2]
+    print(exception_group)
+else:
+    exception_group = None
+
+dict_packages = dict()
+list_cloned_packages = list()
+
+for group in ["base", "recon", "externals", "anal", "calib", "sim", "highland", "framework", "pilot", "master-packages"]:
+    cmd = 'https://git.t2k.org/api/v4/groups/nd280%2F{}/projects?search=&per_page=200&private_token=' + \
+        os.environ["GIT_T2K_TOKEN"]
+    print(cmd.format(group))
+    out = check_output(["curl", cmd.format(group)])
+    try:
+        parsed = json.loads(out)
+        if ("message" in parsed and parsed["message"] == u'401 Unauthorized') or ("error" in parsed and parsed["error"] == u'insufficient_scope'):
+            print("Provided token doesn't have high enough priviledges; change it to API access.")
+            print("Using default dict")
+            dict_packages = default_dict_packages
+            break
+    except OSError:
+        print("Failed getting list; Using default dict")
+        dict_packages = default_dict_packages
+        break
+    p = re.compile("nd280\/([^\s]+)\/([^\s]+)")
+    for item in parsed:
+        m = p.match(item["path_with_namespace"])
+        if m:
+            dict_packages[str(m.group(2))] = str(m.group(1))
+print(" Finished searching for packages")
+print(json.dumps(dict_packages, indent=4, sort_keys=True))
+print("Found {} packages".format(len(dict_packages.keys())))
+
+# retrieve dependency packages and their required versions
+def download_dependencies(package, version):
+    print("Downloading dependencies of {}".format(package))
+    if not os.path.exists(os.environ['ND280_ROOT'] + "/"+package+"_"+version+"/cmake/"+package+"ND280_USE.cmake"):
+        print(os.environ['ND280_ROOT'] + "/"+package+"_"+version+"/cmake/"+package+"ND280_USE.cmake doesn't exist; skpping")
+        return
+    with open(os.environ['ND280_ROOT'] + "/"+package+"_"+version+"/cmake/"+package+"ND280_USE.cmake", "r") as f:
+        wholeline = "#"
+        while wholeline:
+            wholeline = f.readline()
+            if wholeline == "":
+                break
+            # remove everything after a # character 
+            line = wholeline.split("#", 1)[0]
+            if re.search(r'^ND280_USE', line):
+                line = re.sub(r'ND280_USE\(', '', line)
+                line = re.sub(r'\)', '', line)
+                line = re.sub(r'\"', '', line)
+                words = line.split()
+                p = words[0]
+                if len(words) < 2:
+                    v = "*"
+                else:
+                    v = words[1]
+                # If no version is specified in the CMake use file, then use master branch
+                if v == '*':
+                    v = "master"
+                print("->" + package + " needs " + p + ": " + v)
+                if p not in dict_packages.keys():
+                    print("Couldn't find package in dict.: {}; skipping".format(p))
+                    continue
+                    # sys.exit(1)
+                if dict_packages[p] == exception_group:
+                    print("Skipping {} from {}".format(p, dict_packages[p]))
+                    continue
+                # skip already cloned dependencies (requires that its own dependencies are also cloned)
+                if p in list_cloned_packages:
+                    print("Already have " + p +"->skipping")
+                    continue
+
+                print("Getting {} from {}".format(p, dict_packages[p]))
+                if os.environ['ND280_VER'] == "master":
+                    v_download = "master"
+                else:
+                    v_download = v
+                shell.Shell("cd "+os.environ['ND280_ROOT']
+                            + "; nd280-fetch-package "+dict_packages[p]+" "+p+" "+p+" "+v_download)
+                print("Download complete {} from {}".format(p, dict_packages[p]))
+                if os.path.isdir(os.environ['ND280_ROOT']+"/"+p+"_"+v_download):
+                    print("Finding dependencies of " + p + "->version: " + v_download)
+                    # if the dependency is cloned, well it tries to find this package's dependencies
+                    download_dependencies(p, v_download)
+            
+    # since this dependency and its own dependencies have been cloned, we can skip it next time we need it
+    list_cloned_packages.append(package)
+
+download_dependencies(package, version)
+
+sys.exit(0)

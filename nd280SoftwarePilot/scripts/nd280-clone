@@ -1,0 +1,198 @@
+#! /usr/bin/env python
+#
+# Clone a repository from a repository saved at ${ND280_GIT}
+#
+
+
+def usage():
+    print("""
+
+nd280-clone repoName
+
+This clones a repository from the main caption git server. Before 
+cloning the repository, this will make sure that the object doesn't 
+exist.
+
+A plain git repository will end up in a new sub-directory
+with the same name as the repository.  This is the usual git clone
+behavior.  In otherwords, for a plain repository, nd280-clone
+duplicates the git clone behavior.  If a plain git repository is in a
+directory, the directory structure on the main server will be
+preserved.  That means that "nd280-clone subName/repoName" will be
+cloned into the subName directory (i.e. into "subName/repoName").
+
+Options:
+
+    -h, --help : Print this message.
+
+Examples:
+  A master branch of a git package :
+    nd280-clone calibMaster
+  A specific tag of a git package :
+    nd280-clone calibMaster v1r9
+
+  You can override the remote origin using:
+    ND280_GIT="someplace@your.remote.machine.org:" nd280-clone <package>
+""")
+
+####No longer need CMT options since 2018 move to CMake####
+#CMT Package: A repository that holds a CMT package will be cloned
+#without a version directory, and will be in a new sub-directory.  This
+#is almost the same behavior as for a plain git repository, but if a
+#version was specified on the command line, the final step of the clone
+#will be to checkout the branch, or tag corresponding to the version.
+#Recall that a CMT package (with no version directory) is marked by a
+#"packageName/cmt" directory that contains a "requirements" and a
+#"version.cmt" file.  If the package has an offset, then the repository
+#will be specified as "offsetName/packageName", and it will be cloned
+#into the "offsetName/packageName" sub-directory.
+#
+#CMT Project: A CMT project is kept in a directory specifying the
+#project name, and a sub-directory specifying the project version.  The
+#project is specified by it's name.  The version of the project can be
+#set on the command line, or will set to "master".  If the version is
+#specified, then the project is cloned into the correct version
+#directory, and then the version tag is checked out.  
+
+import os
+import sys
+import getopt
+import tempfile
+import shutil
+
+from nd280 import shell
+
+try:
+    options, args = getopt.gnu_getopt(sys.argv[1:], 
+                                      "h",
+                                      ["help"])
+except:
+    usage()
+    print("ERROR: Invalid option.")
+    sys.exit(1)
+
+# If this is true then a package version directory will be used (only
+# applies for a package).  Not currently implemented.
+withVersionDirectory = False
+
+for option, value in options:
+    if option == "-h" or option == "--help":
+        usage()
+        sys.exit(0)
+    else:
+        usage()
+        print("ERROR: Nani??")
+        print("\'Oh myyy Goooooddddd!!\'")
+        sys.exit(1)
+
+# Check that we have the right number of arguments.      
+if len(args) < 1 or len(args) > 2: 
+    usage()
+    print("ERROR: Wrong number of arguments.")
+    sys.exit(1)
+
+if len(args) == 2:
+    withVersionDirectory = True
+
+# Get the repository name.  This is the offset of the repository
+# relative to ND280_GIT
+repositoryName = args[0]
+
+# Get the version (only relevant if this is a specific tag).
+versionTag = "master"
+if len(args) > 1: versionTag=args[1]
+
+print("-- Clone:       ", repositoryName)
+print("-- Version:     ", versionTag)
+
+# add '.git' extension to reponame if not present
+fullRepoName = repositoryName
+if fullRepoName[-4:] != ".git": fullRepoName += ".git"
+
+# Print a warning if this is a clone of an http repo since commits won't work.
+remoteRepository = os.environ["ND280_GIT"] + fullRepoName
+print("-- Remote Repo: ", remoteRepository)
+
+if remoteRepository[0:4] == "http":
+    print(" ")
+    print("WARNING: Using http clone so git-push is disabled.  You need write")
+    print("WARNING: access (usually with ssh) to enable push.")
+    print(" ")
+
+# Check to see that there isn't anything in the way of the clone.  If
+# there is something in the way, this is going to exit.
+
+# First check if there is a git repository in the way.  This actually
+# also handles packages as long as there isn't a version directory.
+#if os.path.exists(repositoryName + "/.git"):
+#    print """ERROR: Repository exists at the clone target"""
+#    sys.exit(1)
+
+# check if there is a version directory already being used, and a
+# package is in the way.
+packageRoot = repositoryName
+if withVersionDirectory: packageRoot = packageRoot + "/" + versionTag
+
+if os.path.exists(packageRoot + "/.git"):
+    print("""ERROR: Repository at the clone target""")
+    sys.exit(1)
+
+# Generate a temporary name for the incoming repository that is
+# guarranteed not to exist.  The file name will look like "git_8H9lJt"
+# where the last 6 characters are random(ish).
+tempRepo = tempfile.mktemp(dir="",prefix="git_")
+
+# Clone the requested repository into a directory named by tempRepo.
+# This lets the script look at the contents and distinguish between
+# the different types of repositories.  This is slightly more
+# complicated than a simple clone because I want to be sure that all
+# the branches and tags show up.  Normally a "git clone" will clone
+# all branches, and then checkout master.  The other branches will be
+# left as "origin/<branch-name> and need to be checked out explicitly.
+#
+# The following lines are a souped up version of:
+#
+# result = shell.Shell("git clone ${ND280_GIT}" + repositoryName
+#                              + " " + tempRepo)
+
+try:
+    shell.Shell("mkdir " + tempRepo)
+    shell.Shell("(cd " + tempRepo + 
+                "; git clone --bare ${ND280_GIT}" + fullRepoName + " .git)")
+    shell.Shell("(cd " + tempRepo + ";"
+                + "git config core.bare false;"
+                + "git config core.logAllRefUpdates true;"
+                + "git config remote.origin.fetch "
+                  +"'+refs/heads/*:refs/remotes/origin/*';"
+                + "git config remote.origin.url ${ND280_GIT}"+fullRepoName+";"
+                + "git config branch.master.remote origin;"
+                + "git config branch.master.merge refs/heads/master;"
+                +" )")
+    shell.Shell("(cd " + tempRepo + ";"
+                + "git reset --hard;"
+                + "git pull --all;"
+                + ")")
+    shell.Shell("(cd " + tempRepo + ";"
+                + "nd280-track-upstream;"
+                + ")")
+
+except:
+    print("ERROR: git clone error (see the messages above). ")
+    print("    After poking around, you should delete the ", repositoryName, \
+        "directory")
+    sys.exit(1)
+    
+# Move the git repository to the requested version. Also creates a new branch 
+# to avoid deteached HEAD state, seeing as we are checking out a tag rather than
+# a branch
+if versionTag != "master":
+    shell.Shell("(cd " + tempRepo + "; "
+                +"git checkout -b freeze/"+versionTag+" "+versionTag+")")
+
+if withVersionDirectory:
+    if not os.path.exists(repositoryName): os.makedirs(repositoryName)
+    shutil.move(tempRepo,repositoryName+"/"+versionTag)
+else:
+    shutil.move(tempRepo,repositoryName)
+
+sys.exit(0)

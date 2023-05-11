@@ -1,0 +1,23 @@
+This is the nueCCAnalysis package 
+### nueCCAnalysis
+### Description
+
+The nue CC selections can be found in psycheSelections. To run nueCCAnalysis
+
+RunNueCCAnalysis.exe path/to/input/file.txt[.root]-o path/to/output/file.root
+
+Make sure that the corrections below are enabled:
+ 
+ < highlandIO.FlatTree.UseReconDirTrackerECal = 1 >
+
+and
+
+ < baseTrackerAnalysis.Corrections.EnableToFCorrection            = 1 >
+ < baseTrackerAnalysis.Weights.EnableNuETPCPileUp      = 1 >
+ < baseTrackerAnalysis.Weights.EnableNuEP0DPileUp      = 1 >
+ < baseTrackerAnalysis.Weights.EnableNuEECalPileUp     = 1 >
+
+and disable
+
+ < baseTrackerAnalysis.Weights.EnablePileUp            = 0 >
+

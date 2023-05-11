@@ -1,0 +1,16 @@
+*.bak
+.*
+!/.gitignore
+!/.gitlab-ci.yml
+c++
+g++
+cc
+gcc
+cmake
+make
+gmake
+gfortran
+*.profile
+*.cshrc
+*.pyc
+nd280-install.log

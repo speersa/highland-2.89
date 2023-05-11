@@ -1,0 +1,29 @@
+# CMakeLists.txt for GSL package. It creates a library with dictionary and a main program
+cmake_minimum_required(VERSION 3.4.3 FATAL_ERROR)
+
+set(PACKAGE GSL)
+set(SHORTTAG 1.15)
+set(TAG "${SHORTTAG}.0.00" )
+string(REPLACE _ .  VERSION ${TAG})
+set(TOPLEVEL ${CMAKE_CURRENT_SOURCE_DIR}/.. )
+
+include(${CMAKE_ROOT}/Modules/ExternalProject.cmake)
+
+message("PROCESS ${PACKAGE}  VERSION : ${VERSION}")
+
+#DOWNLOAD_COMMAND  ${TOPLEVEL}/bin/untar.sh; 
+
+ExternalProject_Add(${PACKAGE}
+PREFIX      ${TOPLEVEL} 
+SOURCE_DIR  ${TOPLEVEL}/src
+STAMP_DIR   ${TOPLEVEL}/stamps
+TMP_DIR     ${TOPLEVEL}/tmp
+BINARY_DIR  ${TOPLEVEL}/src
+INSTALL_DIR ${TOPLEVEL}/setup_script
+DOWNLOAD_COMMAND  tar -xzf ../tar/gsl-${SHORTTAG}.tar.gz
+CONFIGURE_COMMAND  cd gsl-1.15  && ./configure --prefix=${TOPLEVEL}  --exec-prefix=${TOPLEVEL} 
+BUILD_COMMAND  cd gsl-1.15  && make -j$ENV{ND280_JOBS}
+INSTALL_COMMAND  cd gsl-1.15  && make install
+)
+
+

@@ -1,0 +1,60 @@
+###################################################################
+# A CMT package for the ND280 working group which bundles ROOT.  This
+# package is intended to provide a distribution of the ND280 blessed
+# version.  If you are looking for an example of how to use this package,
+# see the oaEvent package.  This is a very unusual CMT package since it is
+# bundling an external library into CMT.  Since it is doing something
+# unusual, it is more complicated that a normal package.  See oaEvent for a
+# typical USER package.
+#
+# See the README file if you want to update the version of ROOT.
+
+package ROOT
+version v5r34p34n00
+
+manager Neil McCauley <n.mccauley@liv.ac.uk>
+author t2k-nd280-software@nngroup.physics.sunysb.edu
+
+use EXTERN 
+use MYSQL
+use GSL
+
+ignore_pattern package_stamps
+
+# ---- Set ROOTSYS environment variable to ROOT installation ----
+set ROOTSYS	 "$(ROOTROOT)/$(ROOTCONFIG)"
+
+#---- Set the paths ----
+path_remove PATH "$(ROOTROOT)"
+path_remove PATH "ROOT" 
+path_remove PATH "root"
+path_prepend PATH "$(ROOTROOT)/$(ROOTCONFIG)/bin"
+
+path_remove LD_LIBRARY_PATH "$(ROOTROOT)"
+path_remove LD_LIBRARY_PATH "ROOT" 
+path_remove LD_LIBRARY_PATH "root"
+path_prepend LD_LIBRARY_PATH "`if which root-config >> /dev/null; then root-config --libdir; fi`"
+
+path_remove PYTHONPATH   "$(ROOTROOT)"
+path_remove PYTHONPATH   "ROOT"
+path_remove PYTHONPATH   "root"
+path_append PYTHONPATH	 $(ROOTSYS)/lib/root
+
+#---- Define the macro values to link and compile against this root.
+include_path none
+include_dirs "`if which root-config >> /dev/null; then root-config --incdir; fi`"
+
+macro ROOT_linkopts  \
+      "`if which root-config >> /dev/null; then root-config --glibs; fi` -lEG -lGeom -lMinuit -lFumili -lXMLIO"
+
+macro ROOT_cppflags \
+      "-DROOT_USED `if which root-config >> /dev/null; then root-config --cflags; fi` -Wno-long-long"
+macro ROOT_stamps "$(ROOTROOT)/$(ROOTCONFIG)/ROOT.stamp"
+
+#----ROOT CINT stuff -----
+macro  dict      "../dict/"
+macro  rootcint  "$(ROOT_BIN)/rootcint" 
+make_fragment rootcint -header=rootcint_header -trailer=rootcint_trailer
+
+# ---- Actually compile the ROOT library ----
+document external ROOT compile_root $(ROOT_SOURCE)

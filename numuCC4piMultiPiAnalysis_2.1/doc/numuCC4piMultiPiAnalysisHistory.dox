@@ -1,0 +1,43 @@
+/*! \page numuCC4piMultiPiAnalysisHistory History for the numuCC4piMultiPiAnalysis Package 
+
+\section numuCC4piMultiPiAnalysis_0_0_history Version 0_0
+
+Freeze information:  
+   - Freeze Date: Wed Jan 11 15:24:49 2023  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MBP
+  
+  
+First freeze of the package
+
+A new package added into highland2 family, is used to validate 4pi selections on highland2 level  
+
+
+\section numuCC4piMultiPiAnalysis_2_0_history Version 2_0
+
+Freeze information:  
+   - Freeze Date: Wed Jan 11 15:25:44 2023  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MBP
+  
+  
+Updated version to 2 to match the overall highland2 versioning  
+
+
+\section numuCC4piMultiPiAnalysis_2_1_history Version 2_1
+
+Freeze information:  
+   - Freeze Date: Wed Apr 19 23:04:16 2023  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MacBook-Pro.local
+  
+  
+
+
+A new freeze
+
+Resolve inconsistencies in Analysis
+for the moment one selects fgd1 or fgd2, not both
+  
+
+*/

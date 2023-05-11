@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<main>
+  <MomResol>
+    <WithItself AllParams=""/>
+  </MomResol>
+  <ChargeIDEff>
+    <WithItself AllParams=""/>
+  </ChargeIDEff>
+  <TpcClusterEff>
+    <WithItself AllParams=""/>
+  </TpcClusterEff>
+  <TpcTrackEff>
+    <WithItself AllParams=""/>
+  </TpcTrackEff>
+  <TpcFgdMatchEff>
+    <WithItself AllParams=""/>
+  </TpcFgdMatchEff>
+  <MichelEleEff>
+    <WithItself AllParams=""/>
+  </MichelEleEff>
+  <FgdHybridTrackEff>
+    <WithItself Block="6,0,0" Block="6,6,6" Block="6,12,12" Block="6,18,18"/>
+  </FgdHybridTrackEff>
+  <TpcPid>
+    <WithItself Block="24,0,0" Block="5,24,24" Block="16,29,29" Block="24,45,45" Block="5,69,69" Block="16,74,74" Block="24,0,45" Block="5,24,69" Block="16,29,74"/>
+  </TpcPid>
+  <FgdPid>
+    <WithItself Param="0,2" Param="4,6" Param="0,4" Param="0,6" Param="2,4" Param="2,6" Param="1,3" Param="5,7" Param="1,5" Param="1,7" Param="3,5" Param="3,7"/>
+  </FgdPid>
+  <OOFV>
+    <WithItself Param="15,20" Param="16,21" Param="17,22" Param="18,23" Param="19,24"/>
+  </OOFV>
+  <PileUp>
+    <WithItself Block="10,0,0" Block="7,10,10" Block="10,17,17" Block="7,27,27" Block="10,0,17" Block="7,10,27" Block="10,17,0" Block="7,27,10"/>
+  </PileUp>
+  <SandMu>
+    <WithItself Param="1,2"/>
+  </SandMu>
+</main>

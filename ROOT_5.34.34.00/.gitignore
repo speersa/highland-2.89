@@ -1,0 +1,5 @@
+*.bak
+.*
+!/.Dockerignore
+!/.gitignore
+*_history.txt

@@ -1,0 +1,65 @@
+#########################################################################
+#! /bin/bash
+#
+# A file to be sourced to setup the ND280 software when running a POSIX
+# shell (bash, sh, dash, ash, &c).
+
+# Set an alias to re-source this file again.  This can (and should) be done
+# every time you start working in a new package (or project) directory.
+alias nd280-setup=". @@ND280PILOTROOT@@/nd280SoftwarePilot/nd280SoftwarePilot.profile"
+
+# Make sure that the path variable is syntactically correct (no "//" in
+# path).
+PATH=$(echo ${PATH} | sed s://:/:g)
+
+# Make sure that other versions of the ND280 scripts directory are removed
+# from the path.  Then add the scripts directory to the newly stripped path.
+PATH=$(echo ${PATH} | sed 's,:*[^:]*/nd280SoftwarePilot/scripts:\+,:,g')
+PATH=@@ND280PILOTROOT@@/nd280SoftwarePilot/scripts:${PATH}
+
+# Remove double colons from the path.  They are a side effect of the
+# previous lines.
+PATH=$(echo ${PATH} | sed s,::,:,g)
+
+# Store the GIT repository base.
+export ND280_GIT
+ND280_GIT=@@ND280GIT@@
+
+export ND280_DOWNLOADS
+ND280_DOWNLOADS=@@ND280DOWNLOADS@@
+
+# Store the root of this installation so that the nd280-* scripts can use
+# figure out where they are installed. 
+export ND280PILOT_ROOT
+ND280PILOT_ROOT=@@ND280PILOTROOT@@
+
+# Invoke multiplexing ssh connections when git uses an ssh connection. Prevents
+# errors when git makes too many ssh connections.
+export GIT_SSH_COMMAND
+GIT_SSH_COMMAND="ssh -o ControlMaster=auto -o ControlPath=~/.ssh/%C -o ControlPersist=3600"
+
+# Set  ND280_ROOT to equal ND280PILOT_ROOT
+# unless it is already set when this script is run
+# in which case the existing value is not changed
+if [ -z "$ND280_ROOT" ] ; then
+ export ND280_ROOT
+ ND280_ROOT=@@ND280PILOTROOT@@
+fi
+# Store the prefix path for CMake. 
+# By default this is the same as ND280_ROOT
+# unless it is already set when this script is run
+# in which case the existing value is not changed
+if [ -z "$CMAKE_PREFIX_PATH" ] ; then
+ export CMAKE_PREFIX_PATH
+ CMAKE_PREFIX_PATH=@@ND280ROOT@@
+fi
+
+# Apply any local configurations.  The local configurations are placed in
+#  the ${ND280PILOT_ROOT}/nd280SoftwarePilot/nd280SoftwarePilot.local file.
+if [ -f @@ND280PILOTROOT@@/nd280SoftwarePilot/nd280SoftwarePilot.local ]; then
+  echo Apply local nd280SoftwarePilot configuration
+  . @@ND280PILOTROOT@@/nd280SoftwarePilot/nd280SoftwarePilot.local
+fi
+
+#########################################################################
+# -*- mode: shell-script-mode; -*-

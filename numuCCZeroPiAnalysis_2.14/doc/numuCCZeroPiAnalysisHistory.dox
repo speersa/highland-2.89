@@ -1,0 +1,231 @@
+/*! \page highland2/numuCCZeroPiAnalysisHistory History for the highland2/numuCCZeroPiAnalysis Package 
+
+\section numuCCZeroPiAnalysis_v1r1_history Version v1r1
+
+Freeze information:
+   - Freeze Date: Tue May 17 14:55:31 2016
+   - Freeze User: izmaylov
+   - Freeze Host: pizmaylov.ific.uv.es
+
+
+A freeze of the package to be compatible with nd280Highland2 v1r15
+
+uses multi-proton topologies (FGD/TPC) and bwd/high-angle muon track candidates (allthough proper/effective
+usage of the ToF should include a review of the FV cuts)
+
+
+various utilities for kinematic variables: transversity etc 
+
+added a systematics for neutrino direction (samples from the vertex distribution provided as a histogram)
+
+
+The freeze has a goal to have a stable frozen version before starting the migration to v2 era highland (and further developments)
+
+
+
+\section numuCCZeroPiAnalysis_v1r3_history Version v1r3
+
+Freeze information:
+   - Freeze Date: Tue May 17 15:04:48 2016
+   - Freeze User: izmaylov
+   - Freeze Host: pizmaylov.ific.uv.es
+
+
+No change in functionality, increase the development version to v2
+
+
+
+\section numuCCZeroPiAnalysis_v2r1_history Version v2r1
+
+Freeze information:
+   - Freeze Date: Thu Mar 22 17:37:00 2018
+   - Freeze User: dolan
+   - Freeze Host: pplxint8.physics.ox.ac.uk
+
+Freeze of the numuCCZeroPiAnalysis version that was used for the CC0pi+protons paper (arXiv:1802.05078). This should build against highland2 v2r19.
+
+In the paper highland2 v2r15 was used, to use this you need to change the GetSampleId() method in tehis freeze to GetSampleEnum in the selection source and header file (for the header file you can find the relevent changes here https://repo.nd280.org/viewvc/ND280/highland2/numuCCZeroPiAnalysis/src/numuCCZeroPiSelection.hxx?r1=1.24&r2=1.23).
+
+This freeze is just before new developments to bring numuCCZeroPiAnalysis up to date with the latest highland2 (currently v2r27). 
+
+
+
+\section numuCCZeroPiAnalysis_v2r3_history Version v2r3
+
+Freeze information:
+   - Freeze Date: Wed Aug 14 12:00:25 2019
+   - Freeze User: alexander
+   - Freeze Host: 107.43.168.192.in-addr.arpa
+
+
+
+A freeze so to have a stable/reference version for the recent (as of August 2019) results:
+
+TN-380 - by L.Maret et all (FGD1 and FGD2 studies)
+
+it also coveres in general the code used for TN-287 analysis: S.Dolan, J.Kim et al 
+
+
+Mostly FWD-going focused: with some bwd-going high-angle objects reconstructed via vertex constrains: ToF not fully used, only as a bkg rejection cut: ToF info usage is OFF by default due to Run8 timing calibration issues
+
+Selection of muon + multi-proton topologies: note! only good TPC DQ and non-TPC tracks are considered (i.e. no TPC bad DQ objects)
+
+Funcionality to use ECal pi-zero veto: OFF by default (systs need to be understood)
+
+Bwd migration systematics studied and added: the actual code to compute it moved to highland2Systematics/fgdBwdMigrationSystematics
+ 
+Variables to specify the sample (and/or X/Y layer) for xsec measurements
+
+Various kinematic vars: e.g. pn, q0, q3 + corresponding utils/params
+
+CSs: pion, DIS, ME and ECal pi-zero veto (if used) 
+
+
+
+
+
+\section numuCCZeroPiAnalysis_v2r5_history Version v2r5
+
+Freeze information:
+   - Freeze Date: Thu Sep  5 15:10:58 2019
+   - Freeze User: alexander
+   - Freeze Host: alexandrs-macbook-pro.local
+
+
+Important fix of the systematic tuning applied:
+the bug caused some systs to be realted/dependent on others hence 
+some relevant ones were not applied at all
+
+
+
+\section numuCCZeroPiAnalysis_v2r7_history Version v2r7
+
+Freeze information:
+   - Freeze Date: Fri Oct  2 11:52:44 2020
+   - Freeze User: alexander
+   - Freeze Host: Alexandrs-MacBook-Pro.local
+
+
+
+A new freeze of   highland2/psyche for summer 2020 OA publications as the main goal,
+also the base version for migration to cmake and git
+
+Modified Files:
+        numuCCZeroPiAnalysis.cxx numuCCZeroPiAnalysis.hxx 
+        numuCCZeroPiSelection.cxx 
+Log Message:
+added neutron SI systematic,  not tuning at the moment 
+
+Modified Files:
+        numuCCZeroPiAnalysis.parameters.dat 
+Log Message:
+added param to control whether to apply neutron SI
+
+Modified Files:
+        numuCCZeroPiAnalysis.cxx numuCCZeroPiAnalysis.hxx 
+        numuCCZeroPiSelection.cxx 
+Log Message:
+started adding neutron vars
+
+first tuning for neutron SI syst:
+only consider neutrons that originate from the selected vertex (true one
+associted to it)
+
+
+
+\section numuCCZeroPiAnalysis_2_9_history Version 2_9
+
+Freeze information:  
+   - Freeze Date: Fri Nov 20 15:15:40 2020  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MacBook-Pro.local
+  
+  
+First freeze of git/cmake version  
+  
+
+
+\section numuCCZeroPiAnalysis_2_10_history Version 2_10
+
+Freeze information:  
+   - Freeze Date: Fri May 27 21:46:17 2022  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MBP
+  
+  
+A new freeze 
+
+Solve rvalue issue with TAxis
+  
+  
+
+
+\section numuCCZeroPiAnalysis_2_11_history Version 2_11
+
+Freeze information:  
+   - Freeze Date: Wed Jun  1 17:03:48 2022  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MBP
+  
+  
+
+The main goal of the freeze is to add new versioning scheme for systematics, corrections and POT 
+
+Now all possible productions included: Prod5, Prod6 and Prod7 wrt the previous is/isnt Prod6 check.
+
+A Highland-run analysis by default will get and set a production index based on input, . if the version check is OFF then all defaults to Prod6. One can also set it with param file,
+psycheSteering controls versioning with a param file.
+
+
+For corrections and systematics split data storage files into Prod5, Prod6 and Prod7 where the appropriate data files should go. It also BinnedParams to use ExtensionSyst() or ExtenstionCorr() so that an appropriate data files is used for a correction or a systematic. 
+As for these freeze Prod7 data for systematics and correction is just a copy of the one from Prod6: is expected to be populated with new numbers as Prod7 validation progresses. 
+
+Also fixes a bug with versions checks in numuCCZeroPiAnalysis   
+  
+
+
+\section numuCCZeroPiAnalysis_2_12_history Version 2_12
+
+Freeze information:  
+   - Freeze Date: Fri Oct 21 14:51:51 2022  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MBP
+  
+  
+
+A new freeze of HighLAND2 software. The main goal is to have a reference version for expected nd280-upgrade merging work, then updates to ToF treatement (smearing x slips correction and updated systematics), updates to FGDs 4pi selections (mature versions ready for preliminary OA tests, some tuning on-going), technical updates like using local HASSERT wrt assert to deal with default NDEBUG setting, also for CI and eg RECPACK added as an option for installation (outside highland but highland2SoftwarePilot) and will be used in containers.
+
+hit based neutron SI tuning
+
+add HASSERT and DHASSERT (for DEBUG flag)  preprocessor macroses for hl2  
+
+
+\section numuCCZeroPiAnalysis_2_13_history Version 2_13
+
+Freeze information:  
+   - Freeze Date: Wed Jan 11 16:42:46 2023  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MBP
+  
+  
+
+adapt to changes in the base packages:
+all flipping is now done inside AnaTrackB and not by external methods, a tracks knows its flipped status and how to do the flipping   
+
+
+\section numuCCZeroPiAnalysis_2_14_history Version 2_14
+
+Freeze information:  
+   - Freeze Date: Wed Apr 19 23:06:36 2023  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MacBook-Pro.local
+  
+  
+
+A new freeze
+
+get rid of old-style ecal photon veto 
+add nhits cut for ecal photons  
+  
+
+*/

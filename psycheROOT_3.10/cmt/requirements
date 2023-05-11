@@ -1,0 +1,76 @@
+package psyche/psycheROOT
+version v3r4
+###################################################################
+# A CMT package which bundles ROOT.  This
+# package is intended to provide a distribution of the ND280 blessed
+# version. This is a very unusual CMT package since it is
+# bundling an external library into CMT.  Since it is doing something
+# unusual, it is more complicated that a normal package.  See oaEvent for a
+# typical USER package.
+#
+# See the README file if you want to update the version of ROOT.
+
+manager Alexander Izmaylov <izmaylov@inr.ru>
+author nd280-software@mailman.t2k.org
+
+# Below, we fully rely on the standard ROOT's "root-config" script.
+# The only thing the user must do is to make sure that the right
+# version of this script is found in the "PATH" first.
+
+# One needs to have ROOTSYS set to the local ROOT version. Either the
+# user executed "source /full_path_to/bin/thisroot.sh" in advance, or:
+set ROOTSYS "`root-config --prefix`"
+
+macro ROOT_BIN  "`root-config --bindir`"
+macro ROOT_LIB  "`root-config --libdir`"
+macro ROOT_INC  "`root-config --incdir`"
+
+include_path none
+ignore_pattern package_stamps
+include_dirs $(ROOT_INC)
+
+#---- Set the paths ----
+path_remove PATH "$(PSYCHEROOTROOT)"
+path_remove PATH "ROOT" 
+path_remove PATH "root"
+path_prepend PATH "$(ROOT_BIN)"
+
+path_remove LD_LIBRARY_PATH "$(PSYCHEROOTROOT)"
+path_remove LD_LIBRARY_PATH "ROOT" 
+path_remove LD_LIBRARY_PATH "root"
+path_prepend LD_LIBRARY_PATH "$(ROOT_LIB)" \
+      WIN32                 "$(ROOT_LIB)" \
+      LinuxStatic           " "
+path_remove DYLD_LIBRARY_PATH "" \
+	    Darwin	      "$(PSYCHEROOTROOT)"
+path_remove DYLD_LIBRARY_PATH "" \
+	    Darwin	      "ROOT" 
+path_remove DYLD_LIBRARY_PATH "" \
+	    Darwin	      "root"
+path_prepend DYLD_LIBRARY_PATH "" \
+	     Darwin	       "$(ROOT_LIB)" 
+
+path_remove PYTHONPATH   "/ROOT/" WIN32 "\ROOT\"
+path_remove PYTHONPATH   "$(PSYCHEROOTROOT)"
+path_remove PYTHONPATH   "/root/" WIN32 "\root\"
+path_prepend PYTHONPATH	 $(ROOT_LIB)
+
+#---- Define the macro values to link and compile against this root.
+macro psycheROOT_linkopts  \
+      "`root-config --ldflags --glibs` -lEG -lGeom -lMinuit -lFumili -lXMLIO" \
+      WIN32      \
+      '/libpath:"$(ROOTSYS)/lib" libCint.lib libCore.lib libTree.lib libWIN32.lib'
+
+macro psycheROOT_cppflags \
+      "-DROOT_USED `root-config --cflags` -Wno-long-long"
+
+# macro psycheROOT_stamps "$(PSYCHEROOTROOT)/$(PSYCHEROOTCONFIG)/psycheROOT.stamp"
+
+#---- ROOT CINT stuff -----
+macro  dict      "../dict/"
+macro  rootcint  "$(ROOT_BIN)/rootcint" 
+make_fragment rootcint -header=rootcint_header -trailer=rootcint_trailer
+
+#---- EXTERN stuff -----
+make_fragment external -header=external_header
+

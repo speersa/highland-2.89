@@ -1,0 +1,59 @@
+package nd280Highland2
+version v2r50
+
+manager Anselmo Cervera <anselmo.cervera@cern.ch>
+manager Alexander Izmaylov <izmaylov@inr.ru>
+author nd280-software@mailman.t2k.org
+
+branches cmt doc
+
+# Master package to specify highland2 package versions and the psyche released version
+
+# psyche packages
+use nd280Psyche                       v3r51
+
+# base highland2 packages
+use highlandCore                      v2r35   highland2
+use oaAnalysisReader                  v2r19   highland2
+use highlandEventModel                v2r29   highland2
+use highlandTools                     v2r27   highland2
+use highlandUtils                     v2r31   highland2
+use highlandIO                        v2r39   highland2
+use highlandCorrections               v2r19   highland2 
+use highlandSystematics               v2r7    highland2
+use baseAnalysis                      v2r31   highland2 
+
+# tracker analyses
+use baseTrackerAnalysis               v2r19   highland2 
+use numuCCAnalysis                    v2r19   highland2
+use numuCCMultiPiAnalysis             v2r23   highland2
+use antiNumuCCAnalysis                v2r5    highland2
+use antiNumuCCMultiPiAnalysis         v2r9    highland2
+use numuBkgInAntiNuModeAnalysis       v2r9    highland2
+use nueCCAnalysis                     v2r27   highland2
+use antiNueCCAnalysis                 v2r15   highland2
+use gammaAnalysis                     v2r17   highland2 
+use numuCCZeroPiAnalysis              v2r7    highland2
+
+# P0D-tracker analyses
+use p0dNumuCCAnalysis                 v2r15   highland2
+
+# P0D-only analyses
+use baseP0DAnalysis                   v2r5    highland2
+
+# the tutorial analysis package
+use tutorialAnalysis                  v2r19   highland2
+
+# the validation package (version used to validate this nd280Highland2 version)
+use highlandValidation                v2r17   highland2
+
+# highland documentation
+use highlandDoc                       v2r3    highland2
+use highlandND280Doc                  v2r3    highland2
+
+
+
+# Build methods to include.
+#document version version *.cxx ../dict/*.cxx
+#document register register
+document doxygen doxygen -group=documentation *.cxx *.hxx ../doc/*.dox *py

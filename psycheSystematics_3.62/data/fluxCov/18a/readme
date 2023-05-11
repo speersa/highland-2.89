@@ -1,0 +1,9 @@
+Flux covariance files from beam MC group
+18a
+https://t2k.org/beam/NuFlux/FluxRelease/ReplicaTuned/uncertainty
+
+v1 - Using runs 1-6 for ND280 POT,  and binned in the format used in
+BANFF and oscillation analysis fits
+
+v2 - Using runs 1-8 for ND280 POT,  and binned in the format used in BANFF and
+oscillation analysis fits

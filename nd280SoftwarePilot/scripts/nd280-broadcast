@@ -1,0 +1,209 @@
+#!/bin/bash
+################################################################
+
+# A script to replicate the "cmt broadcast" command that broadcasts 
+# a command to each dependency of the package the command was 
+# executed in
+
+usage () {
+  echo
+  echo "Usage: nd280-broadcast [command]"
+  echo "  Broadcasts a command to all the dependencies of the"
+  echo "  current package. The command will be executed in the"
+  echo "  root directory of the dependencies."
+  echo
+  echo "  The broadcast command must be executed in an ND280 Software"
+  echo "  package after the package has been setup with a setup.sh script."
+  echo
+  echo "  The dependencies are read out from the file"
+  echo "  <package>.dependencies in the package's current system dependent"
+  echo "  folder."
+  echo 
+  echo "  By default only dependencies found in the first item in CMAKE_PREFIX_PATH are"
+  echo "   considered, unless the option -a is used."
+    echo
+  echo "Options:"
+  echo "  -h : print usage"
+  echo "  -i : ignore missing dependencies. If a dependency cannot"
+  echo "       be found then the broadcast command will continue"
+  echo "       to the next dependency rather than exiting"
+  echo "  -q : print less broadcast information"
+  echo "  -a : run in packages outside the immediate development tree"
+  echo "  -F  : ignore failures and keep going  "
+  echo "  -f  \"<regex>\" : filter the list of packages through grep . "
+  echo "          For example:"
+  echo "             nd280-broadcast -f '[A-Z0-9]$' pwd  "
+  echo "           will print the directory for all packages with a capital letter or digit  at the end of their name."
+  echo "   "
+  echo "           nd280-broadcast -f '[a-z]$' 'cd \$(nd280-system) ; make clean \' "
+  echo "           will  run 'make clean' in all the packages with a lowercase letter at the end of their name"
+  echo
+  echo "Example:"
+  echo "  nd280-broadcast 'cd \$(nd280-system) ; cmake ../cmake'"
+  echo
+  if [ ${#*} != 0 ]; then
+    echo "ERROR: ${*}" | fold -s
+  fi
+  exit 1
+}
+
+missDep=False
+force=False
+terseness=0
+allPackages=False
+filter="\w"
+
+# read the options and arguments
+while getopts "hiqaf:F" option; do
+  case $option in
+    h) usage; exit 0;;
+    i) missDep=True;;
+    a) allPackages=True;;
+    q) let 'terseness=terseness+1';;
+    F) force=True;;
+    f) filter=$OPTARG;;
+    *) echo
+    echo ERROR: Option not valid.
+    echo 
+    usage;;
+  esac
+done
+shift "$((OPTIND-1))"
+
+if [ ${#1} = 0 ]; then
+  usage "Please specify a command to broadcast."
+elif [ $# != 1 ]; then
+  usage "Too many arguments."
+fi
+
+arg=${1}
+
+# Make sure the nd280 software has been initialized.
+#if [ ${#ND280PILOT_ROOT} = 0 ]; then
+#  usage "ND280PILOT_ROOT not set.  Make sure the nd280 software has been setup."
+#fi
+#if [ ${#ND280_ROOT} = 0 ]; then
+#  usage "ND280_ROOT not set.  Make sure the nd280 software has been setup."
+#fi
+
+# Get the current package directory.
+#if (echo $PWD | grep -q "$ND280_ROOT"); then
+#  packagedir=$(echo $PWD | sed "s:^${ND280_ROOT}/\([^/]*\).*:\1:")
+#else
+#  usage "Must be executed inside a package in the ND280_ROOT directory tree."
+#fi
+
+#if [ ${packagedir} = ${ND280_ROOT} ]; then
+#  usage "Cannot be executed in the ND280_ROOT directory"
+#fi
+#=================================================
+#
+# Changed behaviour 6th December 2021 
+#
+# Require us to be in the ${packagesystem} directory of a package,
+# or in the top level directory of a package.
+# Get the package name from contents of files in ../cmake
+#
+packagesystem=$(nd280-system)
+#
+# We must be in  a directory called packagesystem
+#
+whereIam=`pwd | awk -F/ '{print $NF}'`
+
+if [ $whereIam  != $packagesystem ] ; then
+  #
+  # Or in a directory one level higher
+  #
+  if (ls -d $packagesystem >>/dev/null 2>/dev/null ); then
+    cd $packagesystem
+  else
+    #
+    # or in another subdirectory 
+    # 
+    if (ls -d ../$packagesystem >>/dev/null 2>/dev/null); then
+      cd ../$packagesystem
+    else
+      usage "Must be executed in the root directory of an nd280 package or one of its immediate subdirectories."
+    fi
+  fi
+fi
+#
+# Look for files called  ../cmake/xxxPackageVersion.cmake, normally only one but just in case
+#
+package='Unknown'
+for candidateFile in `ls ../cmake/*PackageVersion.cmake `
+do
+  candidate=`echo $candidateFile | awk -F/ '{print $NF}' | sed s/PackageVersion.cmake//g`
+  if (grep $candidate ../cmake/CMakeLists.txt >>/dev/null ) ; then
+    package=$candidate
+  fi
+done
+if [ $package == 'Unknown' ] ; then
+  usage " Failed to deduce package name from contents of files in the cmake directory "
+fi
+# Generate the name of the dependencies file.
+depends=./${package}.dependencies
+
+N=0
+n=0
+
+if [ -f ${depends} ]; then
+  for i in $(cat ${depends}); do
+    let 'N=N+1'
+  done
+else
+  usage "Dependency file ./${package}.dependencies does not exist.  Please run \"cmake ../cmake\"" \
+  " in the ${packagesystem} folder of this package"
+fi
+
+baseDir="$(echo ${CMAKE_PREFIX_PATH} | sed s/:.*//)/"
+baseDir="$(echo ${baseDir} | sed s?//??g)"
+
+#echo " baseDir = $baseDir"
+
+list=$(cat ${depends})
+
+for i in $list ; do
+  let 'n=n+1'
+
+  echo $i |  awk -F/ '{print $(NF-1)}' | awk -F_ '{print $1}' | grep $filter 2>&1 >/dev/null
+  if [ $? -eq 0 ] ;then 
+    runDir=$(dirname $i);
+    if [ "${allPackages}" = False ]; then
+      if ! (echo "$runDir" | grep "${baseDir}" >> /dev/null ) ; then
+        if [ ${terseness} -lt 1 ]; then
+          echo "# Skipping ${runDir} as it is not in ${baseDir}"
+        fi
+        continue
+      fi
+    fi
+
+    if [ ${terseness} -lt 1 ]; then
+      echo
+      echo "#--------------------------------------------------------------"
+      echo "# Now trying command in $(basename `dirname $i`)  ($n/$N)"
+      echo "#--------------------------------------------------------------"
+    elif [ ${terseness} -lt 2 ]; then
+      echo "# Broadcast to $(basename `dirname $i`)  ($n/$N)"
+    fi
+    if [ -d $runDir ]; then
+      if ! (cd $runDir; eval "$arg"); then
+        echo "ERROR: Command failed -- \"${arg}\""
+        if [ "$force" = False ]; then
+          exit 1
+        fi
+      fi
+    else
+      if [ "$missDep" = True ]; then
+        echo "WARNING: Package directory missing : $runDir"
+      else
+        echo "ERROR: Package directory missing : $runDir"
+        echo "Please clone this package or use the \"i\" option" 
+        echo "if you want to ignore it."
+        exit 1;
+      fi
+    fi
+  fi
+done
+
+#-*-Shell-Script-*-

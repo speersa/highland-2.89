@@ -1,0 +1,41 @@
+#! /bin/bash
+
+# This must be a bash script since some of the CMake scripts are not sh
+# safe.  This can be run even if CMake is installed (the tar command
+# preserves the file time).
+
+# The version of CMake that is being installed.
+CMAKEVERSION=3.14
+CMAKEPATCH=0
+
+# The tar file
+CMAKETAR=cmake-${CMAKEVERSION}.${CMAKEPATCH}-Linux-x86_64.tar.gz
+
+echo CMake version ${CMAKEVERSION}.${CMAKEPATCH}
+
+# check if CMAKE has already been cloned, otherwise clone it
+# and remove the version appended to the folder
+if [ ! -d $ND280_ROOT/CMAKE ]; then
+  if ! nd280-fetch-package externals CMAKE CMAKE \
+       ${CMAKEVERSION}.${CMAKEPATCH}; then
+    echo Failed to fetch CMAKE package from GitLab
+    exit 1
+  fi
+fi
+cd $ND280_ROOT/CMAKE_${CMAKEVERSION}.${CMAKEPATCH} 
+
+# Unpack the tar file if not already unpacked
+if [[ ! -d $ND280_ROOT/CMAKE_${CMAKEVERSION}.${CMAKEPATCH}/\
+cmake-${CMAKEVERSION}.${CMAKEPATCH}-Linux-x86_64 ]]; then
+  echo Unpacking tarball...
+  if ! tar xzf ${CMAKETAR}; then
+    echo Failed to unpack CMake source
+    exit 1
+  fi
+else
+  echo CMake binary already installed
+fi
+
+##################################################
+
+#-*-Shell-Script-*-

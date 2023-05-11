@@ -1,0 +1,69 @@
+#####################################################################
+#! /bin/tcsh
+#
+# This file should contain
+#
+#    exec /bin/bash
+#
+# but it doesn't. 
+#
+#####################################################################
+
+# Set an alias to re-source this file again.  This can (and should) be done
+# every time you start working in a new package (or project) directory.
+alias nd280-setup "source @@ND280ROOT@@/nd280SoftwarePilot/nd280SoftwarePilot.cshrc"
+
+# Make sure that other versions of the "nd280SoftwarePilot" scripts directory are removed
+# from the path. 
+setenv PATH `echo $PATH | sed "s,:*[^:]*/nd280SoftwarePilot/scripts:\+,,g"`
+setenv PATH @@ND280ROOT@@/nd280SoftwarePilot/scripts:${PATH}
+rehash
+
+# Store the GIT repository base.
+setenv ND280_GIT @@ND280GIT@@
+
+# Store the root of this installation so that the nd280-* scripts can
+# figure out where they are installed. 
+setenv ND280_ROOT @@ND280ROOT@@
+
+# Set the CMTPROJECTPATH
+setenv CMTPROJECTPATH @@ND280ROOT@@
+
+# Set the CMTSITE tag so that we select any ND280 specific CMT macros
+setenv CMTSITE "ND280"
+
+# Set the CMT configuration variable to be a bit more specific than the CMT
+# default value.
+setenv CMTCONFIG `nd280-system`
+
+# Make sure the CMTPATH variable is empty.  This prevents conflicts between
+# project dependencies.
+unsetenv CMTPATH
+
+# Setup CMT
+if ( -f @@ND280ROOT@@/nd280SoftwarePilot/cmt.cshrc ) then
+   source @@ND280ROOT@@/nd280SoftwarePilot/cmt.cshrc
+endif
+
+# Now source the setup file for the current package.
+set setupfile="/no/such/file"
+foreach s ( ${PWD}/setup.sh \
+    ${PWD}/cmt/setup.sh \
+    ${PWD}/../cmt/setup.sh \
+    ${PWD}/../../cmt/setup.sh \
+    ${PWD}/../../../cmt/setup.sh \
+    ${PWD}/../../../../cmt/setup.sh \
+    ${PWD}/../../../../../cmt/setup.sh )
+    if ( -f ${s} ) then
+        set setupfile=${s}
+    endif
+end
+if ( -f ${setupfile} ) then
+    set cmt=`dirname ${setupfile}`
+    echo Clean with ${cmt}/cleanup.sh
+    source ${cmt}/cleanup.sh
+    echo Setup with ${setupfile}
+    source ${setupfile}
+else
+    echo Environment configured, but specific package is not setup
+endif

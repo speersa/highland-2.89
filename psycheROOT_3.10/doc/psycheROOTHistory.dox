@@ -1,0 +1,121 @@
+/*! \page psyche/psycheROOTHistory History for the psyche/psycheROOT Package 
+
+\section psycheROOT_v3r1_history Version v3r1
+
+Freeze information:
+   - Freeze Date: Sat Jan 27 23:54:15 2018
+   - Freeze User: alexander
+   - Freeze Host: alexandrs-mbp.home
+
+a ROOT CMT wrapper for nd280Highland, 
+in case one wants to use local ROOT version independent from the nd280 software
+
+Set the stable version to v3 so to correspond to the overall frozen version of psyche 
+
+
+
+\section psycheROOT_v3r3_history Version v3r3
+
+Freeze information:
+   - Freeze Date: Wed Nov  6 16:57:30 2019
+   - Freeze User: alexander
+   - Freeze Host: alexandrs-mbp.home
+
+
+A new freeze to includes updates from Jacek who tested and updated the code and the usage of local ROOT version works now 
+
+Added Files:
+        external external_header 
+Log Message:
+add the missing external fragment
+
+Modified Files:
+        requirements 
+Log Message:
+In ROOT We Trust
+
+
+Modified Files:
+        requirements 
+Log Message:
+fix psycheROOT_stamps usage
+
+Modified Files:
+        rootcint 
+Log Message:
+fix psycheROOT_stamps usage
+
+
+
+
+
+\section psycheROOT_3_5_history Version 3_5
+
+Freeze information:  
+   - Freeze Date: Tue Nov 17 15:02:17 2020  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MacBook-Pro.local
+  
+  
+git/cmake version of the package  
+  
+
+
+\section psycheROOT_3_6_history Version 3_6
+
+Freeze information:  
+   - Freeze Date: Wed Nov 18 16:29:54 2020  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MacBook-Pro.local
+  
+  
+new git/cmake freeze in preparation for the first global nd280Highland2 git/cmake
+freeze,  changed cmake config to do nothing if ND280`s ROOT is used
+
+
+\section psycheROOT_3_7_history Version 3_7
+
+Freeze information:  
+   - Freeze Date: Fri Nov 20 14:43:58 2020  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MacBook-Pro.local
+  
+  
+First candidate freeze for git/cmake  
+
+
+\section psycheROOT_3_8_history Version 3_8
+
+Freeze information:  
+   - Freeze Date: Fri Nov 20 16:13:42 2020  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MacBook-Pro.local
+  
+  
+New iteration of the first git/cmake freeze to fix a typo 
+in ROOT/psycheROOT switch  
+
+
+\section psycheROOT_3_9_history Version 3_9
+
+Freeze information:  
+   - Freeze Date: Tue Nov 24 22:18:00 2020  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MacBook-Pro.local
+  
+  
+RooFit libs moved from highlandUtils here
+this simplifies things for the moment  
+
+
+\section psycheROOT_3_10_history Version 3_10
+
+Freeze information:  
+   - Freeze Date: Tue Nov 24 23:54:41 2020  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MacBook-Pro.local
+  
+  
+remove a trailing character  
+
+*/

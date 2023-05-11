@@ -1,0 +1,771 @@
+/*! \page highland2/highlandCorrectionsHistory History for the highland2/highlandCorrections Package 
+
+\section highlandCorrections_v0r1_history Version v0r1
+
+Freeze information:
+   - Freeze Date: Thu Sep 18 10:19:30 2014
+   - Freeze User: acervera
+   - Freeze Host: neutrinos8.local
+
+First freeze of this package, which corresponds to a psyche release
+
+THIS IS A NEW PACKAGE WITH RESPECT TO THE OLD HIGHLAND
+
+corrections that where previously in baseAnalysis/src/corrections 
+have now a separate package in highland2. 
+In this way the can be called also from highlandIO, which do not depend on 
+baseAnalysis
+
+
+
+\section highlandCorrections_v0r3_history Version v0r3
+
+Freeze information:
+   - Freeze Date: Tue Oct  7 22:57:24 2014
+   - Freeze User: acervera
+   - Freeze Host: Anselmo-Cerveras-MacBook-Pro.local
+
+
+adopt to the changes in psycheCore BaseDataClasses: AnaSpillB has now a pointer to AnaEventInfoB
+
+
+
+\section highlandCorrections_v0r5_history Version v0r5
+
+Freeze information:
+   - Freeze Date: Sat Oct 11 00:39:22 2014
+   - Freeze User: acervera
+   - Freeze Host: Anselmo-Cerveras-MacBook-Pro.local
+
+Add ability to use prod6 corrections
+
+- import prod6 dedx correction file for data from highland. 
+- add MC correction for prod6 
+- use the new versionUtils in psyche to chose between prod5 and prod6, now controled via parameters file
+  in baseAnalysus 
+
+
+\section highlandCorrections_v0r7_history Version v0r7
+
+Freeze information:
+   - Freeze Date: Mon Nov 17 17:34:34 2014
+   - Freeze User: acervera
+   - Freeze Host: portanselmo.ific.uv.es
+
+Fully validated	version of FlatTree creation, Selection and Systematics.
+It will	be used	to create first	official FlatTrees.
+
+
+- Don't use the PileUp.dat systematics file for the corrections. Copy the mean value in a new file 
+  PileUpCorrection_p6B.dat and  PileUpCorrection_p5F.dat and in highlandCorrections/.../data
+- correct bug in production selection for the TPCdEdxDataCorrection
+- update of the dEdx corrections for data. This should fix the crash reported for some files from run4
+- Move IgnoreRightEcal correction data from baseAnalysis
+
+
+
+\section highlandCorrections_v0r9_history Version v0r9
+
+Freeze information:
+   - Freeze Date: Sun Nov 30 13:46:31 2014
+   - Freeze User: acervera
+   - Freeze Host: Macintosh-64b9e8d35af0.local
+
+
+Release for the highland to highland2 migration tutorial on Dec 1st 2014.
+Selections give the same results for oaAnalysis and FlatTrees
+Systematics give slighly different results (Under investigation). Not crucial for tutorial
+
+
+- Use members in VersioninUtils to control independenty the production for 
+  corrections, systematics and bunching
+- add highlandUtils dependency in requirements file
+
+
+
+\section highlandCorrections_v0r11_history Version v0r11
+
+Freeze information:
+   - Freeze Date: Wed Dec 10 18:34:16 2014
+   - Freeze User: acervera
+   - Freeze Host: Macintosh-64b9e8d35af0.local
+
+add new pileup correction tables 
+
+
+\section highlandCorrections_v0r13_history Version v0r13
+
+Freeze information:
+   - Freeze Date: Wed Feb 18 11:30:10 2015
+   - Freeze User: acervera
+   - Freeze Host: Macintosh-64b9e8d35af0.local
+
+Add default mainpage.dox so that package  can be referenced from another one in doxygen using \ref
+
+IgnoreRightECalRuns3and4Correction
+- when we remove the right ecal segment from the track also
+  make sure to modify the detector bit field appropriately
+- no need to apply the correction for production 6, 
+  it is already taken into account in MC
+
+MomResolMCCorrection:
+- first version of the momentum resolution correction (MC smearing);
+  this is to split systematics and corrections,  i.e. to have a consistent way of smear
+  MC w/o the need to use systematics with zero var
+- Remove obsolete TPCMomResolMCCorrection
+
+
+\section highlandCorrections_v1r1_history Version v1r1
+
+Freeze information:
+   - Freeze Date: Tue Mar 31 18:55:03 2015
+   - Freeze User: acervera
+   - Freeze Host: Macintosh-64b9e8d35af0.local
+
+Major freeze with many changes in psyche 
+to allow selection depending systematics, and performance optimization
+
+Only change: 
+  Update of the file with new corrections for anti-nu mode. Run5 corrections estimated with rdp data, Run6 correction with fpp data. Corrections are given in a more clean format
+
+
+
+\section highlandCorrections_v1r3_history Version v1r3
+
+Freeze information:
+   - Freeze Date: Thu Apr 30 16:01:41 2015
+   - Freeze User: acervera
+   - Freeze Host: Macintosh-64b9e8d35af0.local
+
+- added a fix to account (for a problem related) to bug 1102,  do not use covUtils method
+  to set the sub-detector used bit (since the latter uses some hard-coded values to account for oaAnalysis numbering)
+
+
+
+\section highlandCorrections_v1r5_history Version v1r5
+
+Freeze information:
+   - Freeze Date: Mon Jun 22 19:12:27 2015
+   - Freeze User: acervera
+   - Freeze Host: Macintosh-64b9e8d35af0.local
+
+TPCdEdxCorrection_p6B.dat:
+ - uploading corrections for Run6 data collected between January and March 2015. Corrections for other runs are unchanged
+ - if the run number is outside the current range just assume no correction (1.) so that the code wont crash (same commit already done by Sasha but removed)
+
+PileUpFGD1Correction_p6B.dat PileUpFGD2Correction_p6B.dat
+ - Updated PileUp correction numbers and new numbers for run5,6
+
+
+\section highlandCorrections_v1r7_history Version v1r7
+
+Freeze information:
+   - Freeze Date: Wed Sep 23 17:17:01 2015
+   - Freeze User: acervera
+   - Freeze Host: portanselmo.ific.uv.es
+
+- added ToF correction (smears MC to match data) and also there is an option to actually flip/reverse tracks if needed
+based on ToF info. the correction may be useful for various analysis so should be kept in a general package (similar one exists in numuCCBwdAnalysis)
+
+
+
+\section highlandCorrections_v1r9_history Version v1r9
+
+Freeze information:
+   - Freeze Date: Fri Jan  8 13:09:31 2016
+   - Freeze User: acervera
+   - Freeze Host: Macintosh-64b9e8d35af0-2.local
+
+
+- dEdx corrections for data for run6 (April to June2015) are now available. Corrections for run 6 are all the same for all subset of runs (semi-rdp, pc1_Jan-to-April and pc1_April-to-June) 
+
+ToFCorrection: 
+- random seed for ToF correction in parameters file
+- reflect the changes into ToFSenseCorrector flip a track if needed if a sense does not match ToF
+- special treatment for FGD-ECal ToF cases:
+  instead of isForward check split based on whether a track starts in/out of FGD, 
+  note,  this is optimized for tracker selection
+
+FlipKinematicsCorrection: 
+- new correction to recover reverse fit failures, needs highlandRecPack
+
+MomRangeCorrection: 
+- new momentum by range correction: use highlandRecPack to substitute prange values (since is easier to estimate the systematics this way)
+  only RangeMomentumMuon is affected
+
+
+
+\section highlandCorrections_v1r11_history Version v1r11
+
+Freeze information:
+   - Freeze Date: Fri Feb  5 12:22:54 2016
+   - Freeze User: acervera
+   - Freeze Host: portanselmo.ific.uv.es
+
+MomRangeCorrection:
+- used kFGD volume as a default detector
+- use IsRelevantTrack() method: a track should
+  start/stop in a given det and fail TPC quality
+
+Move to version v2
+
+
+\section highlandCorrections_v2r1_history Version v2r1
+
+Freeze information:
+   - Freeze Date: Sun Mar  6 17:42:25 2016
+   - Freeze User: acervera
+   - Freeze Host: Macintosh-64b9e8d35af0-2.local
+
+major reorganization with new packages and  changes in event model class names
+
+- MomResolMCCorrection: udapted to use new MomentumResolVariation utility class
+- TPCPIDPullMCCorrection: TPC PID correction based on data-mc differencies in  PID pulls
+
+
+\section highlandCorrections_v2r3_history Version v2r3
+
+Freeze information:
+   - Freeze Date: Thu May  5 10:13:44 2016
+   - Freeze User: acervera
+   - Freeze Host: ip-192-168-19-79.private.net
+
+ToFCorrection:
+- New smearing that takes into account the new HasValidToF method inherit from ToFSenseCorrector. It distingishes between different topologies.
+- Addition of sand muons correction. Rearregment of correction to work porperly.
+- ForceForward now apply in the HasValidToF method. Addition of remaining sand muons.
+
+FlipKinematicsCorrection: 
+- reflect re-naming for the TPC: BackMomentum->MomentumEnd (although not sure it makes sense to split between front and back momentum for a TPC)
+- HasValidToF in Apply method. It is needed because we have to force tracks to be forward going.
+
+CorrId.hxx:
+- correction enums
+
+TPCPIDPullMCCorrection:
+- cadopted to the changes in TPCPIDVariation (psycheND280Utils)
+
+
+
+\section highlandCorrections_v2r5_history Version v2r5
+
+Freeze information:
+   - Freeze Date: Sat Jun 11 17:18:22 2016
+   - Freeze User: acervera
+   - Freeze Host: Macintosh-64b9e8d35af0-2.local
+
+MomResolMCCorrection: 
+- adopting to changes in psycheND280Utils
+- use methods with ToyExperiment input (so to be general between systematics and correction)
+- use a paramter (read from psycheSystematics) to contol whether to use new smearing based on TPC-local info propagated
+  to global
+
+
+
+\section highlandCorrections_v2r7_history Version v2r7
+
+Freeze information:
+   - Freeze Date: Fri Sep 23 17:28:50 2016
+   - Freeze User: acervera
+   - Freeze Host: macintosh-64b9e8d35af0.local
+
+FlipKinematicsCorrection, ToFCorrection, ToFCorrection: 
+- updated to the changes done to the psycheND280Utils::ToFSenseCorrector, 
+  function names,  reutrn values etc
+- FlipKinemaitcs: moved the ToF validity checks into the IsRelevant... function, 
+  added a warning to highlight the correction is being run (compiled) with recpack enabled
+- for the correction, read the parameter on whether to apply the track flip based on ToF from 
+  the psyche systematics,  these two are fully related
+
+highlandCorrections.parameters.dat:
+- read parameter from pyscheSystematics
+
+
+
+\section highlandCorrections_v2r9_history Version v2r9
+
+Freeze information:
+   - Freeze Date: Wed Nov  1 10:13:28 2017
+   - Freeze User: alexander
+   - Freeze Host: alexandrs-mbp.home
+
+ToFCorrection.cxx ToFCorrection.hxx 
+- removed a parameter to control applying the ToF based flip in ToF
+correction/systematic,  the latter will just do the smearing
+- new ToF correction parameters from Alfonso
+Computed using Data-6K and MC-6B. The previous ones were Data-6B and MC-6B
+
+TPCdEdxCorrection_p6B.dat
+- dEdx data correction for run7 and run8 added
+
+FlipKinematicsCorrection.cxx ToFCorrection.cxx 
+- reflect changes in ToFSenseCorrector
+
+GetTopology->GetTopologies() 
+functionality
+
+PileUpCorrection.cxx PileUpCorrection.hxx 
+- getting rid of this correction:
+all re-weighing is done via systematics
+
+
+
+
+
+\section highlandCorrections_v2r11_history Version v2r11
+
+Freeze information:
+   - Freeze Date: Tue Aug 21 02:52:27 2018
+   - Freeze User: alexander
+   - Freeze Host: alexandrs-macbook-pro.local
+
+
+a new freeze to have a stable/reference version for further nd280 developments
+
+- FGDPIDPullMCCorrection.cxx FGDPIDPullMCCorrection.hxx
+splitting systematic and correction for FGD PID pulls, 
+a corresponding correction added
+
+- CorrId.hxx TPCPIDPullMCCorrection.hxx
+CorrId: added kFGDPidMCPull
+TPCPID: minor
+
+ToFCorrection.cxx ToFCorrection.hxx
+reviewed the TOF: modify the code to handle better the data (now is read from
+the data file), added FGD2!
+
+- highlandCorrections.parameters.dat
+ToF params moved to the data file
+
+rms cut params for time data quality correction
+for the moment dummy params for ecal, fgd and p0d
+  to be tuned
+
+- ToFCorrection_p6K.dat
+ToF correction params including FGD2
+
+- ECal_interdet_timecali_RMS_run8.dat 
+  P0D_interdet_timecali_RMS_run8.dat
+
+added P0D and ECal inter-detector time calibration data for run8
+will be used to define good/bad DQ periods
+
+
+- TimeDataQualityCorrection.cxx TimeDataQualityCorrection.hxx
+new time data quality correction
+sets time flags depending on the rms values provided by the cali group and cuts
+set via param file (preliminary dummy values for the moment)
+
+- CorrId.hxx
+added Time data quality correction
+
+
+
+\section highlandCorrections_v2r13_history Version v2r13
+
+Freeze information:
+   - Freeze Date: Fri Sep  6 13:00:55 2019
+   - Freeze User: alexander
+   - Freeze Host: Alexandrs-MacBook-Pro.local
+
+
+Modified Files:
+        TimeDataQualityCorrection.cxx 
+Log Message:
+fixed a typo when filling time dq flags
+
+Added Files:
+        ToFCorrection_p6M.dat 
+Log Message:
+ToF corrections computed using all the runs from run2 to run7
+
+Added Files:
+        FGDPIDCorrection.cxx FGDPIDCorrection.hxx 
+Log Message:
+FGD PID correction: re-calculation of pulls based on the pull_pdf maps from
+fgdRecon
+
+Modified Files:
+        CorrId.hxx 
+Log Message:
+FGD PID correction: pid pull recalculation
+
+
+Modified Files:
+        highlandCorrections.parameters.dat 
+Log Message:
+parameter to control which pdfs to use for FGD PID re-calculation
+default - p6-like (another option is p7-like)
+
+Added Files:
+        pdf_fgd1_Electron.dat pdf_fgd1_Muon.dat pdf_fgd1_Pion.dat 
+        pdf_fgd1_Proton.dat pdf_fgd2_Electron.dat pdf_fgd2_Muon.dat 
+        pdf_fgd2_Pion.dat pdf_fgd2_Proton.dat pdf_fitting_fgd1.dat 
+        pdf_fitting_fgd2.dat pulls_EvsX_FGD1.dat pulls_EvsX_FGD2.dat 
+Log Message:
+fgdRecon data for pid re-calculation
+
+Modified Files:
+        highlandCorrections.parameters.dat 
+Log Message:
+minor: set p0d time dq cut to some more reasonable value 
+
+Modified Files:
+        TimeDataQualityCorrection.cxx 
+Log Message:
+fixed a bug - time dq cut values should be read as doubles
+
+Modified Files:
+        FGDPIDCorrection.cxx FGDPIDCorrection.hxx 
+Log Message:
+added an additional correction to account for a missing water layer in Run7
+onwards: subtract a path in the first water layer (if crossed) from track X
+
+Modified Files:
+        highlandCorrections.parameters.dat 
+Log Message:
+a parameter to control whether to apply an additional correction for 
+a missing FGD2 water layer for Run7 onwards
+ON by default
+
+
+Modified Files:
+        FGDPIDPullMCCorrection.cxx 
+Log Message:
+fixed a bug:
+force pions to be treated as muons
+
+
+Modified Files:
+        ToFCorrection.cxx 
+Log Message:
+<   file.open((std::string(getenv("HIGHLANDCORRECTIONSROOT")) +
+"/data/ToFCorrection_p6K.dat").c_str()); 
+---
+>   file.open((std::string(getenv("HIGHLANDCORRECTIONSROOT")) +
+>   "/data/ToFCorrection_p6M.dat").c_str()); 
+
+updated to the new 6M corrections from Ciro
+
+
+
+
+
+
+
+
+\section highlandCorrections_v2r15_history Version v2r15
+
+Freeze information:
+   - Freeze Date: Wed Nov  6 19:01:14 2019
+   - Freeze User: alexander
+   - Freeze Host: alexandrs-mbp.home
+
+
+A new freeze of highlandCorrections with the following updates:
+
+Modified Files:
+        FGDPIDCorrection.cxx 
+Log Message:
+remove checking a run period since was only relevant for pre-Prod6T
+
+
+Modified Files:
+        TPCdEdxCorrection_p6B.dat 
+Log Message:
+updated to include run9 numbers 
+calculated here
+
+https://www.t2k.org/nd280/physics/SystematicsAndSelection/Meetings/2019/ssv22022019/tpc-dedx-corrections
+
+
+
+
+
+
+
+\section highlandCorrections_v2r17_history Version v2r17
+
+Freeze information:
+   - Freeze Date: Sat Feb 29 14:44:41 2020
+   - Freeze User: alexander
+   - Freeze Host: alexandrs-mbp.dlink
+
+
+
+Since preparing a big freeze for summer 2020 OA, increase the version number where appropriate 
+
+A new freeze of highlandCorrections package
+
+Modified Files:
+        FlipKinematicsCorrection.cxx 
+Log Message:
+remove debugging verbosity
+
+
+Modified Files:
+        mainpage.dox 
+Log Message:
+Remove the word package from the end of the  \page line
+
+Modified Files:
+        ToFCorrection.cxx ToFCorrection.hxx 
+Log Message:
+added new topologies as e.g. P0D_FGD1_Shower and varios for sand added by Ciro
+with prod6M
+
+improved the naming, so that all topos follow the same namenculature 
+
+added more topologies for sand
+
+Modified Files:
+        ToFCorrection_p6M.dat 
+Log Message:
+improved the naming so that all the topos follow the saming conventions
+cosmetics, align the numbers so that is easier to read them
+
+
+
+\section highlandCorrections_v2r19_history Version v2r19
+
+Freeze information:
+   - Freeze Date: Fri Oct  2 10:58:08 2020
+   - Freeze User: alexander
+   - Freeze Host: Alexandrs-MacBook-Pro.local
+
+
+A new freeze of   highland2/psyche for summer 2020 OA publications as the main goal,
+also the base version for migration to cmake and git
+
+Modified Files:
+        ToFCorrection_p6M.dat 
+Log Message:
+Updated kP0D_FGD1_ToF_MC_TrueBwd_Track and kFGD1_FGD2_ToF_MC_TrueBwd with correct
+numbers
+
+Modified Files:
+        TPCPIDPullMCCorrection.cxx 
+Log Message:
+use TPCPIDVariation::HypEnum TPCPIDVariation::GetPIDHypo(Int_t PDG) const 
+method
+
+
+
+\section highlandCorrections_2_21_history Version 2_21
+
+Freeze information:  
+   - Freeze Date: Fri Nov 20 14:54:28 2020  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MacBook-Pro.local
+  
+  
+First freeze of git/cmake version  
+
+
+\section highlandCorrections_2_22_history Version 2_22
+
+Freeze information:  
+   - Freeze Date: Mon Feb  8 23:42:47 2021  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MacBook-Pro.local
+  
+  
+Add run dependent ToF corrections
+
+Now use separate values for FHC and RHC: more can be easily added as they come
+
+The following inputs are used
+
+ ToFCorrection_FHCRun2-4_p6M.dat 
+ToFCorrection_RHCRun5-9_p6M.dat 
+  
+  
+
+
+\section highlandCorrections_2_23_history Version 2_23
+
+Freeze information:  
+   - Freeze Date: Thu Mar  4 12:28:26 2021  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MacBook-Pro.local
+  
+  
+A new freeze with a goal to prepare a version for further developments of ND280 4pi selections for OA and xsec measurements. Also includes  updates to numu CC multi-pi + photons selection which lead to an increase of samples` purities.
+
+add (commented out) use of highlandRecPack since the latter is used for some corrections on certain circumstances: e.g. 4pi selection with tracks` flipping  
+  
+
+
+\section highlandCorrections_2_24_history Version 2_24
+
+Freeze information:  
+   - Freeze Date: Tue Jun 22 15:27:22 2021  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MacBook-Pro.local
+  
+  
+
+add pion hypothesis for mom-range
+
+mom-range correction applied now for FGD (FGD1 or FGD2) by default
+
+TPC PID:  added kaon treatment as well, variations are taken from protons but the values themselves from kaons
+
+mass scaling applied for kaon momentum to match proton dedx range 
+ 
+  
+
+
+\section highlandCorrections_2_25_history Version 2_25
+
+Freeze information:  
+   - Freeze Date: Thu Sep  2 20:41:45 2021  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MacBook-Pro.local
+  
+  
+
+Add run8 TOF numbers from Danaisis for corrections and systematics   
+  
+
+
+\section highlandCorrections_2_26_history Version 2_26
+
+Freeze information:  
+   - Freeze Date: Fri Jan 28 19:29:09 2022  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MBP
+  
+  
+A new freeze, main goal: first iteration of 4pi    multi-pi selections in psyche, udpa\
+tes to make the    software working with the recent prod7,    updates    to some    systs: mom-\
+range, fgd-ecal-(smrd) high-angle matching, fgd    pid (apply also to the "wrong" true\
+ pdg)
+
+update FGD PID to vary wrong (wrt true pdg) pulls
+  
+
+
+\section highlandCorrections_2_27_history Version 2_27
+
+Freeze information:  
+   - Freeze Date: Fri May 20 18:04:04 2022  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MBP
+  
+  
+A new freeze:
+add corr to add FGD PIDMIPLike var  
+
+
+\section highlandCorrections_2_28_history Version 2_28
+
+Freeze information:  
+   - Freeze Date: Wed Jun  1 17:00:37 2022  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MBP
+  
+  
+The main goal of the freeze is to add new versioning scheme for systematics, corrections and POT 
+
+Now all possible productions included: Prod5, Prod6 and Prod7 wrt the previous is/isnt Prod6 check.
+
+A Highland-run analysis by default will get and set a production index based on input, . if the version check is OFF then all defaults to Prod6. One can also set it with param file,
+psycheSteering controls versioning with a param file.
+
+
+For corrections and systematics split data storage files into Prod5, Prod6 and Prod7 where the appropriate data files should go. It also BinnedParams to use ExtensionSyst() or ExtenstionCorr() so that an appropriate data files is used for a correction or a systematic. 
+As for these freeze Prod7 data for systematics and correction is just a copy of the one from Prod6: is expected to be populated with new numbers as Prod7 validation progresses. 
+
+Also fixes a bug with versions checks in numuCCZeroPiAnalysis 
+
+  
+  
+
+
+\section highlandCorrections_2_29_history Version 2_29
+
+Freeze information:  
+   - Freeze Date: Sun Jul 31 20:01:53 2022  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MBP
+  
+  
+
+A new freeze prepared to work with prod6Y/Z/AA and prod7_V06/07 + adds utils/vars for FGD charge related analyses + updates tof treatment with an infrastructure for both time smearing and time-slips + add FGD2 4pi multi-pi selection + add true info utils for AnaHits 
+
+
+add tof time slip corr
+add data files for time-slip corr
+set AnaToF::Flag_* vars to tag slips
+reorganize tof and tof time slip corrs
+Merge branch 'add_tof_time_slip_correction' into 'master'  
+  
+
+
+\section highlandCorrections_2_30_history Version 2_30
+
+Freeze information:  
+   - Freeze Date: Thu Oct 20 17:05:39 2022  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MBP
+  
+  
+
+A new freeze of HighLAND2 software. The main goal is to have a reference version for expected nd280-upgrade merging work, then updates to ToF treatement (smearing x slips correction and updated systematics), updates to FGDs 4pi selections (mature versions ready for preliminary OA tests, some tuning on-going), technical updates like using local HASSERT wrt assert to deal with default NDEBUG setting, also for CI and eg RECPACK added as an option for installation (outside highland but highland2SoftwarePilot) and will be used in containers.
+
+Update numbers for TOF smearing and slip corrections for Prod6 FHC 2-4, FHC 8 and RHC&nbsp;  
+  
+
+
+\section highlandCorrections_2_31_history Version 2_31
+
+Freeze information:  
+   - Freeze Date: Wed Jan 11 15:17:09 2023  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MBP
+  
+  
+a new freeze
+
+Fix FGD PID Pull MC correction: make sure that a proper FGD det is used when FGD1 and FGD2 are both present, fix mis-use of wrong and correct hypos used for correction!  
+
+
+\section highlandCorrections_2_32_history Version 2_32
+
+Freeze information:  
+   - Freeze Date: Thu Apr  6 13:39:48 2023  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MacBook-Pro.local
+  
+  
+
+A new freeze 
+
+
+fully reviewed fgd pid syst&corr implementation
+
+get rid of corr/incorr hypo, instead
+require one to provide a variation given a track and a pdg_hypo,
+then one will vary a pull corresponding to the pdg_hypo
+change data tables accordingly: p6 and p7
+data for p6 stays the same (means and sigmas), just the bins have changed
+whether to use e.g. muon numbers for pions is controlled via tables since may change as are CSs improved
+
+improve debugging for FGD PID pull MC correction  
+
+
+\section highlandCorrections_2_33_history Version 2_33
+
+Freeze information:  
+   - Freeze Date: Wed Apr 19 22:58:36 2023  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MacBook-Pro.local
+  
+  
+A new freeze 
+
+get rid of prod5 treatment: not supported anymore  
+  
+
+*/

@@ -1,0 +1,46 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/home/t2k/aspeers/Highland_Installs/HighLAND_2.89/ROOT_5.34.34.00/Linux-CentOS_7-gcc_4.8-x86_64/CMakeFiles/root"
+		},
+		{
+			"file" : "/home/t2k/aspeers/Highland_Installs/HighLAND_2.89/ROOT_5.34.34.00/Linux-CentOS_7-gcc_4.8-x86_64/CMakeFiles/root.rule"
+		},
+		{
+			"file" : "/home/t2k/aspeers/Highland_Installs/HighLAND_2.89/ROOT_5.34.34.00/Linux-CentOS_7-gcc_4.8-x86_64/CMakeFiles/root-complete.rule"
+		},
+		{
+			"file" : "/home/t2k/aspeers/Highland_Installs/HighLAND_2.89/ROOT_5.34.34.00/Linux-CentOS_7-gcc_4.8-x86_64/stamps/root-install.rule"
+		},
+		{
+			"file" : "/home/t2k/aspeers/Highland_Installs/HighLAND_2.89/ROOT_5.34.34.00/Linux-CentOS_7-gcc_4.8-x86_64/stamps/root-mkdir.rule"
+		},
+		{
+			"file" : "/home/t2k/aspeers/Highland_Installs/HighLAND_2.89/ROOT_5.34.34.00/Linux-CentOS_7-gcc_4.8-x86_64/stamps/root-download.rule"
+		},
+		{
+			"file" : "/home/t2k/aspeers/Highland_Installs/HighLAND_2.89/ROOT_5.34.34.00/Linux-CentOS_7-gcc_4.8-x86_64/stamps/root-update.rule"
+		},
+		{
+			"file" : "/home/t2k/aspeers/Highland_Installs/HighLAND_2.89/ROOT_5.34.34.00/Linux-CentOS_7-gcc_4.8-x86_64/stamps/root-patch.rule"
+		},
+		{
+			"file" : "/home/t2k/aspeers/Highland_Installs/HighLAND_2.89/ROOT_5.34.34.00/Linux-CentOS_7-gcc_4.8-x86_64/stamps/root-configure.rule"
+		},
+		{
+			"file" : "/home/t2k/aspeers/Highland_Installs/HighLAND_2.89/ROOT_5.34.34.00/Linux-CentOS_7-gcc_4.8-x86_64/stamps/root-build.rule"
+		},
+		{
+			"file" : "/home/t2k/aspeers/Highland_Installs/HighLAND_2.89/ROOT_5.34.34.00/Linux-CentOS_7-gcc_4.8-x86_64/stamps/root-PostConfigure.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"root"
+		],
+		"name" : "root"
+	}
+}

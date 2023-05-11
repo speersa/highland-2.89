@@ -1,0 +1,28 @@
+ToFSenseCorrector::kToFTopo_FGD1FGD2                                       0.0  0.003
+ToFSenseCorrector::kToFTopo_FGD1P0D_Track                                  0.04  0.042
+ToFSenseCorrector::kToFTopo_FGD1P0D_Shower                                 0.069  0.074
+ToFSenseCorrector::kToFTopo_FGD1ECAL_LAStartFgd_Track                      0.062  0.035
+ToFSenseCorrector::kToFTopo_FGD1ECAL_LAStartFgd_Shower                     0.058  0.04
+ToFSenseCorrector::kToFTopo_FGD1ECAL_LAEndFgd_Track                        0.102  0.056
+ToFSenseCorrector::kToFTopo_FGD1ECAL_LAEndFgd_Shower                       0.087  0.063
+ToFSenseCorrector::kToFTopo_FGD1ECAL_HAStartFgd_Track                      0.042  0.032
+ToFSenseCorrector::kToFTopo_FGD1ECAL_HAStartFgd_Shower                     0.074  0.082
+ToFSenseCorrector::kToFTopo_FGD1ECAL_HAEndFgd_Track                        0.089  0.048
+ToFSenseCorrector::kToFTopo_FGD1ECAL_HAEndFgd_Shower                       0.045  0.078
+ToFSenseCorrector::kToFTopo_FGD2ECAL_LAStartFgd_Track                      0.06  0.034
+ToFSenseCorrector::kToFTopo_FGD2ECAL_LAStartFgd_Shower                     0.062  0.075
+ToFSenseCorrector::kToFTopo_FGD2ECAL_LAEndFgd_Track                        0.091  0.061
+ToFSenseCorrector::kToFTopo_FGD2ECAL_LAEndFgd_Shower                       0.095  0.058
+ToFSenseCorrector::kToFTopo_FGD2ECAL_HAStartFgd_Track                      0.057  0.051
+ToFSenseCorrector::kToFTopo_FGD2ECAL_HAStartFgd_Shower                     0.045  0.125
+ToFSenseCorrector::kToFTopo_FGD2ECAL_HAEndFgd_Track                        0.069  0.042
+ToFSenseCorrector::kToFTopo_FGD2ECAL_HAEndFgd_Shower                       0.062  0.04
+ToFSenseCorrector::kToFTopo_FGD2DSECAL_LAStartFgd_Track                    0.01  0.032
+ToFSenseCorrector::kToFTopo_FGD2DSECAL_LAStartFgd_Shower                   0.011  0.02
+ToFSenseCorrector::kToFTopo_FGD1FGD2_NoStopFGD1                            0.0  0.0
+
+
+
+
+
+

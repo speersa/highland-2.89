@@ -1,0 +1,180 @@
+#! /usr/bin/env python
+#
+# Get a package from it's repository and install it.  This will check out
+# any dependent packages and checkout at the same CMTPATH.
+
+import os
+import sys
+import getopt
+import shutil
+from sets import Set
+from nd280 import shell
+from nd280 import cmt
+
+def usage():
+    print("""
+nd280-install-package repoName [version]
+
+This clones a repository containing a package from the main caption
+git server.  It then checks for package dependencies and clones them.
+After all packages are cloned, it configure the packages.  If the
+"--make=<target>" option has been set, then "cmt broadcast make
+<target>" will be run.
+
+Options:
+
+    -h, --help : Print this message.
+    -m, --make=<target> : Run cmt broadcast make target.
+    -jN        : Set the number of jobs to run in make.
+
+Examples:
+
+    nd280-install-package nd280Release 
+         # Install nd280Release plus all of its dependencies.
+
+    nd280-install-package nd280Release 1.2.3 
+         # Install nd280Reelease 1.2.3 plus all of its dependencies.
+""")
+
+def PullPackage(path):
+    """ Pull a package.  This safely runs a pull in path.  If the
+    package has not been cloned, then this exit with an error.  If the
+    path isn't a git directory, or is on a detached head, this just
+    returns (with possible "error" messages on std out."""
+
+    if not os.path.exists(path): 
+        print("ERROR: Cannot pull", path, " because package is not present")
+        sys.exit(1)
+
+    # The project exists and came from git.  Try to pull the
+    # latest version.
+    try:
+        shell.Shell("(cd " + path + "; git pull)");
+    except:
+        print("Not on a branch: This is a tagged version so don't pull.")
+
+
+def ClonePackage(package,version):
+    """ Clone a package.  This returns the package cmt directory
+    relative to the current directory."""
+
+    if package == None: return sys.exit(1)
+    if version == None: return sys.exit(1)
+
+    # Check if the package exists
+    if os.path.exists(package+ "/cmt/requirements"): 
+        PullPackage(package)
+        return package + "/cmt"
+
+    if os.path.exists(package+"/"+version+"/cmt/requirements"):
+        PullPackage(package+"/"+version)
+        return package+"/"+version+"/cmt"
+    
+    try:
+        shell.Shell("(nd280-clone " 
+                    + package + " " + version + ")") 
+    except:
+        print("ERROR: Cannot clone", package, version)
+        sys.exit(1)
+        
+    return package + "/cmt"
+        
+def InitializePackage(package,initialized):
+    """Make sure that a package is initialized. This can be called
+    multiple times on the same package"""
+    if package.name in initialized: return True
+    for used in package.use:
+        if used.name not in initialized: return False
+    initialized.add(package.name)
+    print("Initialize Package:", package.name)
+
+try:
+    options, args = getopt.gnu_getopt(sys.argv[1:], 
+                                      "hm:j:",
+                                      ["help",
+                                       "make=",
+                                       "jobs="])
+except:
+    usage()
+    print("ERROR: Invalid option.")
+    sys.exit(1)
+
+# If this is not None, the make target is the target to broadcast in
+# the installed package.
+makeTarget = None
+makeJobs = ""
+
+for option, value in options:
+    if option == "-h" or option == "--help":
+        usage()
+        sys.exit(0)
+    elif option == "-m" or option == "--make":
+        makeTarget=value
+    elif option == "-j" or option == "--jobs":
+        makeJobs="-j"+value
+    else:
+        usage()
+        print("ERROR: Inconceivable.  This can't happen.")
+        print("    \'I do not think you know what that word means\'")
+        sys.exit(1)
+
+# Check that we have the right number of arguments.      
+if len(args) < 1 or len(args) > 2: 
+    usage()
+    print("ERROR: Wrong number of arguments.")
+    sys.exit(1)
+
+# Get the repository name.  This is the offset of the repository
+# relative to ND280_GIT
+repositoryName = args[0]
+
+# Get the version
+versionTag = "master"
+if len(args) > 1: versionTag=args[1]
+
+print("Install Package:", repositoryName, "   Version:", versionTag)
+
+packageRoot = ClonePackage(repositoryName,versionTag)
+
+# Make sure all of the missing packages have been cloned.
+lastCloned=""
+continueLooking = True
+while continueLooking:
+    continueLooking = False
+    missing = cmt.GetMissing(packageRoot)
+    if len(missing) < 1: break
+    for package in missing:
+        # Skip wild card packages and hope for the best...
+        if package.version == None: continue
+        if package.version.find("*") >= 0: continue
+        print("Clone missing package: ", package.name, package.version)
+        ClonePackage(package.name,package.version)
+        if lastCloned == package.name: 
+            print("ERROR: Cannot find ", package.name)
+            sys.exit(1)
+        lastCloned = package.name
+        continueLooking = True
+        break
+
+# Configure the package.
+shell.Shell("(cd " + packageRoot 
+            + "; CMTPATH='' cmt config)")
+
+# Make sure all of used packages have been pulled.
+shell.Shell("(cd " + packageRoot 
+            + "; CMTPATH='' cmt broadcast '(git pull || true)' )")
+
+# Make sure all of tghe used packages are reconfigured.
+shell.Shell("(cd " + packageRoot 
+            + "; CMTPATH='' cmt broadcast cmt config)")
+
+# Make sure everything is built.
+if makeTarget != None:
+    shell.Shell("(cd " + packageRoot + "; CMTPATH=''"
+                + "; . ./cleanup.sh"
+                + "; . ./setup.sh"
+                + "; cmt broadcast "
+                + "'(make VERBOSE=1 -k " + makeJobs+ " " + makeTarget
+                + " || true)'"
+                + " )")
+    

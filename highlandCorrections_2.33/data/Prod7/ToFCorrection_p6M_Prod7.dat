@@ -1,0 +1,78 @@
+kP0D_FGD1_ToF_MC_TrueFwd_Track                 -1.100   0.436
+kP0D_FGD1_ToF_MC_TrueBwd_Track                 -0.939   2.570
+kP0D_FGD1_ToF_MC_Sand_Track                    -0.145   1.940
+
+kP0D_FGD1_ToF_MC_TrueFwd_Shower                -1.190   4.420
+kP0D_FGD1_ToF_MC_TrueBwd_Shower                -0.730   0.417
+kP0D_FGD1_ToF_MC_Sand_Shower                    0.012   0.330
+                                                    
+kFGD1_FGD2_ToF_MC_TrueFwd                       0.118   0.794
+kFGD1_FGD2_ToF_MC_TrueBwd                      -0.105   2.380
+kFGD1_FGD2_ToF_MC_Sand                         -0.330   1.710  
+                                                    
+kECal_FGD1_ToF_MC_LAStartFgd_TrueFwd_Shower     0.169   1.840
+kECal_FGD1_ToF_MC_LAStartFgd_TrueBwd_Shower     1.600   3.030
+kECal_FGD1_ToF_MC_LAStartFgd_TrueFwd_Track     -0.189   2.080
+kECal_FGD1_ToF_MC_LAStartFgd_TrueBwd_Track      0.945   6.620
+kECal_FGD1_ToF_MC_LAStartFgd_Sand_Shower        0.298   1.660
+kECal_FGD1_ToF_MC_LAStartFgd_Sand_Track        -0.297   1.570
+                                                    
+kECal_FGD1_ToF_MC_LAEndFgd_TrueFwd_Shower       0.047   5.640
+kECal_FGD1_ToF_MC_LAEndFgd_TrueBwd_Shower      -0.531   0.570
+kECal_FGD1_ToF_MC_LAEndFgd_TrueFwd_Track       -1.120   3.080
+kECal_FGD1_ToF_MC_LAEndFgd_TrueBwd_Track       -1.030   3.500
+                                                    
+kECal_FGD1_ToF_MC_HAStartFgd_TrueFwd_Shower     0.763   1.880
+kECal_FGD1_ToF_MC_HAStartFgd_TrueBwd_Shower     1.410   2.700
+kECal_FGD1_ToF_MC_HAStartFgd_TrueFwd_Track      0.468   1.980
+kECal_FGD1_ToF_MC_HAStartFgd_TrueBwd_Track      0.172   2.170
+kECal_FGD1_ToF_MC_HAStartFgd_Sand_Shower        0.846   3.230
+kECal_FGD1_ToF_MC_HAStartFgd_Sand_Track        -0.208   1.320
+                                                    
+kECal_FGD1_ToF_MC_HAEndFgd_TrueFwd_Shower       0.830   4.420
+kECal_FGD1_ToF_MC_HAEndFgd_TrueBwd_Shower       0.778   0.556
+kECal_FGD1_ToF_MC_HAEndFgd_TrueFwd_Track       -0.475   1.420
+kECal_FGD1_ToF_MC_HAEndFgd_TrueBwd_Track        0.0087  3.750
+kECal_FGD1_ToF_MC_HAEndFgd_Sand_Shower          0.924   4.360
+kECal_FGD1_ToF_MC_HAEndFgd_Sand_Track          -0.633   4.030
+                                                    
+
+kECal_FGD2_ToF_MC_LAStartFgd_TrueFwd_Track     -0.607   2.890 
+kECal_FGD2_ToF_MC_LAStartFgd_TrueBwd_Track      0.160   4.990
+kECal_FGD2_ToF_MC_LAStartFgd_TrueFwd_Shower    -0.188   2.930
+kECal_FGD2_ToF_MC_LAStartFgd_TrueBwd_Shower     1.440   5.220
+kECal_FGD2_ToF_MC_LAStartFgd_Sand_Track         0.390   4.630
+kECal_FGD2_ToF_MC_LAStartFgd_Sand_Shower        0.697   5.510
+
+kECal_FGD2_ToF_MC_LAEndFgd_TrueFwd_Track       -0.125   1.980
+kECal_FGD2_ToF_MC_LAEndFgd_TrueBwd_Track       -0.028   3.010
+kECal_FGD2_ToF_MC_LAEndFgd_TrueFwd_Shower       1.000   4.650
+kECal_FGD2_ToF_MC_LAEndFgd_TrueBwd_Shower      -0.003   0.101
+kECal_FGD2_ToF_MC_LAEndFgd_Sand_Track           0.028   4.690
+kECal_FGD2_ToF_MC_LAEndFgd_Sand_Shower          1.250   8.050
+
+kECal_FGD2_ToF_MC_HAStartFgd_TrueFwd_Track      0.580   5.370
+kECal_FGD2_ToF_MC_HAStartFgd_TrueBwd_Track      0.085   1.640
+kECal_FGD2_ToF_MC_HAStartFgd_TrueFwd_Shower     0.312   1.740
+kECal_FGD2_ToF_MC_HAStartFgd_TrueBwd_Shower     1.280   3.390
+kECal_FGD2_ToF_MC_HAStartFgd_Sand_Track         0.094   1.750      
+kECal_FGD2_ToF_MC_HAStartFgd_Sand_Shower        0.326   1.950 
+
+kECal_FGD2_ToF_MC_HAEndFgd_TrueFwd_Track        0.259   1.390
+kECal_FGD2_ToF_MC_HAEndFgd_TrueBwd_Track        0.152   1.520
+kECal_FGD2_ToF_MC_HAEndFgd_TrueFwd_Shower       1.340   2.690
+kECal_FGD2_ToF_MC_HAEndFgd_TrueBwd_Shower       0.562   0.194
+kECal_FGD2_ToF_MC_HAEndFgd_Sand_Track           1.710   2.090 
+
+kDSECal_FGD2_ToF_MC_LAStartFgd_TrueFwd_Track    0.268   0.608
+kDSECal_FGD2_ToF_MC_LAStartFgd_TrueBwd_Track    1.560   7.340
+kDSECal_FGD2_ToF_MC_LAStartFgd_TrueFwd_Shower   0.939   0.892
+kDSECal_FGD2_ToF_MC_LAStartFgd_TrueBwd_Shower   1.750   1.790
+kDSECal_FGD2_ToF_MC_LAStartFgd_Sand_Track       0.740   1.610  
+kDSECal_FGD2_ToF_MC_LAStartFgd_Sand_Shower      1.400   2.420  
+
+kFGD1_FGD2_ToF_MC_NoStopFGD1_TrueFwd            0.544   0.442
+kFGD1_FGD2_ToF_MC_NoStopFGD1_TrueBwd           -0.806   4.640 
+kFGD1_FGD2_ToF_MC_NoStopFGD1_Sand              -0.408   2.340
+
+

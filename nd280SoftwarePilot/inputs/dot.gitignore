@@ -1,0 +1,4 @@
+*.bak
+.*
+!/.gitignore
+*_history.txt

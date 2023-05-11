@@ -1,0 +1,1921 @@
+/*! \page psyche/psycheND280UtilsHistory History for the psyche/psycheND280Utils Package 
+
+\section psycheND280Utils_v3r1_history Version v3r1
+
+Freeze information:
+   - Freeze Date: Sun Mar  6 17:09:46 2016
+   - Freeze User: acervera
+   - Freeze Host: Macintosh-64b9e8d35af0-2.local
+
+major reorganization with new packages and  changes in event model class names
+
+- ND280BeamBunching: add specific files for ND280 specifiying the file to read
+- move bunch positions data files to this new package
+- VersioningUtils moved to psycheND280Utils. Convert it into a namespace since there is no need for a class
+- AnaEventB::kEventBoxTracker --> EventBoxId::kEventBoxTracker, SystematicSource --> BinnedData, SubDetId::SubDetEnum --> SubDetId_h
+- MomentumResolVariation: a class that handles the smearing of the global/TPC momentum, MomentumResolutionSystematic and Correction will inherit from it 
+- a new class to apply TPCPIDVariation, the corresponding systematic and correction will use it
+- ND280AnalysisUtils: add utility IncrementPOTBySpill, previously in Header
+
+
+\section psycheND280Utils_v3r3_history Version v3r3
+
+Freeze information:
+   - Freeze Date: Mon Apr 11 16:32:04 2016
+   - Freeze User: acervera
+   - Freeze Host: portanselmo.ific.uv.es
+
+Freeze for BANFF development
+
+- TPCPIDVariation: Current frozen version assigns muon mean/sigma for every particle, which is an obvious bug. Fixing it. added ToyExperiment as an input param, some re-organization
+- FiducialVolumeDefinition: Definition of ECAL and SMRD fiducial volumes. Used by the stopping cut in 4pi (needed to compute the momentum by range)
+- CutUtils: Addition of ECAL PID and Stopping ECAL/SMRD cuts. They are used in the numu 4pi selection for high angle tracks.
+- ToFSenseCorrector: New organization of the flip method. Now we apply the flip sense to those tracks that fulfil muon like requirements. 
+  Distinction between Fwd, Bwd and HA topologies is made. Currently, only optimised for muons in starting or ending in FGD1.
+  Changing name of isECAL class. Including ForceForward method in HasValidToF to classify consistently. Removing PID conditions from HasValidToF.
+- ND280AnalysisUtils: Update (temporary) the run id for the data to include the full run6 anti-nu. However, this doesn't separate between fhc and rhc for run6. 
+  Need to have access to each run (where can we get this info?) and also introduce the subrun id.
+- Add nue utils and cututils classes.
+- BinnedData --> BinnesParams to avoid confusion (data vs MC)
+
+
+\section psycheND280Utils_v3r5_history Version v3r5
+
+Freeze information:
+   - Freeze Date: Wed May  4 18:33:30 2016
+   - Freeze User: acervera
+   - Freeze Host: Macintosh-64b9e8d35af0-2.local
+
+- ND280AnalysisUtils: Update GetRunPeriod which now takes an optional subrun argument. 
+  Run periods taken from here http://www.t2k.org/nd280/physics/nu-mu/2014analysis/run-5-info . 
+  This solves https://bugzilla.nd280.org/show_bug.cgi?id=1282
+
+- nueCCUtils: Use Box utilities instead of GetAllTracks calls as explained in https://bugzilla.nd280.org/show_bug.cgi?id=1224
+
+
+
+\section psycheND280Utils_v3r7_history Version v3r7
+
+Freeze information:
+   - Freeze Date: Sat Jun 11 17:08:38 2016
+   - Freeze User: acervera
+   - Freeze Host: Macintosh-64b9e8d35af0-2.local
+
+- PionCrossSections.cxx Implement fix for https://bugzilla.nd280.org/show_bug.cgi?id=1301 as suggested there. 
+- nueCCUtils: Remove a forgotten GetTracker* method. Add some protection when looking for tracks with Ecal segment. 
+              Add temporary functions to save some extra variables to further check the veto cuts.
+              Update FGD2 shower cut.
+- SecondaryInteractionSystematic: global re-view:
+  - properly implemented the step propagation (bug fixed that missed the steps)
+  - added a possibility to use the reference cross-section (i.e. re-weighting)
+  - material enums
+  - detector bit has to be provided for the manager and is later set to the propagator
+
+  the code is in principle a migration (with additional modifications) from the numuDisKaonAnalysis
+- ProtonInteractionSystematic:  adopted to the changes in base class
+- psycheND280Utils.parameters.dat: store nd280-related params here
+- BunchPosition.dat:  New temporary Bunch timing to include the first Run 7 data. This file is temporary since the timing for run 7 data is computed using Run 7 fpp data which are not calibrated yet
+- ND280AnalysisUtils, TruthUtils: added an ability to retrieve pt from the AnaDetCrossing
+- MomentumResolVariation: started adding an ability to do pure tpc based mom variation
+    various new methods to smear TPC local momentum and then propagate to global
+    propagate the smearing to the flip momentum as well!
+- ContituentsUtils methods methods related ith the mass component and the Fgd module type take now "bool IsMC" as argument, and not event, since event is not avaiable 
+  in FillTruthTree 
+
+
+
+
+\section psycheND280Utils_v3r9_history Version v3r9
+
+Freeze information:
+   - Freeze Date: Tue Aug  9 12:59:58 2016
+   - Freeze User: acervera
+   - Freeze Host: macintosh-64b9e8d35af0.local
+
+
+Summer release !!!!
+
+ProtonInteractionSystematic: add #include <cmath> (trying to solve compilation issue in some platform)
+ConstituentsUtils.: GetAllTracking(Not)UsingDet() functions moved to SubDetUtils, GetConstituentInDet functionality was lacking P0D
+
+
+ND280AnalysisUtils: Minor. Be constistent when returning run period for fhc or rhc in runs 5+6.
+
+nueCCUtils, nueCutUtils:
+ - Update nue utils for the tof and oofv cuts.
+ - Added FindLeadingTrackInDet to get the leading track in the gamma pairs in FGD1 when the box fv is FGD2,
+ - Add a warning if the highlandIO.FlatTree.UseReconDirTrackerECal is not turned on - bug 1344.
+ - Do not use the extended EMEnergy cut for anti-nue. Add some protection for sand muons against the veto cuts.
+
+psycheND280Tools: add class with utilities that can be instantiated from a interactive rood session. In this way we don't need the DrawingTools 
+                    to do that. 
+
+
+
+\section psycheND280Utils_v3r11_history Version v3r11
+
+Freeze information:
+   - Freeze Date: Fri Sep 23 17:13:12 2016
+   - Freeze User: acervera
+   - Freeze Host: macintosh-64b9e8d35af0.local
+
+- EventBoxTracker, EventBoxUtils, ConstituentsUtils: 
+   + Added four rec. object groups and three true object groups: for P0D tracks:
+   + Also added functions to fill these in ConstituentsUtils (trajectories) and EventBoxUtils (rec objects) and
+     modified boxUtils::FillTracksWithTPC to fill groups if the P0D is the subdetector being used. 
+   + Fixed bug causing errors when filling P0D true trajectories.
+- CutUtils: Added some functions for a P0D veto cut. The cut creates a box around the standard fiducial volume (limits currently hard coded)
+  and vetoes bunches where a track starts outside the box and ends inside.
+- ToFSenseCorrector: started to review the logic and the names. review the satic-ness and const-ness of functions
+- nueCCUtils: Add a protection against tracks going in the Ecal but no ecal information is available. Remove unused variables. Small change in the way the FGD2Shower cut is applied.
+- FluxWeighting:
+  + FluxTuning now optionally takes a 'planeident' parameter.
+  + Can specifiy nd6/nd13 (magnet/sand) neutrino plane
+  + Constructor arguments are now const references... saving the world
+    one std::string copy at a time.
+  + Also recieved a clang-format.
+
+
+\section psycheND280Utils_v3r13_history Version v3r13
+
+Freeze information:
+   - Freeze Date: Tue Oct 18 18:56:53 2016
+   - Freeze User: acervera
+   - Freeze Host: macintosh-64b9e8d35af0.local
+
+FREEZE FOR BANFF DEVELOPMENT
+
+add rootmap stuff such that psycheND280Tools is visible from a root session
+
+ND280AnalysisUtils:
+- fix GetNTargets for fgd2xylike when using a FV different from default, and make fgd2watermodules being the exact sum of fgdwaterlike and virtual xy
+
+EventBoxUtils:
+- adopted to changes in psycheCore/CoreUtils.(h)cxx and
+  psycheEventModel/BasicUtils.(h)cxx related to the arrays
+
+nueCCUtils:
+- Minor. Update warning when the ecal variables are not found.
+- Minor. Update ToF.
+
+
+
+\section psycheND280Utils_v3r15_history Version v3r15
+
+Freeze information:
+   - Freeze Date: Thu Nov 10 16:14:01 2016
+   - Freeze User: acervera
+   - Freeze Host: portcervera.ific.uv.es
+
+FREEZE FOR BANFF DEVELOPMENT with no nd280AnalysisTools
+
+- fix number of targets for water modules
+
+
+
+\section psycheND280Utils_v3r17_history Version v3r17
+
+Freeze information:
+   - Freeze Date: Wed Dec 28 13:22:16 2016
+   - Freeze User: acervera
+   - Freeze Host: portcervera.ific.uv.es
+
+- TruthUtils: Added initial version of an alternative true Michel counter that does not require pion grandparents and uses a time cut between
+  the Michel start time and the parent end time. Might also want a Michel counter that looks at pileup events (true Michels from different vertices)
+- ND280AnalysisUtils: Update runid for Run7 data. MC is not yet updated as there is no Run7 MC available.
+- TreeConverterUtils: correct bug in ConvertBitFieldToTrackerDetField
+
+
+\section psycheND280Utils_v3r19_history Version v3r19
+
+Freeze information:
+   - Freeze Date: Tue Feb  7 21:47:16 2017
+   - Freeze User: acervera
+   - Freeze Host: macintosh-64b9e8d35af0.local
+
+- EventBoxUtils: fixed typos, 
+  in FillTrajsInECal() and FillTrajsChargedInP0D()
+  the check whether the trajs were already filled should use
+  TrueObjectsInGroup and not RecObjectsInGroup
+- ND280AnalysisUtils: Added IsRHC(run) in ND280AnalysisUtils which needs to be updated every times a RHC run is added in GetRunPeriod()
+- nueCutUtils:  Added a check in nuecututils for the TPC segment. got rid of the usage of anaUtils::GetTPCBackSegment()
+  which simply gets the last element of the array of TPC constituents (actually
+  sorted by the decreasing number of nodes!)
+  instead use the good quality segment ("standard" cut to trust the momentum) in the TPC closest to the ECal segment of
+  interest
+
+  probably the effect is small since the tracks of interest usually I guess cross
+  only one TPC,  but is it important to be consistent
+
+- ConstituentsUtils: added a flag to control whether to apply a quality cut
+  GetSegmentWithMostNodesInClosestTpc(const AnaTrackB& track,  const Float_t* pos, bool quality_cut = false);
+  Removed confusing GetTPCBackSegment utility
+- nueCCUtils, nueCutUtils: Add ME finder in Utils and FGD2 pull cut in CutUtils
+- EventBoxTracker, EventBoxUtils: Add new groups kTracksWithFGD1InFGD1FV and kTracksWithFGD2InFGD2FV, kTracksWithFGD1AndTECALInFGD1FV and kTracksWithFGD2AndTECALInFGD2FV
+- FluxWeighting: Simplify enormously by replacing individual histos and files by vectors. Add run7
+- psycheND280Utils.parameters.dat: centralise the selection of Flux parameters
+- add latest flux files from july 2016, including run7, at tuned13av1.1_july2016
+
+
+\section psycheND280Utils_v3r21_history Version v3r21
+
+Freeze information:
+   - Freeze Date: Wed Mar  1 15:43:53 2017
+   - Freeze User: acervera
+   - Freeze Host: macintosh-64b9e8d35af0.local
+
+
+MANY CHANGES. SUMMARY:
+
+- add latest flux files from july 2016, including run7
+- centralise the selection of Flux parameters here
+- unify multi-pi selections by putting the cuts in CutUtils
+
+
+
+ConstituentsUtils:
+- a function to get all iso tracks in ECal (dsecal and barrel sub-modules)
+
+CutUtils:
+- added general ECal pi0 veto cut,
+  re-named the previous one (it does the loop on ECal tracks) as general
+  and the new one uses MultiPiBox already filled
+- re-named pion related cuts to *Base ones
+  added a simple utility class used to retrieve the MultiPiBox from the ToyBox,
+  the user will have to implement it for his analysis
+- added dummy classes for multi-pion,
+  no/one/other pion cuts
+  can be used for further generalisation of methods
+- fixed a typo in getting ECal most energetic object
+- FillPionInfo properly check a paramter to control whether to use ECal pi-zero info
+- make Detector a  member of the MultiPiBox
+- added various methods related to filling the pion information:
+  methdos fill various variables in multipi::MultiPiBox,
+  also included various cuts on track PID: TPC,  FGD,  ECal
+  relevant for pion selection
+  these were basically re-arranged/simplified ones from
+  numuCCMultiPiSelection so that make them available for general usage
+  and avoid copying the code
+- minor, use proper virtual destructor for MultiPiBoxGetter
+
+EventBoxTracker: 
+- add kIsoTrackInECal
+
+EventBoxUtils: 
+- add filling ECal iso tracks when calling FillAllTracksUsingECAL
+  added filling of Michel electrons on event basis
+
+FluxWeighting: 
+
+- add new constructor with no arguments, in which the flux file coordinates are directly read from the parameters file.
+  Add option to use the histograms with fine binning, off by default
+- Simplify enormously by replacing individual histos and files by vectors.
+- Add run7
+
+MultiPiBox: 
+- make Detector a  member of the MultiPiBox
+- added an utility object that stores information
+  relevant for the selection of various pion info,
+  this is to be able to do a unification over various selections
+
+ND280AnalysisUtils: 
+- Data run 7754 added to run2 air list. See bug 1418.
+- Added a check when the Bunch time is not filled in GetFGDMichelElectrons
+
+
+TreeConverterUtils: 
+- convUtils::ConvertTrueParticleDetEnumToBitField()
+- added fine-grained numbers for Barrel and P0D ECals
+  these appear in prod-7 oaAnalysis iteration
+  although the functionality should be bwd compatible
+
+TruthUtils: 
+- GetDetectorUsed()
+  for compatibility with prod-7 oaAnalysis versions
+  which uses individual sub-modules for Barrel and P0D ECals,
+  added  and explicit check on the detector usage as well
+- addressing bug 1435:
+  introduced a function anaUtils::GetDetectorUsed(const AnaDetCrossingB& cross,
+  SubDetId::SubDetEnum det, bool check_active);
+  that uses geometry info to check the sub-modules crossed for SMRD,  Barrel
+  and P0D ECals.
+
+  Although one has to be careful anyway since  a true track may cross several
+  sub-modules of SMRD/Barrel/P0DECal but this will be treated as one crossing
+  (in case they are subsequent)
+
+  GetAnaDetCrossing()
+  fixed a typo when getting the GetSubdetectorEnum
+
+  also proceed with the first crossing of interest found
+
+nueCCUtils: 
+- Minor. Missed else.
+- Provide detector as argument, rather than looking for the detector each time. Rverse back to the old way the TPC veto cut is applied.
+- Remove michel finder as this now handle in boxUtils. Add option to look for pair track with the same charge as the main track. Off by default.
+
+nueCutUtils:
+- Provide detector as argument, rather than looking for the detector each time. Rverse back to the old way the TPC veto cut is applied.
+
+psycheND280Utils.parameters.dat: 
+- add parameter to select fine binning flux tunning. Off by default (by now)
+- use $(PSYCHEND280UTILSROOT)/data/tuned13av1.1_july2016 flux folder
+- centralise the selection of Flux parameters
+
+data
+- add latest flux files from july 2016, including run7
+
+
+\section psycheND280Utils_v3r23_history Version v3r23
+
+Freeze information:
+   - Freeze Date: Sat Apr 22 09:09:23 2017
+   - Freeze User: alexander
+   - Freeze Host: alexandrs-mbp.home
+
+An intermediate freeze of psyche in order to test systematics tuning for NuMu.
+ 
+PionInteractionSystematic.cxx PionInteractionSystematic.hxx 
+Added a virtual method:
+CheckLookForInteraction() to check whether a particular trajectory should be a
+subject to a search for its interactions
+
+This method can be overwritten hence makes the code available for general usage
+for other FV,  e.g. TPC analysis
+
+EventBoxTracker.hxx 
+added new groups *WithStartOrEndInFGD*FV
+needed for 4pi selections
+
+EventBoxUtils.cxx 
+fill new categories in EventBoxTracker
+"WithStartOrEndInFGD*FV*
+
+ProtonInteractionSystematic.hxx 
+simplify things:
+no need to use separate ProtonSIManager
+will just set the proper propagator where needed
+
+TruthUtils.cxx TruthUtils.hxx 
+Check that a give true particle "leads" to the existence of a given reco object
+In case of "Simple" only certain "generations" are considered:
+direct, parent, grandparent and primary
+
+In case of "Full" a looping takes place over parents (from the true particle
+associated with the reco up to the primary) 
+
+bool CheckTrueCausesRecoSimple(const AnaTrueParticleB& trueTrack,  const
+AnaParticleB& track);
+
+
+Also returns the generation is the association is found (0 --> direct
+contributor)
+bool CheckTrueCausesRecoFull(const AnaEventB& event,  const AnaTrueParticleB&
+trueTrack,
+const AnaParticleB& track,  int& gen);
+
+
+CutUtils.cxx 
+following the discussion at the NuMu meeting (April 18th,  2017)
+do not use the upper limit for the AntiMuon TPC PID cut (previousely 0.7), 
+added an explanation and the link to the corresponding material
+
+
+
+\section psycheND280Utils_v3r25_history Version v3r25
+
+Freeze information:
+   - Freeze Date: Wed Nov  1 02:08:26 2017
+   - Freeze User: alexander
+   - Freeze Host: alexandrs-mbp.home
+
+A new freeze of psycheND280Utils
+Many updates and modifications,
+the most important is the updated flux to 13av2 and inclusion or Run7 and 8
+
+The detailed list of changes
+ToFSenseCorrector.cxx ToFSenseCorrector.hxx 
+ — In order to address bug 1453 and also generalize the ToF usage, 
+modify the GetTopology functions, 
+now it fills the array of the topologies relevant for the track 
+
+Although for the moment only one is added, due to the fact how the
+values (systematics and corrections) were studied.
+
+— further addressing bug 1453, 
+for FWD LA (CS used to study the corrections/systematics)
+return also FGD1_ECal topologies as relevant ones
+
+TruthUtils.cxx TruthUtils.hxx
+— Int_t anaUtils::GetTrueParticlesFromTrueVertex(const AnaTrueVertexB& vertex,
+AnaTrueParticleB* outTraj[],  
+    const std::set<int>& particlePDGs,  unsigned int mode)
+
+An utility function that allows to get true primary/secondary/all (mode = 0/1/2)
+particles of given PDGs (provided by a std::set<> of PDGs) for a given true
+vertex
+— added an new utility function to get a true track from a tru vertex given a
+track ID
+— bool anaUtils::CheckTrueCausesRecoFull(const AnaEventB& event,  const
+AnaTrueParticleB& trueTrack,  const AnaParticleB& track,  int& gen) 
+fixed the logic
+
+New flux tuning added tuned13av2 (only ND relevant files) including Run 7 and 8 
+
+ND280AnalysisUtils.cxx 
+— added run periods up to Run 8 for data and MC (NEUT) and up to Run 7 (GENIE)
+        
+FluxWeighting.cxx FluxWeighting.hxx
+— flux weighting for run 7 and 8
+— modified how the flux weighting is organised, 
+now the histograms are stored for run periods, planes (nd5, nd6, nd13) and 4
+nutypes (if exist)
+
+then one can specify a plane when getting the weight (FluxWeighting::kND5 is the
+default), this gives more flexibility for out-of-target analysis (ecal,
+sand-muons etc)
+
+
+ ConstituentsUtils.cxx 
+— minor, 
+when getting the closest TPC increase the default max value (an event was
+observed with the TPC being separated by ~3m (yep, some reco failure and/or
+matching a track that passes at the trakcer edge) from the
+vertex)
+
+ EventBoxTracker.hxx EventBoxUtils.cxx 
+— Add new categories of tracks to EventBoxTracker: kTracksWithTPCAndP0D and
+kTracksWithGoodQualityTPCAndP0D
+
+ nueCutUtils.cxx nueCCUtils.hxx
+— Enable nue ToF cut up to run 7
+— Veto cuts also include tracks that stop in the FGD.
+
+
+
+
+
+\section psycheND280Utils_v3r27_history Version v3r27
+
+Freeze information:
+   - Freeze Date: Tue Aug 21 01:32:54 2018
+   - Freeze User: alexander
+   - Freeze Host: alexandrs-macbook-pro.local
+
+a new freeze to have a stable/reference version for further nd280 developments 
+
+- EventBoxUtils.cxx
+emoved for the moment process P0D for the filling TPC tracks 
+all the needed stuff is done in FillTracksWithP0D
+
+fixed a bug when dealing with the case when non-FGD bit is provided for 
+FillTracksWithTPC(), i.e. just fill "all tracks with TPC" objects 
+
+
+- ND280AnalysisUtils.cxx 
+
+Update genie run id up to Run8. Make a fairer split of the genie mc for run6 since
+the (sub-)run ids between neut and genie are not the same for Run6.
+
+reflect the revision of POT counting
+
+- FGDPIDVariation.cxx FGDPIDVariation.hxx
+a new class to handle variations applied for FGD PID pulls, 
+a base for the corresponding correction and systematic
+
+- ToFSenseCorrector.cxx ToFSenseCorrector.hxx
+added FGD2
+some re-naming and adding missing params
+
+- psycheND280Utils.parameters.dat
+added FGD2 ToF
+
+added a parameter to control the usage of NEUTCascade data for pion SI,  off for
+the moment
+
+- PionInteractionSystematic.cxx
+some generalisaiton to work with more materials:
+WaterModel - > Water
+FGDScintillator -> Scintillator (so to work for P0D and ECal)
+FGDWaterModuleEpoxy -> Epoxy (work for P0DEpoxy)
+use for the moment iron for lead and brass
+use iron for "Iron" not only for "Steel" which was before
+
+- PionCrossSections.cxx PionCrossSections.hxx 
+        PionInteractionSystematic.cxx
+added a parameter to control the usage of NEUT Cascade info for pion SI
+
+
+
+\section psycheND280Utils_v3r29_history Version v3r29
+
+Freeze information:
+   - Freeze Date: Thu Sep  5 20:12:09 2019
+   - Freeze User: alexander
+   - Freeze Host: Alexandrs-MacBook-Pro.local
+
+
+
+
+REALLY MANY
+        PionInteractionSystematic.cxx PionInteractionSystematic.hxx 
+when using NEUT Cascade model,  then the data for lead exists, 
+reflect it in the code
+(GetMaterialSeries has been made a method of PionSIManager)
+
+        GeometryManager.cxx
+default geom file is now read from params file
+
+Modified Files:
+        psycheND280Utils.parameters.dat 
+Log Message:
+default geom file is read from the params file
+
+
+Modified Files:
+        CutUtils.cxx CutUtils.hxx 
+Log Message:
+re-naming: MultiPiBox --> MultiParticleBox: added an ability to collect/store
+proton candidates
+
+Modified Files:
+        CutUtils.cxx CutUtils.hxx MultiParticleBox.hxx 
+Log Message:
+added params and utils to find and fill proton candidatesModified Files:
+
+        nueCutUtils.cxx 
+Log Message:
+Use Run8 FGD-BrECal ToF for nue.
+
+
+New and fixed from June 2019 tuned13av4.0 replica tuned flux
+updated to use 13av4 flux - RUN9 NOT INCLUDED YET (SINCE NO MC for ND280)
+
+Modified Files:
+        IntersectionUtils.cxx IntersectionUtils.hxx 
+Log Message:
+made IsInsideBox const
+
+Added Files:
+        IntersectionUtils.cxx IntersectionUtils.hxx 
+Log Message:
+moved utils here from highlandUtils
+
+
+Modified Files:
+        PropagationUtils.cxx PropagationUtils.hxx 
+Log Message:
+added propagatation to/from the 
+AnaDetector3DBox_AAB
+
+Modified Files:
+        FGDPIDVariation.cxx FGDPIDVariation.hxx 
+Log Message:
+forced pions to be treated as muons
+with and explicit GetPDG() code
+
+Modified Files:
+        DetectorDefinition.cxx DetectorDefinition.hxx 
+        FiducialVolumeDefinition.cxx FiducialVolumeDefinition.hxx 
+Log Message:
+moved all macroses of dumping arrays into CoreUtils.hxx
+removed not used vars
+added dumping of actual FVs for FGDs and P0D
+
+Added Files:
+        DetectorDefinition_LinkDef.h 
+        FiducialVolumeDefinition_LinkDef.h 
+Log Message:
+added libs 
+
+
+Modified Files:
+        SecondaryInteractionSystematic.cxx 
+        SecondaryInteractionSystematic.hxx 
+Log Message:
+fixed a typo when converting mm to cm (was effctively applied two times)
+
+added some generalized utilities for external usage
+
+added an ability to fill particle state with the AnaPartcileMomB (assuming PDG
+is provided)
+
+added more materials enums
+
+
+Added Files:
+        PropagationUtils.cxx PropagationUtils.hxx 
+Log Message:
+add utils to propagate detector kinematics to a certain detector
+
+Modified Files:
+        SecondaryInteractionSystematic.cxx 
+        SecondaryInteractionSystematic.hxx 
+Log Message:
+getting rid of edge cases 
+added more useful enums 
+
+Modified Files:
+        EventBoxTracker.hxx EventBoxUtils.cxx 
+Log Message:
+remove obsolete eventbox categories as well as their filling, 
+keep only those relevant for current forward and 4pi selections
+
+Modified Files:
+        FGDPIDVariation.cxx 
+Log Message:
+fixed a typo: pion pull was used to vary muon pull based on sigma variation
+
+Modified Files:
+        SecondaryInteractionSystematic.cxx 
+        SecondaryInteractionSystematic.hxx 
+Log Message:
+added the usage of sense (Forward/Backward) for propagation, 
+properly use charge in the propagation: previously was assumed positive (since
+the code was developed originally for proton SI)
+
+Modified Files:
+        PropagationUtils.cxx PropagationUtils.hxx 
+Log Message:
+added a function to propagate AnaTrueParticle 
+moved sense definitions into SecondaryInteractionSystematic
+
+Modified Files:
+        SecondaryInteractionSystematic.cxx 
+Log Message:
+takesmallstep: added some warning verbosity in case geomnode is not found
+
+Modified Files:
+        PropagationUtils.cxx PropagationUtils.hxx 
+Log Message:
+added functions to propagate to a given length
+
+Modified Files:
+        IntersectionUtils.cxx IntersectionUtils.hxx 
+Log Message:
+added a function to check whether a pos (TVector3) is inside the box
+
+Modified Files:
+        IntersectionUtils.cxx IntersectionUtils.hxx 
+Log Message:
+made IsInsideBox const
+
+Modified Files:
+        PropagationUtils.cxx PropagationUtils.hxx 
+Log Message:
+added propagatation to/from the 
+AnaDetector3DBox_AAB
+
+Modified Files:
+        FGDPIDVariation.cxx 
+Log Message:
+Adding class name to GetPDG class. Causes psyche to not compile
+
+Modified Files:
+        MultiParticleBox.cxx MultiParticleBox.hxx 
+Log Message:
+an utility to get the leading proton candidate: either tpc or fgd contrained one
+- mom-from-range is used in the latter case
+
+Modified Files:
+        MultiParticleBox.cxx MultiParticleBox.hxx 
+Log Message:
+added a new function to get the HM pion no matter it is 
+TPC of FGD-contained
+
+Modified Files:
+        MultiParticleBox.cxx MultiParticleBox.hxx 
+Log Message:
+functions to return the proton/pion topologies
+
+
+
+
+
+
+\section psycheND280Utils_v3r31_history Version v3r31
+
+Freeze information:
+   - Freeze Date: Mon Sep 30 14:54:13 2019
+   - Freeze User: alexander
+   - Freeze Host: alexandrs-mbp.local
+
+
+
+
+Following a new update from the T2K beam mc group updated to the new flux release 
+ Replica tuned flux with bugfixes since 13av4  - 13av5
+
+The details can be found here:
+https://www.t2k.org/beam/NuFlux/FluxRelease/13areplica/13av5
+
+
+13av5 tuning is set as a default
+may of interested for NuE since has a reviewed K0 uncertainty which has a direct effect
+
+\section psycheND280Utils_v3r33_history Version v3r33
+
+Freeze information:
+   - Freeze Date: Wed Nov  6 17:33:18 2019
+   - Freeze User: alexander
+   - Freeze Host: alexandrs-mbp.home
+
+
+A new freeze of psycheND280Utils, quite a few updates:
+
+Modified Files:
+        CutUtils.cxx CutUtils.hxx MultiParticleBox.cxx 
+        MultiParticleBox.hxx PropagationUtils.cxx PropagationUtils.hxx 
+Log Message:
+CutUtils: new methods to set the reco vertex to the multiparticle box as well
+as to call function to fill pion and proton FGD-iso reange momenta propagated to the
+reco
+vertex
+
+MultiParticleBox: members to store pion/proton FGD-iso range momenta propagated
+to the reco vertex
+functions to sort iso-tracks based on the iso-momentum corrected to the reco
+vertex 
+function to get the highest momentum pion/proton candidate and the corresponding
+momentum (may be the one corrected to the reco vertex)
+
+PropagationUtils:
+utility functions to correct range momentum to a given reco vertex
+
+
+
+Modified Files:
+        ToFSenseCorrector.cxx 
+Log Message:
+Fix ToF categories for FGD2-ECal
+
+
+
+Modified Files:
+        ND280AnalysisUtils.cxx 
+Log Message:
+
+* Split run9 into 9c and 9d  (9a and 9b had no/negligable good POT)
+
+* Updated run7,8 to be compatible with P6L and P6T
+
+run6 numbers no longer match up between 6B and 6T
+- in 6B for some reason the run6 files were only 1e17 POT
+whereas every other 6B/6L run, and all 6T, have 5e17 POT as standard
+
+Adding run9 data
+
+added run numbering flag to GetRunPeriod()
+
+
+ 
+Modified Files:
+        VersioningUtils.cxx VersioningUtils.hxx 
+Log Message:
+added a run_numbering_sheme var and corresponding enum, \
+for the moment have kPreProd6TNum  and kProd6TNum 
+make prod6T numeration default
+
+
+
+Modified Files:
+        FluxWeighting.cxx FluxWeighting.hxx 
+Log Message:
+Adding run9 flux files, i.e. flux tuning
+
+  
+
+
+
+
+
+
+
+\section psycheND280Utils_v3r35_history Version v3r35
+
+Freeze information:
+   - Freeze Date: Wed Nov 13 21:48:43 2019
+   - Freeze User: alexander
+   - Freeze Host: alexandrs-mbp.home
+
+A new freeze to add new variables for BANFF tests from FGD-iso
+
+Modified Files:
+        CutUtils.cxx CutUtils.hxx MultiParticleBox.cxx 
+        MultiParticleBox.hxx PropagationUtils.cxx PropagationUtils.hxx 
+Log Message:
+A new update on the multi-pi selections to use the vertex constraint
+Now in addition to mom-range momentum for FGD-iso tracks added filling of
+direction variables as well,  so that bwd tracks can be reconstructed,
+the mon-range is also now reconstructed using the direction (via vertex) constraint 
+
+
+
+\section psycheND280Utils_v3r37_history Version v3r37
+
+Freeze information:
+   - Freeze Date: Mon Nov 18 23:26:08 2019
+   - Freeze User: alexander
+   - Freeze Host: alexandrs-mbp.home
+
+A new freeze to finally have a version with the pion/proton vars
+of FGD-iso objects introduced and porvided for the output:
+i.e. momentum from range and direction are set with the vertext consraint
+
+Modified Files:
+        MultiParticleBox.cxx 
+Log Message:
+fixed a typo in filling FGD-iso dir
+
+Modified Files:
+        CutUtils.cxx 
+Log Message:
+Selection of FGD-iso protons - protons should be FGD contained - i.e. no other
+detectors
+
+
+
+
+\section psycheND280Utils_v3r39_history Version v3r39
+
+Freeze information:
+   - Freeze Date: Wed Dec  4 20:17:37 2019
+   - Freeze User: alexander
+   - Freeze Host: alexandrs-mbp.home
+
+
+A new freeze to have a version prepared for further sand-muons water
+in/out productions
+
+Int_t anaUtils::GetRunPeriod(Int_t run, Int_t subrun){
+
+else if (run>=80307000 && run<=80307999) return 8;  //sand muons antinu water-out (run3 pot/sp)
+else if (run>=80317000 && run<=80317999) return 8;  //sand muons antinu water-in  (run3 pot/sp)
+else if (run>=90307000 && run<=90307999) return 4;  //sand muons neut water-out   (run3 pot/sp)
+else if (run>=90317000 && run<=90317999) return 4;  //sand muons neut water-in    (run3 pot/sp)
+
+
+int anaUtils::GetSandMode(int run){
+
+if      (run>=80307000 && run<=80307999) return 0;    // antineutrino flux
+else if (run>=80317000 && run<=80317999) return 0;    // antineutrino flux
+else if (run>=90307000 && run<=90307999) return 1;    // neutrino flux
+else if (run>=90317000 && run<=90317999) return 1;    // neutrino flux
+else if (run>=92307000 && run<=92307999) return 2;    // neutrino flux, old NEUT
+
+
+
+\section psycheND280Utils_v3r41_history Version v3r41
+
+Freeze information:
+   - Freeze Date: Fri Feb 28 21:23:43 2020
+   - Freeze User: alexander
+   - Freeze Host: alexandrs-mbp.dlink
+
+
+
+
+Since preparing a big freeze for summer 2020 OA, increase the version number where appropriate 
+
+A new freeze of psycheND280Utils package
+
+Modified Files:
+        mainpage.dox 
+Log Message:
+Remove the word package from the end of the  \page line
+
+Modified Files:
+        MultiParticleBox.cxx 
+Log Message:
+removed the unneccesary sqrt when flipping track with a vertex constraint
+
+Modified Files:
+        ND280AnalysisUtils.cxx
+
+Log Message:
+IsRHC: Update runlist for Run9.
+
+Log Message:
+fixed a bug:
+for run 6 in GetRunPeriod() 
+kPreProd6TNum and kProd6TNum were swapped
+
+Modified Files:
+        ToFSenseCorrector.cxx ToFSenseCorrector.hxx 
+Log Message:
+Updated to use P0D_FGD1_Shower topology added by Ciro
+
+Modified Files:
+        psycheND280Utils.parameters.dat
+
+Log Message:
+added preliminary cut value for P0DFGD1_Shower topology -- 1 ns (same as for
+tracks)
+
+Log Message:
+Added new flux files with new 2011.2x fluka tuning
+av7, see here
+https://t2k.org/beam/NuFlux/FluxRelease/13areplica/13av7
+
+make NEUT cascade the default option for pion SI, since prod6T is consdered as
+default now
+
+Log Message:
+default geometry file is stored in psycheND280Utils now
+
+Log Message:
+added some info for geometry: one can now select a geometry from the 
+data/Geometry
+
+
+
+Directory /home/trt2kmgr/ND280Repository/psyche/psycheND280Utils/data/tuned13av7
+added to the repository — new flux tuning
+
+Directory /home/trt2kmgr/ND280Repository/psyche/psycheND280Utils/data/Geometry added
+to the repository
+
+Directory /home/trt2kmgr/ND280Repository/psyche/psycheND280Utils/data/PionSI added
+to the repository
+Directory /home/trt2kmgr/ND280Repository/psyche/psycheND280Utils/scripts added to
+the repository
+
+
+Modified Files:
+        FluxWeighting.cxx 
+Log Message:
+Added new flux files with new 2011.2x fluka tuning
+av7, see here
+https://t2k.org/beam/NuFlux/FluxRelease/13areplica/13av7
+
+for the moment ignore Run10 (comments added,  since no MC for it)
+  
+
+Added Files:
+        v5r1p3-baseline-2010-11_geom-aa7ba9d3-c9bce01d-1965fe02-bb7afdbf-6c35814b.root 
+Log Message:
+moved geom file here from psycheUtils
+
+Added Files:
+        SIPionXsecMCto8GeV.dat SIPionXsecMCto8GeVFixG10.dat 
+        SIPionXsecMCto8GeV_NEUTCascade.dat SIPionXsecto8GeV.dat 
+        SIPionXsecto8GeVFixG10.dat SIPionXsecto8GeV_NEUTCascade.dat 
+Log Message:
+moved here from psycheUtils
+
+Added Files:
+        geometry_setup.csh geometry_setup.sh 
+Log Message:
+a script added to get the geomtries from the nd280-repo at the setup stage
+
+Modified Files:
+        requirements 
+Log Message:
+a script added to get the geometries from the nd280 repo
+
+Added Files:
+        nd280-get-geometry 
+Log Message:
+added a script to wget the geometries from the nd280-repo
+
+Modified Files:
+        PionCrossSections.hxx 
+Log Message:
+cross-section numbers are now written from psycheND280Utils/data/PionSI
+
+
+Note! when the package is setup the first time it will download the geometries needed — takes a bit of time but is done only once!
+
+
+\section psycheND280Utils_v3r43_history Version v3r43
+
+Freeze information:
+   - Freeze Date: Sat Feb 29 11:09:46 2020
+   - Freeze User: alexander
+   - Freeze Host: alexandrs-mbp.dlink
+
+
+A new freeze: the previous one v3r41 failed with adding a Geometry folder
+
+trying again
+
+A new freeze of psycheND280Utils package
+
+Modified Files:
+        mainpage.dox 
+Log Message:
+Remove the word package from the end of the  \page line
+
+Modified Files:
+        MultiParticleBox.cxx 
+Log Message:
+removed the unneccesary sqrt when flipping track with a vertex constraint
+
+Modified Files:
+        ND280AnalysisUtils.cxx
+
+Log Message:
+IsRHC: Update runlist for Run9.
+
+Log Message:
+fixed a bug:
+for run 6 in GetRunPeriod() 
+kPreProd6TNum and kProd6TNum were swapped
+
+Modified Files:
+        ToFSenseCorrector.cxx ToFSenseCorrector.hxx 
+Log Message:
+Updated to use P0D_FGD1_Shower topology added by Ciro
+
+Modified Files:
+        psycheND280Utils.parameters.dat
+
+Log Message:
+added preliminary cut value for P0DFGD1_Shower topology -- 1 ns (same as for
+tracks)
+
+Log Message:
+Added new flux files with new 2011.2x fluka tuning
+av7, see here
+https://t2k.org/beam/NuFlux/FluxRelease/13areplica/13av7
+
+make NEUT cascade the default option for pion SI, since prod6T is consdered as
+default now
+
+Log Message:
+default geometry file is stored in psycheND280Utils now
+
+Log Message:
+added some info for geometry: one can now select a geometry from the 
+data/Geometry
+
+
+
+Directory /home/trt2kmgr/ND280Repository/psyche/psycheND280Utils/data/tuned13av7
+added to the repository — new flux tuning
+
+Directory /home/trt2kmgr/ND280Repository/psyche/psycheND280Utils/data/Geometry added
+to the repository
+
+Directory /home/trt2kmgr/ND280Repository/psyche/psycheND280Utils/data/PionSI added
+to the repository
+Directory /home/trt2kmgr/ND280Repository/psyche/psycheND280Utils/scripts added to
+the repository
+
+
+Modified Files:
+        FluxWeighting.cxx 
+Log Message:
+Added new flux files with new 2011.2x fluka tuning
+av7, see here
+https://t2k.org/beam/NuFlux/FluxRelease/13areplica/13av7
+
+for the moment ignore Run10 (comments added,  since no MC for it)
+  
+
+Added Files:
+        v5r1p3-baseline-2010-11_geom-aa7ba9d3-c9bce01d-1965fe02-bb7afdbf-6c35814b.root 
+Log Message:
+moved geom file here from psycheUtils
+
+Added Files:
+        SIPionXsecMCto8GeV.dat SIPionXsecMCto8GeVFixG10.dat 
+        SIPionXsecMCto8GeV_NEUTCascade.dat SIPionXsecto8GeV.dat 
+        SIPionXsecto8GeVFixG10.dat SIPionXsecto8GeV_NEUTCascade.dat 
+Log Message:
+moved here from psycheUtils
+
+Added Files:
+        geometry_setup.csh geometry_setup.sh 
+Log Message:
+a script added to get the geomtries from the nd280-repo at the setup stage
+
+Modified Files:
+        requirements 
+Log Message:
+a script added to get the geometries from the nd280 repo
+
+Added Files:
+        nd280-get-geometry 
+Log Message:
+added a script to wget the geometries from the nd280-repo
+
+Modified Files:
+        PionCrossSections.hxx 
+Log Message:
+cross-section numbers are now written from psycheND280Utils/data/PionSI
+
+Modified Files:
+        nd280-get-geometry 
+Log Message:
+exit if no folder is found
+
+
+Note! when the package is setup the first time it will download the geometries needed — takes a bit of time but is done only once!
+
+
+
+\section psycheND280Utils_v3r45_history Version v3r45
+
+Freeze information:
+   - Freeze Date: Sat Feb 29 11:46:51 2020
+   - Freeze User: izmaylov
+   - Freeze Host: node201.inr.troitsk.ru
+
+
+
+A new freeze: the previous one v3r43 failed with adding a Geometry folder
+
+trying again: moved default geom to Geometry folder
+
+A new freeze of psycheND280Utils package
+
+Modified Files:
+        mainpage.dox 
+Log Message:
+Remove the word package from the end of the  \page line
+
+Modified Files:
+        MultiParticleBox.cxx 
+Log Message:
+removed the unneccesary sqrt when flipping track with a vertex constraint
+
+Modified Files:
+        ND280AnalysisUtils.cxx
+
+Log Message:
+IsRHC: Update runlist for Run9.
+
+Log Message:
+fixed a bug:
+for run 6 in GetRunPeriod() 
+kPreProd6TNum and kProd6TNum were swapped
+
+Modified Files:
+        ToFSenseCorrector.cxx ToFSenseCorrector.hxx 
+Log Message:
+Updated to use P0D_FGD1_Shower topology added by Ciro
+
+Modified Files:
+        psycheND280Utils.parameters.dat
+
+Log Message:
+added preliminary cut value for P0DFGD1_Shower topology -- 1 ns (same as for
+tracks)
+
+Log Message:
+Added new flux files with new 2011.2x fluka tuning
+av7, see here
+https://t2k.org/beam/NuFlux/FluxRelease/13areplica/13av7
+
+make NEUT cascade the default option for pion SI, since prod6T is consdered as
+default now
+
+Log Message:
+default geometry file is stored in psycheND280Utils now
+
+Log Message:
+added some info for geometry: one can now select a geometry from the 
+data/Geometry
+
+
+
+Directory /home/trt2kmgr/ND280Repository/psyche/psycheND280Utils/data/tuned13av7
+added to the repository ?�? new flux tuning
+
+Directory /home/trt2kmgr/ND280Repository/psyche/psycheND280Utils/data/Geometry added
+to the repository
+
+Directory /home/trt2kmgr/ND280Repository/psyche/psycheND280Utils/data/PionSI added
+to the repository
+Directory /home/trt2kmgr/ND280Repository/psyche/psycheND280Utils/scripts added to
+the repository
+
+
+Modified Files:
+        FluxWeighting.cxx 
+Log Message:
+Added new flux files with new 2011.2x fluka tuning
+av7, see here
+https://t2k.org/beam/NuFlux/FluxRelease/13areplica/13av7
+
+for the moment ignore Run10 (comments added,  since no MC for it)
+  
+
+Added Files:
+        v5r1p3-baseline-2010-11_geom-aa7ba9d3-c9bce01d-1965fe02-bb7afdbf-6c35814b.root 
+Log Message:
+moved geom file here from psycheUtils
+
+Added Files:
+        SIPionXsecMCto8GeV.dat SIPionXsecMCto8GeVFixG10.dat 
+        SIPionXsecMCto8GeV_NEUTCascade.dat SIPionXsecto8GeV.dat 
+        SIPionXsecto8GeVFixG10.dat SIPionXsecto8GeV_NEUTCascade.dat 
+Log Message:
+moved here from psycheUtils
+
+Added Files:
+        geometry_setup.csh geometry_setup.sh 
+Log Message:
+a script added to get the geomtries from the nd280-repo at the setup stage
+
+Modified Files:
+        requirements 
+Log Message:
+a script added to get the geometries from the nd280 repo
+
+Added Files:
+        nd280-get-geometry 
+Log Message:
+added a script to wget the geometries from the nd280-repo
+
+Modified Files:
+        PionCrossSections.hxx 
+Log Message:
+cross-section numbers are now written from psycheND280Utils/data/PionSI
+
+Modified Files:
+        nd280-get-geometry 
+Log Message:
+exit if no folder is found
+
+
+Note! when the package is setup the first time it will download the geometries
+needed ?�? takes a bit of time but is done only once!
+
+
+
+
+\section psycheND280Utils_v3r47_history Version v3r47
+
+Freeze information:
+   - Freeze Date: Sat Feb 29 12:08:39 2020
+   - Freeze User: alexander
+   - Freeze Host: alexandrs-mbp.dlink
+
+A new freeze: the previous one v3r45 failed with patch head due to cvs ssh connection problems
+
+one more try...
+
+A new freeze of psycheND280Utils package
+
+Modified Files:
+        mainpage.dox 
+Log Message:
+Remove the word package from the end of the  \page line
+
+Modified Files:
+        MultiParticleBox.cxx 
+Log Message:
+removed the unneccesary sqrt when flipping track with a vertex constraint
+
+Modified Files:
+        ND280AnalysisUtils.cxx
+
+Log Message:
+IsRHC: Update runlist for Run9.
+
+Log Message:
+fixed a bug:
+for run 6 in GetRunPeriod() 
+kPreProd6TNum and kProd6TNum were swapped
+
+Modified Files:
+        ToFSenseCorrector.cxx ToFSenseCorrector.hxx 
+Log Message:
+Updated to use P0D_FGD1_Shower topology added by Ciro
+
+Modified Files:
+        psycheND280Utils.parameters.dat
+
+Log Message:
+added preliminary cut value for P0DFGD1_Shower topology -- 1 ns (same as for
+tracks)
+
+Log Message:
+Added new flux files with new 2011.2x fluka tuning
+av7, see here
+https://t2k.org/beam/NuFlux/FluxRelease/13areplica/13av7
+
+make NEUT cascade the default option for pion SI, since prod6T is consdered as
+default now
+
+Log Message:
+default geometry file is stored in psycheND280Utils now
+
+Log Message:
+added some info for geometry: one can now select a geometry from the 
+data/Geometry
+
+
+
+Directory /home/trt2kmgr/ND280Repository/psyche/psycheND280Utils/data/tuned13av7
+added to the repository ?�? new flux tuning
+
+Directory /home/trt2kmgr/ND280Repository/psyche/psycheND280Utils/data/Geometry added
+to the repository
+
+Directory /home/trt2kmgr/ND280Repository/psyche/psycheND280Utils/data/PionSI added
+to the repository
+Directory /home/trt2kmgr/ND280Repository/psyche/psycheND280Utils/scripts added to
+the repository
+
+
+Modified Files:
+        FluxWeighting.cxx 
+Log Message:
+Added new flux files with new 2011.2x fluka tuning
+av7, see here
+https://t2k.org/beam/NuFlux/FluxRelease/13areplica/13av7
+
+for the moment ignore Run10 (comments added,  since no MC for it)
+  
+
+Added Files:
+        v5r1p3-baseline-2010-11_geom-aa7ba9d3-c9bce01d-1965fe02-bb7afdbf-6c35814b.root 
+Log Message:
+moved geom file here from psycheUtils
+
+Added Files:
+        SIPionXsecMCto8GeV.dat SIPionXsecMCto8GeVFixG10.dat 
+        SIPionXsecMCto8GeV_NEUTCascade.dat SIPionXsecto8GeV.dat 
+        SIPionXsecto8GeVFixG10.dat SIPionXsecto8GeV_NEUTCascade.dat 
+Log Message:
+moved here from psycheUtils
+
+Added Files:
+        geometry_setup.csh geometry_setup.sh 
+Log Message:
+a script added to get the geomtries from the nd280-repo at the setup stage
+
+Modified Files:
+        requirements 
+Log Message:
+a script added to get the geometries from the nd280 repo
+
+Added Files:
+        nd280-get-geometry 
+Log Message:
+added a script to wget the geometries from the nd280-repo
+
+Modified Files:
+        PionCrossSections.hxx 
+Log Message:
+cross-section numbers are now written from psycheND280Utils/data/PionSI
+
+Modified Files:
+        nd280-get-geometry 
+Log Message:
+exit if no folder is found
+
+
+Note! when the package is setup the first time it will download the geometries
+needed ?�? takes a bit of time but is done only once!
+
+
+
+\section psycheND280Utils_v3r49_history Version v3r49
+
+Freeze information:
+   - Freeze Date: Mon Mar 30 20:11:01 2020
+   - Freeze User: alexander
+   - Freeze Host: Alexandrs-MacBook-Pro.local
+
+
+
+New flux tuning from beam MC 13av7p1
+
+https://t2k.org/beam/NuFlux/FluxRelease/13areplica/13av7
+
+Changes affect run10 (still not used by highland2) and flux covariance matrix
+
+Modified Files:
+        psycheND280Utils.parameters.dat 
+Log Message:
+using 13av7p1 flux tuning
+
+Modified Files:
+        FluxWeighting.cxx 
+Log Message:
+added comments regaring 13av7p1
+
+Modified Files:
+        ND280AnalysisUtils.cxx 
+Log Message:
+Extend run9 run numbers  —> since more run9 MC was produced 
+
+Modified Files:
+        PIDUtils.cxx 
+Log Message:
+GetPIDLikelihood - use doubles for pulls so to  make sure that the final results
+of probabilty calculation will have the desired precision
+
+Modified Files:
+        ND280AnalysisUtils.cxx 
+Log Message:
+Minor. Improve cout when computing NTargets.
+
+
+
+
+
+
+\section psycheND280Utils_v3r51_history Version v3r51
+
+Freeze information:
+   - Freeze Date: Fri Aug 21 11:56:22 2020
+   - Freeze User: alexander
+   - Freeze Host: Alexandrs-MacBook-Pro.local
+
+A new freeze of    psyche for summer 2020 OA publications as the main goal,
+also the base version for migration to cmake and git
+
+
+Modified Files:
+        ND280BeamBunching.cxx 
+Log Message:
+remove obsolete mention of preProd6 bunching
+
+Removed Files:
+        BunchPosition_PreProd6.dat 
+Log Message:
+remove obsolete bunch position file for preProd6 -- lacking many runs etc 
+
+Modified Files:
+        ND280AnalysisUtils.cxx ND280AnalysisUtils.hxx 
+        ND280BeamBunching.cxx ND280BeamBunching.hxx 
+Log Message:
+made ND280BeamBunching a singleton manager to be used through all ND280 code
+
+_sigma and _nsigmas are set via params
+
+Modified Files:
+        psycheND280Utils.parameters.dat 
+Log Message:
+added params to set sigma and nsigmas for nd280 beam time bunching
+
+Modified Files:
+        BunchPosition.dat 
+Log Message:
+updated numbers for Run5 and added numbers for 
+Run8 and Run9
+
+according to 
+https://www.t2k.org/nd280/physics/SystematicsAndSelection/Meetings/2020/ssv10042020/timebunchhl2/view
+
+Modified Files:
+        ND280AnalysisUtils.cxx 
+Log Message:
+Add code to get RunID for Run7c neutrino MC. This is done by assigning a fraction of
+Run8 MC to Run7c. This option is currently commented out.
+
+Modified Files:
+        SecondaryInteractionSystematic.cxx 
+        SecondaryInteractionSystematic.hxx 
+Log Message:
+
+TakeSmallStep - added a treatment of zero charged particles - just propagate w/o
+energy loss over a straight-line
+
+CollectParticleInteractions  -- set a xsec error as an absolute value for
+consistency
+
+GetRelevantParticles -- particles daughtes (to find inelastic interactions) have
+to start in the VOI as well 
+
+Modified Files:
+        PropagationUtils.cxx 
+Log Message:
+fixed a small bug when estimating the length to be used for the correction, 
+bwd goin track,  for which the end point should be used were not considered
+correctly 
+
+Modified Files:
+        TPCPIDVariation.cxx TPCPIDVariation.hxx 
+Log Message:
+added a virtual method TPCPIDVariation::HypEnum TPCPIDVariation::GetPIDHypo(Int_t
+PDG) const
+that can be re-used in various methods
+
+Modified Files:
+        MultiParticleBox.hxx 
+Log Message:
+a simple Reset function in case is needed
+
+Modified Files:
+        ND280AnalysisUtils.cxx 
+Log Message:
+Updating data run numbers cross checked against the DQ tech notes
+
+Modified Files:
+        FluxWeighting.cxx 
+Log Message:
+Fix typo
+
+Modified Files:
+        psycheND280Utils.parameters.dat 
+Log Message:
+for the moment set the sigma for bunching to 15 ns (as it as for all the
+  previous analysis), timing is also used for ME, so have to be careful here
+ 
+
+
+
+\section psycheND280Utils_v3r53_history Version v3r53
+
+Freeze information:
+   - Freeze Date: Mon Oct 19 17:34:06 2020
+   - Freeze User: alexander
+   - Freeze Host: Alexandrs-MacBook-Pro.local
+
+
+A new freeze to make kaon SI work
+
+Modified Files:
+        SecondaryInteractionSystematic.cxx 
+Log Message:
+minor: fix a typo when weighting to a reference cross-section 
+
+<       result->Particles[i].Weight *=  result->Particles[i].XSecData.XSec / 
+result->Particles[i].XSecDataReference.XSec; 
+---
+>       result->Particles[i].Weight *=  result->Particles[i].XSecDataReference.XSec
+/  result->Particles[i].XSecData.XSec; 
+
+note! now only used in kaon SI
+
+
+
+
+\section psycheND280Utils_3_55_history Version 3_55
+
+Freeze information:  
+   - Freeze Date: Mon Nov 16 15:31:00 2020  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MacBook-Pro.local
+  
+  
+First freeze on git/cmake  
+
+
+\section psycheND280Utils_3_56_history Version 3_56
+
+Freeze information:  
+   - Freeze Date: Fri Nov 20 14:38:06 2020  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MacBook-Pro.local
+  
+  
+First candidate freeze for git/cmake  
+
+
+\section psycheND280Utils_3_57_history Version 3_57
+
+Freeze information:  
+   - Freeze Date: Sun Nov 22 14:48:49 2020  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MacBook-Pro.local
+  
+  
+A new freeze to include variables requested by 4pi analysers
+Update the release number (instead of a patch) since preparing for 
+the first git/cmake freeze announcement  
+
+
+\section psycheND280Utils_3_58_history Version 3_58
+
+Freeze information:  
+   - Freeze Date: Mon Dec 28 13:10:14 2020  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MacBook-Pro.local
+  
+  
+
+
+A new freeze to include new selections and fix some typos
+
+ modifications to include multi-pi with photons
+    
+    -- ECal photons added to MultiParticleBox
+    -- ECal photons selections methods added to utils
+
+
+add Zero/NProtonCutBase
+
+
+ Rename ECal track as ecal_track in GetSegmentWithMostNodesInDet.
+    (was previously tpc_track)
+
+ Fix typos (pion utils used instead of protons` ones) in GetHMProton 
+  
+
+
+\section psycheND280Utils_3_59_history Version 3_59
+
+Freeze information:  
+   - Freeze Date: Mon Feb  8 23:23:10 2021  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MacBook-Pro.local
+  
+  
+Add/update utils for track state propagation:
+  
+more propagation utils: PropagateFromDetector() functions 
+
+
+Also make sure to save the last/first step inside a detector when doing from/to a detector 
+business, previousely in some cases the first/last was returned 
+
+
+
+\section psycheND280Utils_3_60_history Version 3_60
+
+Freeze information:  
+   - Freeze Date: Thu Mar  4 12:05:03 2021  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MacBook-Pro.local
+  
+  
+  
+A new freeze with a goal to prepare a version for further developments
+ of ND280 4pi selections for OA and xsec measurements. 
+Also includes  updates to numu CC multi-pi + photons selection which lead to an increase of samples` purities.
+
+Generalize methods related to pion and proton info collection, as well as ECal photon candidates search. So that they can be shared by different selections that use different toy boxes and input event groups. For ECal photons selections add a cut on the most upstream hit layer, a corresponding variable also added into ECal photon selections params of MultiParticleBox, the latter also got an improved reset method <— make sure that ECal photons` related containers are always cleaned. 
+
+
+
+
+\section psycheND280Utils_3_61_history Version 3_61
+
+Freeze information:  
+   - Freeze Date: Tue Jun 22 14:36:27 2021  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MacBook-Pro.local
+  
+  
+A new (base) freeze for summer 2021 OA
+
+add pion hypothesis for mom-range
+
+add a protection of zero mom when propagating
+
+
+add an improved version of CheckTrueCausesReco...
+
+allows one to set whether to use pions, protons, ecal photons or all
+(default)
+
+generalise pion si so that one can set dynamic voi
+
+
+pion SI: changed water system to oxygen
+
+pion si: add new MC table with p6t fix
+
+
+Add 21bv2 flux files from t2k.org. Update parameters file to load flux. Add reading in of new flux to FluxWeighting.cxx
+  
+  
+
+
+\section psycheND280Utils_3_62_history Version 3_62
+
+Freeze information:  
+   - Freeze Date: Sat Jul 10 11:02:37 2021  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MacBook-Pro.local
+  
+  
+A new freeze for summer 2021 OA/xsec/P7 studies
+
+Add new TPC volumes: three full drift volumes, three volumes for each left and right parts of a TPC (separated by a cathode), cathode volumes   
+  
+
+
+\section psycheND280Utils_3_63_history Version 3_63
+
+Freeze information:  
+   - Freeze Date: Wed Jul 21 19:15:00 2021  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MacBook-Pro.local
+  
+  
+A new freeze to hopefully finalize the work for summer 2021 OA/xsec/P7 checks release
+
+make sure useNEUTCascade flag is set for P6Tfix when NEUTCascade option is OFF
+  
+  
+
+
+\section psycheND280Utils_3_63_1_history Version 3_63_1
+
+Freeze information:  
+   - Freeze Date: Fri Oct 22 15:32:33 2021  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MacBook-Pro.local
+  
+  
+A patch to use muon hypo for fgd-iso pions when retrieving mom-range in case
+mom-range with pion hypothesis is not valid
+
+Mom-range hypothesis is only available with a recpack based correction 
+hence is done on flat-tree creation level usually, there may be a problem when one runs 
+psyche with on the flat-trees without the correction   
+
+
+\section psycheND280Utils_3_64_history Version 3_64
+
+Freeze information:  
+   - Freeze Date: Fri Jan 28 19:10:13 2022  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MBP
+  
+  
+
+A new freeze, main goal: first iteration of 4pi	multi-pi selections in psyche, udpa\
+tes to make the	   software working with the recent prod7,	    updates    to some	systs: mom-\
+range, fgd-ecal-(smrd) high-angle matching, fgd	    pid (apply also to the "wrong" true\
+ pdg)
+
+add method to check fgd time bin is out of bunches: given an event, fed time bin, an offset and l/rcuts 
+
+Generalize getting fgd delayed time bins  
+  
+
+
+\section psycheND280Utils_3_65_history Version 3_65
+
+Freeze information:  
+   - Freeze Date: Fri May 20 15:48:18 2022  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MBP
+  
+  
+
+A new freeze, the main focus is an extension of 
+CheckTrueCausesReco... with more options  
+
+this is used for syst tuning of various selections
+
+
+\section psycheND280Utils_3_66_history Version 3_66
+
+Freeze information:  
+   - Freeze Date: Wed Jun  1 16:49:40 2022  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MBP
+  
+  
+
+
+The main goal of the freeze is to add new versioning scheme for systematics, corrections and POT 
+
+Now all possible productions included: Prod5, Prod6 and Prod7 wrt the previous is/isnt Prod6 check.
+
+A Highland-run analysis by default will get and set a production index based on input, . if the version check is OFF then all defaults to Prod6. One can also set it with param file,
+psycheSteering controls versioning with a param file.
+
+
+For corrections and systematics split data storage files into Prod5, Prod6 and Prod7 where the appropriate data files should go. It also BinnedParams to use ExtensionSyst() or ExtenstionCorr() so that an appropriate data files is used for a correction or a systematic. 
+As for these freeze Prod7 data for systematics and correction is just a copy of the one from Prod6: is expected to be populated with new numbers as Prod7 validation progresses. 
+
+Also fixes a bug with versions checks in numuCCZeroPiAnalysis 
+  
+
+
+\section psycheND280Utils_3_67_history Version 3_67
+
+Freeze information:  
+   - Freeze Date: Sun Jul 31 19:40:06 2022  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MBP
+  
+  
+
+A new freeze prepared to work with prod6Y/Z/AA and prod7_V06/07 + adds utils/vars for FGD charge related analyses + updates tof treatment with an infrastructure for both time smearing and time-slips + add FGD2 4pi multi-pi selection + add true info utils for AnaHits 
+
+
+move ToyBoxes here (from psycheSelections), generalise FindPions/Protons methods for the selections: base ones are now inside psycheND280Utils rather than in one of the selection codes 
+
+
+
+Now FGD2FGD1_nostop_FGD1 is no longer mutually exclusive with other FGD2 BWD LA tof topologies. This change is to match the behavior of tofSystematic
+
+
+
+add utils to intersect a given detector or AAB box
+  
+  
+
+
+\section psycheND280Utils_3_68_history Version 3_68
+
+Freeze information:  
+   - Freeze Date: Wed Oct 19 15:48:21 2022  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MBP
+  
+  
+A new freeze of HighLAND2 software. The main goal is to have a reference version for expected nd280-upgrade merging work, then updates to ToF treatement (smearing x slips correction and updated systematics), updates to FGDs 4pi selections (mature versions ready for preliminary OA tests, some tuning on-going), technical updates like using local HASSERT wrt assert to deal with default NDEBUG setting, also for CI and eg RECPACK added as an option for installation (outside highland but highland2SoftwarePilot) and will be used in containers.
+
+4pi/tof updates in ToFSenseCorrector, new utility functions, fixes, etc
+  
+  
+
+
+\section psycheND280Utils_3_69_history Version 3_69
+
+Freeze information:  
+   - Freeze Date: Sat Dec 31 22:15:41 2022  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MacBook-Pro.local
+  
+  
+
+A fix for FGD PID correction/systematic. True and detector info is retrieved from an FGD segment and not a global track, this fixes FGD1 numbers applied to FGD2 in a case of FGD1-FGD2 object (luckily in analysis we use FGD-iso objects), found when looking at e.g. stopping control samples. 
+
+4pi work: Flip/UnFlip() business moved to AnaTrackB
+  
+
+
+\section psycheND280Utils_3_70_history Version 3_70
+
+Freeze information:  
+   - Freeze Date: Wed Mar 29 14:50:59 2023  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MBP
+  
+  
+A new freeze
+
+make neut cascade default wrt neut cascade 6t fix
+
+Turn on the flipping for FGD1-FGD2 + plus FGD1ECAL_LAStartFgd_Track/Shower topologies which were wrongly set to off
+
+  
+
+
+\section psycheND280Utils_3_71_history Version 3_71
+
+Freeze information:  
+   - Freeze Date: Sun Apr  2 21:22:08 2023  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MacBook-Pro.local
+  
+  
+A new freeze 
+
+get pdg: use global true if no local
+
+if no true particle is available for local (fgd constituent), this can
+  happen for older psyche/highlandIO then use global
+
+add debugging info
+  
+
+
+\section psycheND280Utils_3_72_history Version 3_72
+
+Freeze information:  
+   - Freeze Date: Thu Apr  6 13:20:21 2023  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MacBook-Pro.local
+  
+  
+
+A new freeze 
+
+- fully reviewed fgd pid syst&corr implementation
+
+get rid of corr/incorr hypo, instead
+require one to provide a variation given a track and a pdg_hypo,
+then one will vary a pull corresponding to the pdg_hypo
+change data tables accordingly: p6 and p7
+data for p6 stays the same (means and sigmas), just the bins have changed
+whether to use e.g. muon numbers for pions is controlled via tables since may change as are CSs improved
+
+- improve fgd pid debug info, fix p7 run6 run nums
+
+  
+
+
+\section psycheND280Utils_3_73_history Version 3_73
+
+Freeze information:  
+   - Freeze Date: Wed Apr 19 22:42:29 2023  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MacBook-Pro.local
+  
+  
+
+A new freeze
+
+get rid of prod5 treatment: not supported anymore
+
+get rid of old-style ecal photon veto
+
+add nhits cut for ecal photons
+  
+
+*/

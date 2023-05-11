@@ -1,0 +1,134 @@
+/*! \page highland2/antiNumuCCMultiPiAnalysisHistory History for the highland2/antiNumuCCMultiPiAnalysis Package 
+
+\section antiNumuCCMultiPiAnalysis_v2r1_history Version v2r1
+
+Freeze information:
+   - Freeze Date: Wed Oct  4 19:02:31 2017
+   - Freeze User: alexander
+   - Freeze Host: lapizmaylov.ific.uv.es
+
+
+First freeze of an utility package to run antinumu analyses:
+can switch between multi-track and multi-pi selecitons
+as well as between FGD1/2 
+
+At the moment uses antiNumuCCAnalysis to fill the vars 
+
+Works with v2 era of highland2 so this is what has started with v2r1
+
+
+\section antiNumuCCMultiPiAnalysis_v2r3_history Version v2r3
+
+Freeze information:
+   - Freeze Date: Wed Nov  1 23:09:43 2017
+   - Freeze User: alexander
+   - Freeze Host: 186.1.168.192.in-addr.arpa
+
+A freeze of the package to test antinumu multi-track/pi selections in highland
+A few changes to make it flexible and add new variables
+-- use antiNumuCCSelection instead of numuCC
+added a switch between multi-track and multi-pi selections
+
+-- when running in multi-pion mode then use numuCCMultiPi to define and fill the
+variables
+
+-- added dependency on numuCCMultiPi package
+
+
+\section antiNumuCCMultiPiAnalysis_v2r5_history Version v2r5
+
+Freeze information:
+   - Freeze Date: Sat Nov  4 01:25:53 2017
+   - Freeze User: alexander
+   - Freeze Host: 21.1.168.192.in-addr.arpa
+
+A new freeze, decided to increase the version number 
+to correspond to numu multi-pi (plus preparation for the big freeze for 
+OA 2018 analysis)
+
+
+use new functionality from numuCCmulti-pi analysis to fill
+pion info for the truth and reco trees (when running in multi-pi momde)
+
+
+\section antiNumuCCMultiPiAnalysis_v2r7_history Version v2r7
+
+Freeze information:
+   - Freeze Date: Sat Feb 29 15:25:05 2020
+   - Freeze User: alexander
+   - Freeze Host: alexandrs-mbp.dlink
+
+
+
+
+Since preparing a big freeze for summer 2020 OA, increase the version number where appropriate 
+
+A new freeze of antiNumuCCMultiPiAnalysis   package
+
+Modified Files:
+        antiNumuCCMultiPiAnalysis.cxx 
+Log Message:
+fixed a trivial bug
+CheckFillTruthVertex() -- do not call antinumu since the private vars are not
+filled for it (one can call Initialise method but it is better to avoid
+depending on antinumu CC params setting)
+
+also use the proper filling of base truth tree with antinu flag On
+(i.e. call FillTruthTree from antinu and not FillTruthTreeBase)
+
+
+
+
+
+\section antiNumuCCMultiPiAnalysis_v2r9_history Version v2r9
+
+Freeze information:
+   - Freeze Date: Fri Oct  2 11:45:43 2020
+   - Freeze User: alexander
+   - Freeze Host: Alexandrs-MacBook-Pro.local
+
+
+A new freeze of   highland2/psyche for summer 2020 OA publications as the main goal,
+also the base version for migration to cmake and git
+
+Modified Files:
+        antiNumuCCMultiPiAnalysis.cxx 
+Log Message:
+make filling the efficiency (for some weight-like systs where it is used to
+estimate the efficiencies for the signal samples) counters` filling finally working, 
+account for the cases where one may use the UseAnalysis method and/or use other
+analysis class to define/fill the variables
+
+for an analysis derived from  baseTrackerAnalysis one needs to call
+  FillEffCounters() function when filling  micro trees
+
+
+
+\section antiNumuCCMultiPiAnalysis_2_11_history Version 2_11
+
+Freeze information:  
+   - Freeze Date: Fri Nov 20 15:13:07 2020  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MacBook-Pro.local
+  
+  
+First freeze of git/cmake version  
+
+
+\section antiNumuCCMultiPiAnalysis_2_12_history Version 2_12
+
+Freeze information:  
+   - Freeze Date: Wed Jul 14 12:36:34 2021  
+   - Freeze User: Izmaylov  
+   - Freeze Host: Alexandrs-MacBook-Pro.local
+  
+  
+
+A new freeze for summer 2021 OA/xsec/P7 checks
+
+update pion SI info storage/treatment to be used by RHC mode analyses, increased the default accum-level to store the events
+
+  
+  
+
+*/

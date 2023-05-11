@@ -1,0 +1,164 @@
+#!/usr/bin/env python
+
+import os
+import sys
+import argparse
+import re
+
+
+def compare( pattern, string ):
+    """ find patterns in string """
+    match = re.search(pattern, string )
+    if not match:
+        return False
+    return True
+
+
+def loop_and_change(linelist, roofile, use_root):
+    line = roofile.readline()
+   
+    ## Found psycheROOT
+    fpsycheROOT =  False    
+
+    while line:
+
+        ## Use ROOT
+        if (compare("ND280_USE", line) and compare("ROOT", line)) and (not compare("psycheROOT", line)):
+            symbol = "" if use_root else "#"
+            index = line.find("ND280_USE")
+            line = line[:index].replace("#", symbol) + line[index:]
+            if index==0 and symbol=="#":
+                line = "#" + line
+
+        ## Use psycheROOT
+        if compare("ND280_USE", line) and compare("psycheROOT", line):
+            fpsycheROOT = True
+            symbol = "#" if use_root else ""
+            index = line.find("ND280_USE")
+            line = line[:index].replace("#", symbol) + line[index:]
+            if index==0 and symbol=="#":
+                line = "#" + line
+
+        ## Return
+        if compare("return()", line):
+            symbol = "" if use_root else "#"
+            index = line.find("return()")
+            line = line[:index].replace("#", symbol) + line[index:]
+            if index==0 and symbol=="#":
+                line = "#" + line
+
+        ## link_libraries
+        ##if compare("link_libraries", line) and compare("RooFit", line):
+          ##  symbol = "#" if use_root else ""
+          ##  index = line.find("link_libraries")
+          ##  line = line[:index].replace("#", symbol) + line[index:]
+          ##  if index==0 and symbol=="#":
+          ##      line = "#" + line
+
+        linelist.append(line)
+        line = roofile.readline()
+    
+    if not compare("psycheROOT", roofile.name):  
+        if not fpsycheROOT:
+            text = "#ND280_USE(psycheROOT)\n" if use_root else "ND280_USE(psycheROOT)\n"
+            linelist.append(text)	
+
+def replace_wise(filename, use_root):
+
+    roofile = open(filename, "r")
+    
+    linelist = []
+
+    loop_and_change(linelist, roofile, use_root)
+
+    roofile = open(filename, "w")
+    roofile.writelines(linelist)
+    roofile.close()
+
+
+## Define the parser
+parser = argparse.ArgumentParser(description = "Make changes required to use local ROOT version via psycheROOT.")
+
+parser.add_argument('-r', '--root', type=str, choices = ['ROOT', 'psycheROOT'],
+        required = True, help="control which configuration to use: ROOT or psycheROOT", 
+        dest='rootPackage')
+
+args = parser.parse_args()
+
+fprevious = os.getcwd()
+
+# Check whether the ND280_ROOT exists and go there
+try:
+    got_psycheROOT = True if args.rootPackage=="ROOT" else False
+
+    nd280_folder = os.environ.get("ND280_ROOT")
+   
+    os.chdir(nd280_folder)
+    # Look for the folder of interest: psycheCore, oaAnalysisReader and
+    # psycheROOT, highlandUtils, RECPACK
+
+    tree = list(os.walk(os.getcwd()))
+     
+    for folder in tree[0][1]:
+        if compare("oaAnalysisReader", str(folder)):
+            print("Changes in folder: " + folder)
+            ## Got to cmake folder
+            os.chdir(folder + "/cmake")
+            ## Do the job
+            replace_wise("oaAnalysisReaderND280_USE.cmake",
+                    bool(args.rootPackage=="ROOT"))
+
+            os.chdir(nd280_folder)
+
+        if compare("psycheCore", str(folder)):
+            print("Changes in folder: " + folder)
+            ## Got to cmake folder
+            os.chdir(folder + "/cmake")
+            ## Do the job
+            replace_wise("psycheCoreND280_USE.cmake",
+                    bool(args.rootPackage=="ROOT"))
+
+            os.chdir(nd280_folder)
+            
+        if compare("highlandUtils", str(folder)):
+            print("Changes in folder: " + folder)
+            ## Got to cmake folder
+            os.chdir(folder + "/cmake")
+            ## Do the job
+            replace_wise("highlandUtilsND280_USE.cmake",
+                    bool(args.rootPackage=="ROOT"))
+
+            os.chdir(nd280_folder)
+
+        if compare("RECPACK", str(folder)):
+            print("Changes in folder: " + folder)
+            ## Got to cmake folder
+            os.chdir(folder + "/cmake")
+            ## Do the job
+            replace_wise("RECPACKND280_USE.cmake",
+                    bool(args.rootPackage=="ROOT"))
+
+            os.chdir(nd280_folder)
+ 
+
+        if compare("psycheROOT", str(folder)):
+            print("Changes in folder: " + folder)
+            ## Got to cmake folder
+            os.chdir(folder + "/cmake")
+            ## Do the job
+            replace_wise("psycheROOTConfig.cmake",
+                    bool(args.rootPackage=="ROOT"))
+
+            got_psycheROOT = True
+
+            os.chdir(nd280_folder)
+
+    os.chdir(fprevious)
+    if not got_psycheROOT:
+        raise Exception("")
+
+
+except:
+    print("ERROR has occured. Check ND280_ROOT is set,  ROOT/psycheROOT is present")
+    os.chdir(fprevious)
+    sys.exit(1)

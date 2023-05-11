@@ -1,0 +1,38 @@
+#!/bin/sh
+# Make sure environment is properly configured when calling this.
+
+DIR=$PWD
+PRODUCTIONDIR=prod6G
+LIBS=`root-config --libs`
+CC=`root-config --cxx` 
+CFLAGS=`root-config --cflags`
+
+# Get the system identifier.
+cd $OAANALYSISREADERROOT/inc/$PRODUCTIONDIR 
+
+rm -f ../*/oaAnalysisReaderProjectDict.*
+rm -f ../../src/*/oaAnalysisReaderProjectDict.*
+rm -f ../*/oaAnalysisReaderProjectHeaders.h
+echo "namespace std {} using namespace std;" > oaAnalysisReaderProjectHeaders.h
+cat oaAnalysisReaderProjectHeaders.h0 >> oaAnalysisReaderProjectHeaders.h
+
+echo "GENERATING DICTIONARY"
+cd $OAANALYSISREADERROOT/src/$PRODUCTIONDIR
+rootcint -f oaAnalysisReaderProjectDict.cxx -c -I$ROOTSYS/include/root  -I"$ROOTSYS/include/root"  ../../inc/$PRODUCTIONDIR/oaAnalysisReaderProjectHeaders.h ../../inc/$PRODUCTIONDIR/oaAnalysisReaderLinkDef.h 
+mv -v oaAnalysisReaderProjectDict.h $OAANALYSISREADERROOT/inc/$PRODUCTIONDIR
+
+echo "COMPILING"
+$CC -c -O2 -fPIC $CFLAGS  -I$OAANALYSISREADERROOT/inc/$PRODUCTIONDIR oaAnalysisReaderProjectSource.cxx -o $OAANALYSISREADERROOT/$OAANALYSISREADERCONFIG/oaAnalysisReaderProjectSource.o
+
+echo "LINKING"
+LIBNAME=liboaAnalysisReader.so
+if [[ $OAANALYSISREADERCONFIG == *"Darwin"* ]]; then
+    LIBNAME=liboaAnalysisReader.dylib
+fi
+
+$CC $OAANALYSISREADERROOT/$OAANALYSISREADERCONFIG/oaAnalysisReaderProjectSource.o  -dynamiclib -shared $LIBS  -o $OAANALYSISREADERROOT/$OAANALYSISREADERCONFIG/lib/$LIBNAME
+
+echo "ADDING VERSION"
+cd $OAANALYSISREADERROOT/inc/$PRODUCTIONDIR
+cat Version.h >> oaAnalysisReaderProjectHeaders.h
+cd $DIR

@@ -1,0 +1,45 @@
+
+package MYSQL
+version v5r6p20n01
+
+#manager Iain Bertram <i.bertram@lancaster.ac.uk>
+manager Alex Finch  <A.Finch@lancaster.ac.uk>
+
+
+use EXTERN
+use CMAKE
+
+branches cmt doc src
+
+# Set the include file locations
+ include_path none
+ include_dirs none
+ include_dirs "$(MYSQLROOT)/$(MYSQL_tag)/include"
+ 
+# Add the executable location.
+ path_remove PATH "$(MYSQLROOT)"
+ path_remove PATH "MYSQL" 
+ path_remove PATH "mysql"
+ path_prepend PATH "$(MYSQLROOT)/$(MYSQL_tag)/bin"
+
+ path_remove LD_LIBRARY_PATH "$(MYSQL)"
+ path_remove LD_LIBRARY_PATH "MYSQL" 
+ path_remove LD_LIBRARY_PATH "mysql"
+ path_prepend LD_LIBRARY_PATH "$(MYSQLROOT)/$(MYSQL_tag)/lib" \
+       WIN32                 "$(MYSQLROOT)/$(MYSQL_tag)/lib" \
+       LinuxStatic           " "
+
+#---- Define the macro values to link and compile against MySQL.
+macro MYSQL_linkopts  \
+      "`$(MYSQLROOT)/$(MYSQL_tag)/bin/mysql_config  --libs`"
+
+
+ set 	MYSQL_BASE_DIR 		"$(MYSQLROOT)/$(MYSQL_tag)"
+ set 	MYSQL_LIB_DIR  		"$(MYSQL_BASE_DIR)/lib"
+ set 	MYSQL_INCLUDE_DIR 	"$(MYSQL_BASE_DIR)/include"
+
+
+
+# ---- Actually compile the mysql library ----
+document external mysql compile_mysql $(mysql_SOURCE)
+

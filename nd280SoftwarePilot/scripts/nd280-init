@@ -1,0 +1,99 @@
+#! /bin/bash
+#
+# Initialize an existing package or project directory to work with an
+# empty, bare central repository.
+
+export PROGRAM
+PROGRAM=`basename $0`
+
+usage () {
+    cat <<EOF | more
+Usage: 
+   ${PROGRAM}            # No arguments allowed.
+
+Initialize a new nd280 software package. This isn't run very often, but
+automates the "annoying" parts of adding packages to git. It's used in place 
+of "git init", which means it's run once when a package is created.
+As with "git init", this creates the local repository, but also creates a 
+.gitignore file and links the package to the ND280 group on GitLab. Like 
+"git init", this must be run from inside the new package's root directory. 
+
+CREATE A NEW PACKAGE
+  [ 0) source nd280SoftwarePilot.profile if you haven't already. ]
+  1) nd280-new-package <package> <version>
+  2) Run ${PROGRAM} in the new package's root directory
+       -- This will run 'git init', install and add .gitignore file, and
+          configure the repository origin.
+  4) Do your initial work on the new package and add it to (the local) git.
+  5) Commit your changes.
+  5) Push your new package to the central repository (git push --all).
+
+Run with the --apply option to actually initialize the repository.
+    i.e. nd280-init --apply
+EOF
+}
+
+if [ "x${1}" != "x--apply" ]; then
+  usage
+  exit 1
+fi
+
+# Find the current package or project name.
+if [ `dirname $PWD` == $ND280_ROOT ]; then
+  FOLDER=`basename $PWD`
+  NAME=`echo $FOLDER | sed 's/\(.*\)_.*/\\1/'`
+  echo Connect package named $NAME to central repository
+fi
+
+if [ "x${NAME}" = "x" ]; then
+  echo "Cannot find the package name. Is it named correctly (name_version)?"
+  echo "    " Run with --help for usage information.
+  exit 1
+fi
+
+# Initialize the git repository (if needed)
+if [ ! -d .git ]; then
+  echo Initializing the local git repository
+  git init
+else
+  echo Local repository is already initialized.  Not running git init.
+fi
+
+# Make sure we have a reasonable default for the gitignore file.
+if [ ! -f .gitignore ]; then
+  echo Installing a .gitignore file
+  cp ${ND280PROFILE_ROOT}/nd280SoftwarePilot/inputs/dot.gitignore .gitignore
+  git add .gitignore
+else
+  echo Local .gitignore already exists.  Not installing a new one.
+fi
+
+if [ -d cmake ]; then
+  echo Adding cmake folder to git
+  git add cmake
+fi
+
+# Define a uniform call to git config.  This makes the code easier to read.
+config () {
+  if [ x`git config "$1"` = x ]; then
+    git config "$1" "$2"
+    echo Set "$1" to `git config "$1"`
+  else
+    echo
+    echo "###" "$1" is `git config "$1"`
+    echo "The value was not changed.  You can reset this by hand with:"
+    echo "  git config $1 $2"
+  fi
+}
+
+# Set the config options.
+config remote.origin.fetch     '+refs/heads/*:refs/remotes/origin/*'
+config remote.origin.url       ${ND280_GIT}${NAME}
+config branch.master.remote    origin
+config branch.master.merge     refs/heads/master
+
+echo
+echo "After adding and committing files to the local repository, use "
+echo '   "git push --all" to push the new files.'
+
+#-*-Shell-Script-*-

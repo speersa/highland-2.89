@@ -1,0 +1,15 @@
+Set the range of MAIN RING run numbers to apply the CT4POTCorrection to (inclusive).
+ < highlandCorrections.CT4POTCorrection.MRrunLower = 440194 >
+ < highlandCorrections.CT4POTCorrection.MRrunUpper = 440235 > 
+ 
+ 
+ 
+ FGD charge utilities parameters
+ < highlandUtils.FGD.WLS.MPPCtoBarEdgeDistance = 41. > (mm)
+ < highlandUtils.FGD.WLS.BarLength = 1864.34 > (mm)
+ < highlandUtils.FGD.WLS.LongComponentFraction = 0.739 > (mm)
+ < highlandUtils.FGD.WLS.LongAttLength = 23600. > (mm)
+ < highlandUtils.FGD.WLS.ShortAttLength = 410. > (mm)
+ < highlandUtils.FGD.WLS.BarLightDecayLength = 0.0464 > (mm)
+ < highlandUtils.FGD.Scintillator.BirksConstant = 0.0208 cm/MeV > 
+ < highlandUtils.FGD.Scintillator.peuMeV = 21.7 > (peu/MeV)

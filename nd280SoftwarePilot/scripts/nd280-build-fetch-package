@@ -1,0 +1,110 @@
+#! /usr/bin/env python
+#
+# build a shell script that can clone a specified package and the requested 
+# version
+#
+
+import os
+import glob
+import sys
+import getopt
+import tempfile
+import shutil
+
+from nd280 import git
+from nd280 import shell
+
+def usage():
+    print("""
+
+nd280-build-fetch-package subDirectory repositoryPackage package version
+
+This creates a script GetGit<package>.sh that has the capability of cloning
+the specified version of 'repositoryPackage' from a 'subDirectory' from the
+git repo. The cloned package will have the name <package>_<version>
+The clone filters out all blobs from commits previous to the most recent commit 
+unless the -f option is used
+
+Options:
+    -h, --help : Print this message.
+    -f, --full : Fully clone the package, don't filter blobs
+
+Examples:
+    Build script to clone master branch :
+      nd280-build-fetch-package Base oaEvent oaEvent master
+    Build script to clone specific tag
+      nd280-build-fetch-package Base oaEvent oaEvent 12.29
+
+You can overide the remote origin using:
+    ND280_GIT='someplace@your.remote.machine.org:' nd280-build-fetch-package ...
+""")
+
+try:
+  options, args = getopt.gnu_getopt(sys.argv[1:], "hf", ["help","full"])
+except:
+  usage()
+  print("ERROR: Invalid option.")
+  sys.exit(1)
+
+opt = ""
+if git.SupportsPartialClones() :
+  opt = "--filter=blob:none"
+
+
+for option, value in options:
+  if option == "-h" or option == "--help":
+    usage()
+    sys.exit(0)
+  elif option == "-f" or option == "--full":
+    opt = ""
+  else:
+    usage()
+    print("ERROR: Nani??")
+    print("\'Oh myyy Goooooddddd!!\'")
+    sys.exit(1)
+
+# check that we have the right number of arguments.      
+if len(args) != 4:
+  usage()
+  print("ERROR: Wrong number of arguments.")
+  sys.exit(1)
+
+# get the different arguments
+subDirectory = args[0]
+repositoryPackage = args[1]
+package = args[2]
+version = args[3]
+
+# build script clone and checkout the package if not already present, otherwise 
+# build script to execute 'git pull'
+if glob.glob(os.environ['ND280_ROOT']+"/"+package+"_"+version):
+  print("The clone of "+package+"_"+version+" already exists. Skipping...")
+  print("")
+else:
+  # generate a temporary name for the incoming repository that is guaranteed 
+  # not to exist. The file name will look like 'git_8H9lJt' where the last 6 
+  # characters are pseudo random
+  tempRepo = tempfile.mktemp(dir="",prefix="git_")
+
+  # Create a script to do the actual cloning and checking out of requested
+  # version.
+  with open(os.environ["ND280_ROOT"] + "/GetGit" + package + ".sh", 'wt') as script:
+    script.write("""#!/bin/bash
+echo Cloning {package}_{version}...
+cd ${{ND280_ROOT}}
+{{
+  mkdir {tempRepo} &&
+  git clone {opt} --branch {version} -c advice.detachedHead=false ${{ND280_GIT}}{subDirectory}/{repositoryPackage}.git {tempRepo}
+}} || {{
+  echo
+  echo ERROR: Could not clone {package} {version} [see messages above].
+  echo   After debugging, you should delete the {package}_{version} directory
+  echo   The git address was ${{ND280_GIT}}{subDirectory}/{repositoryPackage}.git
+  echo
+  exit 255
+}}
+cd ${{ND280_ROOT}}
+mv {tempRepo} {package}_{version}
+""".format(version=version, subDirectory=subDirectory, repositoryPackage=repositoryPackage, package=package, tempRepo=tempRepo, opt=opt))
+
+sys.exit(0)

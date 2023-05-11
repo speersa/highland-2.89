@@ -1,0 +1,36 @@
+CMT package for ROOT
+
+This is a copy of the ROOT package that has been installed in the
+repository so that it can be easily distributed within the ND280 group.  
+
+To upgrade the version of ROOT.
+
+1) Get a copy of head of the root CVS package. ("cmt checkout ROOT")
+
+2) Get the tar file with the source for the new root from root.cern.ch and
+   place it in the package root. (ROOT/<version>/<tar-file-goes-here>
+   Delete previous version of tar file and patch file.
+   
+3) Edit the src/compile_root file to set the ROOT version and set the ROOT
+   configuration flags.
+
+4) Make sure the new version compiles.  If it doesn't compile, you may need
+   to create a patch for the source.  This is detailed surgery, so if you
+   need instructions you might just want to find a different version of
+   ROOT that works.  The created diff should go into the package root with
+   the extension ".patch".  Read the "compile_root" source to see the
+   details. 
+
+5) Once the version compiles and is "ready to go", add the new root file
+   (and patch file) to the repository. Use the -ko option to the cvs add command
+   to prevent it being corrupted by cvs, then commit.
+
+6) Checkout the head into a new directory and check that it will build.  
+
+7) Update the version number in the requirements file to match the
+   intended tag.  Commit the modified requirements file.
+
+8) Make sure you are in the <version> directory (this will be the
+   old version)
+
+9) Tag the new version using "cvs tag -F <version>"

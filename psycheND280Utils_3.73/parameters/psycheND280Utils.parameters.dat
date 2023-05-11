@@ -1,0 +1,78 @@
+------- Time bunching -------
+
+ < psycheND280Utils.TimeBunching.Sigma = 15 >  // ns
+ 
+ < psycheND280Utils.TimeBunching.NSigmas = 4 > 
+ 
+
+
+------- Flux Weighting -------
+
+ < psycheND280Utils.FluxWeighting.Folder      = $(PSYCHEND280UTILSROOT)/data/tuned21bv2 >
+ < psycheND280Utils.FluxWeighting.Version     = tuned21bv2_13anom >
+ < psycheND280Utils.FluxWeighting.Tuning      = tuned21b >
+ < psycheND280Utils.FluxWeighting.FineBinning = 0 > 
+
+------- Proton SI -------
+ 
+--- Specify the step length for propagation
+ < psycheND280Utils.SI.StepSize = 0.1 > //mm
+ 
+--- Specify the value of momentum change that will lead to save the step
+ < psycheND280Utils.SI.StepMom = 10 > //MeV
+ 
+ --- Specify the value of the cross-section relative uncertainty
+ < psycheND280Utils.ProtonSI.XSec.Uncertainty = 0.1 > 
+
+------- Pion SI -------
+--- Set whether to use numbers for NEUT Cascade model
+ < psycheND280Utils.PionSI.UseNEUTCascade = 1 >
+ 
+ --- Set whether to use numbers for NEUT Cascade model fixed for prod6T
+ < psycheND280Utils.PionSI.UseNEUTCascadeProd6TFix = 0 >
+
+------- Geometry -------
+
+--- Use the default geometry file even if the input file contains geometry
+ < psycheND280Utils.Geometry.UseDefaultGeometry = 1 >
+ 
+--- Geometry files of nd280 software are downloaded at the setup stage and
+--- stored at data/Geometry -- they can be used here so have the right geometry
+--- for the setup
+ < psycheND280Utils.Geometry.DefaultGeometryFile = $(PSYCHEND280UTILSROOT)/data/Geometry/v5r1p3-baseline-2010-11_geom-aa7ba9d3-c9bce01d-1965fe02-bb7afdbf-6c35814b.root >
+
+--- Use the ROOT geometry to overrride the harcoded values in detectorDefinition (DetDef namespace)
+ < psycheND280Utils.Geometry.DetectorDefinitionFromROOTGeometry = 0 >
+ < psycheND280Utils.Geometry.DetectorDefinitionFromROOTGeometry.FillFGDInfo = 0 > //fill FGD info: bar centers etc 
+ 
+ 
+ ToF parameters
+ < psycheND280Utils.ToF.FGD1FGD2                   = 2. >
+ 
+ < psycheND280Utils.ToF.FGD1P0D_Track              = 1. >
+ < psycheND280Utils.ToF.FGD1P0D_Shower             = 1. >
+ 
+ < psycheND280Utils.ToF.FGD1ECAL_LAStartFgd_Track  = 0. >
+ < psycheND280Utils.ToF.FGD1ECAL_LAStartFgd_Shower = 0. >
+ < psycheND280Utils.ToF.FGD1ECAL_LAEndFgd_Track    = 1. >
+ < psycheND280Utils.ToF.FGD1ECAL_LAEndFgd_Shower   = 2. >
+ 
+ < psycheND280Utils.ToF.FGD1ECAL_HAStartFgd_Track  = 0. >
+ < psycheND280Utils.ToF.FGD1ECAL_HAStartFgd_Shower = 1. >
+ < psycheND280Utils.ToF.FGD1ECAL_HAEndFgd_Track    = 1. >
+ < psycheND280Utils.ToF.FGD1ECAL_HAEndFgd_Shower   = 2. >
+ 
+ < psycheND280Utils.ToF.FGD2ECAL_LAStartFgd_Track    = -2. >
+ < psycheND280Utils.ToF.FGD2ECAL_LAStartFgd_Shower   = -2. >
+ < psycheND280Utils.ToF.FGD2ECAL_LAEndFgd_Track      = 2. >
+ < psycheND280Utils.ToF.FGD2ECAL_LAEndFgd_Shower     = 1. >
+ 
+ < psycheND280Utils.ToF.FGD2ECAL_HAStartFgd_Track    = 0. >
+ < psycheND280Utils.ToF.FGD2ECAL_HAStartFgd_Shower   = 0. >
+ < psycheND280Utils.ToF.FGD2ECAL_HAEndFgd_Track      = 1. >
+ < psycheND280Utils.ToF.FGD2ECAL_HAEndFgd_Shower     = 2. >
+ 
+ < psycheND280Utils.ToF.FGD2DSECAL_LAStartFgd_Track  = -2. >
+ < psycheND280Utils.ToF.FGD2DSECAL_LAStartFgd_Shower = -2. >
+ 
+ < psycheND280Utils.ToF.FGD1FGD2_NoStopFGD1          = 2. >

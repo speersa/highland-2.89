@@ -1,0 +1,58 @@
+Set the range of MAIN RING run numbers to apply the CT4POTCorrection to (inclusive).
+ < highlandCorrections.CT4POTCorrection.MRrunLower = 440194 >
+ < highlandCorrections.CT4POTCorrection.MRrunUpper = 440235 >
+
+Set the range of times to apply the DataQualityCorrection for. The parameters
+come in triplets. The NewValue sets whether the DQ flag should be good (1) or bad (0).
+The Time.Lower and Time.Upper values set the UNIX timestamps that the NewValue should
+be applied in. You can add more periods by following the pattern.
+ < highlandCorrections.DataQuality.NewValue.1 = 0 >
+ < highlandCorrections.DataQuality.Time.Lower.1 = 1269258741 > # 2010/03/22 20:52:21
+ < highlandCorrections.DataQuality.Time.Upper.1 = 1269319996 > # 2010/03/23 13:53:16
+ < highlandCorrections.DataQuality.NewValue.2 = 0 >
+ < highlandCorrections.DataQuality.Time.Lower.2 = 1271398406 > # 2010/04/16 15:13:26
+ < highlandCorrections.DataQuality.Time.Upper.2 = 1271405782 > # 2010/04/16 17:16:22
+ < highlandCorrections.DataQuality.NewValue.3 = 0 >
+ < highlandCorrections.DataQuality.Time.Lower.3 = 1274856072 > # 2010/05/26 15:41:12
+ < highlandCorrections.DataQuality.Time.Upper.3 = 1277910000 > # 2010/07/01 00:00:00
+
+Set the run periods for which the IgnoreRightECalRuns3and4Correction should be applied.
+Extra periods can be defined by following the pattern. You need to specify both Lower
+and Upper runs for the period (inclusive). 
+
+ < highlandCorrections.IgnoreRightECal.Runs.MC.Lower.1 = 90300000 >
+ < highlandCorrections.IgnoreRightECal.Runs.MC.Upper.1 = 90300075 >
+ < highlandCorrections.IgnoreRightECal.Runs.MC.Lower.2 = 90410000 >
+ < highlandCorrections.IgnoreRightECal.Runs.MC.Upper.2 = 90410049 >
+ < highlandCorrections.IgnoreRightECal.Runs.Data.Lower.1 = 8000 >
+ < highlandCorrections.IgnoreRightECal.Runs.Data.Upper.1 = 12000 >
+
+
+TOF
+
+ < highlandCorrections.ToF.RandomSeed = 2267671 >
+ Filenames without the .dat and exact path: will be retrieved automatically
+ based on input prod version
+ < highlandCorrections.ToF.TimeSlips.File.FHC.Run8    = ToFTimeSlipCorrection_FHCRun8_p6T >
+ < highlandCorrections.ToF.TimeSlips.File.FHC.Run2_4  = ToFTimeSlipCorrection_FHCRun2-4_p6T >
+ < highlandCorrections.ToF.TimeSlips.File.RHC.Run5_9  = ToFTimeSlipCorrection_RHCRun5-9_p6T >
+ 
+ < highlandCorrections.ToF.Smear.File.FHC.Run8    = ToFCorrection_FHCRun8_p6M >
+ < highlandCorrections.ToF.Smear.File.FHC.Run2_4  = ToFCorrection_FHCRun2-4_p6M >
+ < highlandCorrections.ToF.Smear.File.RHC.Run5_9  = ToFCorrection_RHCRun5-9_p6M >
+ 
+
+RMS cut values for Time Data Quality correction
+ < highlandCorrections.TimeDataQualityCorrection.RMSCut.FGD = 2.5 > 
+ < highlandCorrections.TimeDataQualityCorrection.RMSCut.ECal = 2.5 > 
+ < highlandCorrections.TimeDataQualityCorrection.RMSCut.P0D = 3 > 
+ 
+FGD PID
+
+Pull_maps for FGD PID correction
+ < highlandCorrections.FGDPIDCorrection.UseP7Pulls = 0 >
+
+Whether to apply additional correciton to account for a missing FGD2 water layer
+in Run7 onwards
+ < highlandCorrections.FGDPIDCorrection.ApplyCorrMissingWaterLayer = 0 >
+ < highlandCorrections.FGDPIDCorrection.CorrMissingWaterLayer.XFactor = 1.06 >
