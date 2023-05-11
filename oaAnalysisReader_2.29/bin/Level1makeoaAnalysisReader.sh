@@ -7,13 +7,13 @@ export ND280_NJOBS=${ND280_NJOBS}
 function shout {
   echo "+=======================================+" 
  echo "+                                       +" 
- echo "   Build of package oaAnalysisReader_2.29 in  /home/t2k/aspeers/Highland_Installs/HighLAND_2.89/oaAnalysisReader_2.29  FAILED   ( Level = 1 )       " 
+ echo "   Build of package oaAnalysisReader_-128-NOTFOUND in  /home/t2k/aspeers/Highland_Installs/HighLAND_2.89/oaAnalysisReader_2.29  FAILED   ( Level = 1 )       " 
  echo "+                                       +" 
  echo "+=======================================+" 
  exit 1 
  } 
  trap shout ERR 
-  echo "" ; echo " Building oaAnalysisReader_2.29  ( package number " 2 " out of " 2 " at level 1 ) " ; echo "" 
+  echo "" ; echo " Building oaAnalysisReader_-128-NOTFOUND  ( package number " 2 " out of " 2 " at level 1 ) " ; echo "" 
    makeTarget=$1 
   if [ "$1" == "documentation" ] ; then makeTarget=oaAnalysisReader_$1 ; fi 
    cd  /home/t2k/aspeers/Highland_Installs/HighLAND_2.89/oaAnalysisReader_2.29 

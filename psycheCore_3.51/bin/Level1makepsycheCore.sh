@@ -7,13 +7,13 @@ export ND280_NJOBS=${ND280_NJOBS}
 function shout {
   echo "+=======================================+" 
  echo "+                                       +" 
- echo "   Build of package psycheCore_3.51 in  /home/t2k/aspeers/Highland_Installs/HighLAND_2.89/psycheCore_3.51  FAILED   ( Level = 1 )       " 
+ echo "   Build of package psycheCore_-128-NOTFOUND in  /home/t2k/aspeers/Highland_Installs/HighLAND_2.89/psycheCore_3.51  FAILED   ( Level = 1 )       " 
  echo "+                                       +" 
  echo "+=======================================+" 
  exit 1 
  } 
  trap shout ERR 
-  echo "" ; echo " Building psycheCore_3.51  ( package number " 2 " out of " 2 " at level 1 ) " ; echo "" 
+  echo "" ; echo " Building psycheCore_-128-NOTFOUND  ( package number " 2 " out of " 2 " at level 1 ) " ; echo "" 
    makeTarget=$1 
   if [ "$1" == "documentation" ] ; then makeTarget=psycheCore_$1 ; fi 
    cd  /home/t2k/aspeers/Highland_Installs/HighLAND_2.89/psycheCore_3.51 

@@ -7,13 +7,13 @@ export ND280_NJOBS=${ND280_NJOBS}
 function shout {
   echo "+=======================================+" 
  echo "+                                       +" 
- echo "   Build of package highlandEventModel_2.43 in  /home/t2k/aspeers/Highland_Installs/HighLAND_2.89/highlandEventModel_2.43  FAILED   ( Level = 1 )       " 
+ echo "   Build of package highlandEventModel_-128-NOTFOUND in  /home/t2k/aspeers/Highland_Installs/HighLAND_2.89/highlandEventModel_2.43  FAILED   ( Level = 1 )       " 
  echo "+                                       +" 
  echo "+=======================================+" 
  exit 1 
  } 
  trap shout ERR 
-  echo "" ; echo " Building highlandEventModel_2.43  ( package number " 5 " out of " 5 " at level 1 ) " ; echo "" 
+  echo "" ; echo " Building highlandEventModel_-128-NOTFOUND  ( package number " 5 " out of " 5 " at level 1 ) " ; echo "" 
    makeTarget=$1 
   if [ "$1" == "documentation" ] ; then makeTarget=highlandEventModel_$1 ; fi 
    cd  /home/t2k/aspeers/Highland_Installs/HighLAND_2.89/highlandEventModel_2.43 

@@ -553,7 +553,6 @@ const multipart::MultiParticleBox& numuCC4piMultiPi::GetPionBox(const ToyBoxB& b
 void numuCC4piMultiPi::FindECALPionInfo(const AnaEventC& event, const multipart::PionSelectionParams& params,
     multipart::MultiParticleBox& pionBox){
   //**************************************************
-  Float_t fix_length = = anaUtils::GetSeparationSquared(track->PositionStart, track->PositionEnd);
   pionBox.nECalPiontracks  = 0;
   Float_t cut1 = 0;
   Float_t cut2 = 0.4;
@@ -587,9 +586,9 @@ void numuCC4piMultiPi::FindECALPionInfo(const AnaEventC& event, const multipart:
         
         AnaECALParticleB* ECalSeg = track->ECALSegments[0];
 
-        if ( fix_length > 0 && ECalSeg->EMEnergy > 0 ) {
+        if ( ECalSeg->Length > 0 && ECalSeg->EMEnergy > 0 ) {
           if ( ECalSeg->PIDMipEm > cut1 &&  ECalSeg->PIDMipPion > cut1 ) {
-            if ( fix_length/ECalSeg->EMEnergy > cut2 && fix_length/ECalSeg->EMEnergy < cut3 ){
+            if ( ECalSeg->Length/ECalSeg->EMEnergy > cut2 && ECalSeg->Length/ECalSeg->EMEnergy < cut3 ){
               pionBox.ECalPiontracks[pionBox.nECalPiontracks++] = track;
             }
           }
@@ -1551,7 +1550,6 @@ bool numuCC4piMultiPi_utils::BWDMuonPIDCut(const AnaTrackB& track){
 //**************************************************
 bool numuCC4piMultiPi_utils::MuonECALPIDCut(const AnaTrackB& track){
   //************************************************
-  Float_t fix_length = = anaUtils::GetSeparationSquared(track->PositionStart, track->PositionEnd);
   Float_t cut1 = 0.0;
   Float_t cut2 = 1.0;
   Float_t cut3 = 2.6;
@@ -1559,8 +1557,8 @@ bool numuCC4piMultiPi_utils::MuonECALPIDCut(const AnaTrackB& track){
   // if ( SubDetId::GetDetectorUsed(track.Detector, SubDetId::kSMRD) ) return true;
   if( track.nECALSegments > 0 ){
     AnaECALParticleB* ECalSeg = static_cast<AnaECALParticleB*>( track.ECALSegments[0] );
-    if ( ECalSeg->PIDMipEm>-100 && fix_length>0 && ECalSeg->EMEnergy>0 ) {
-      if ( ECalSeg->PIDMipEm < cut1 && fix_length/ECalSeg->EMEnergy > cut2 && fix_length/ECalSeg->EMEnergy < cut3) return true;
+    if ( ECalSeg->PIDMipEm>-100 && ECalSeg->Length>0 && ECalSeg->EMEnergy>0 ) {
+      if ( ECalSeg->PIDMipEm < cut1 && ECalSeg->Length/ECalSeg->EMEnergy > cut2 && ECalSeg->Length/ECalSeg->EMEnergy < cut3) return true;
     }
   }
   return false;
