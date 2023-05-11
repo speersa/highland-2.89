@@ -1,3 +1,0 @@
-repository='external project URL'
-module='http://nd280.lancs.ac.uk/downloads/root_v5.34.34.source.tar.gz'
-tag=''
